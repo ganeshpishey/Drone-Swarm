@@ -1,0 +1,14 @@
+defaults: [../base.yaml, ../presets/smoke_ci.yaml]
+experiment_name: smoke-train
+environment:
+  communication: {mode: nocomm, cost_per_recipient_attempt: 0.0}
+training:
+  total_timesteps: 256
+  rollout_steps: 16
+  ppo_epochs: 1
+  minibatch_size: 48
+  checkpoint_interval: 128
+  scenario_manifest: null
+evaluation:
+  episodes: 2
+  scenario_manifest: null

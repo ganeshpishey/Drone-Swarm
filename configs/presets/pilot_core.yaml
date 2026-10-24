@@ -1,0 +1,6 @@
+environment:
+  preset: pilot_core
+  grid: {width: 17, height: 17, internal_wall_fraction: 0.14}
+  team: [scout_0, ambulance_0, fireman_0]
+  incidents: {victims: 3, fires: 3, service_ticks: 3}
+  horizon: 240

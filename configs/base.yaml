@@ -1,0 +1,62 @@
+environment:
+  environment_version: relay-grid-v1
+  preset: pilot_core
+  grid:
+    width: 17
+    height: 17
+    internal_wall_fraction: 0.14
+  team: [scout_0, ambulance_0, fireman_0]
+  incidents:
+    victims: 3
+    fires: 3
+    service_ticks: 3
+  sensors:
+    scout_radius: 4
+    specialist_radius: 2
+  motion:
+    scout_cells: 2
+    specialist_cells: 1
+  horizon: 240
+  communication:
+    mode: when_who
+    message_dim: 8
+    cost_per_recipient_attempt: 0.01
+    additional_latency_steps: 0
+    packet_loss_probability: 0.0
+training:
+  root_seed: 42001
+  total_timesteps: 2000000
+  rollout_steps: 128
+  learning_rate: 0.0003
+  gamma: 0.99
+  gae_lambda: 0.95
+  ppo_epochs: 4
+  minibatch_size: 1024
+  clip_coef: 0.2
+  value_coef: 0.5
+  entropy_coef: 0.01
+  max_grad_norm: 0.5
+  hidden_size: 128
+  checkpoint_interval: 100000
+  scenario_manifest: configs/manifests/relay-grid-v1.json
+  scenario_split: train
+execution:
+  num_workers: 1
+  envs_per_worker: 1
+  device: cpu
+  deterministic_torch: true
+  recovery_mode: strict
+  max_worker_restarts: 1
+logging:
+  profile: headless_train
+  runs_dir: runs
+  event_buffer_size: 1024
+evaluation:
+  root_seed: 52001
+  episodes: 100
+  deterministic_policy: true
+  scenario_manifest: configs/manifests/relay-grid-v1.json
+  scenario_split: test
+  start_index: 0
+experiment_name: relay
+locked_fields: []

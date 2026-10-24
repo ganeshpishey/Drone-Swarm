@@ -1,0 +1,6 @@
+environment:
+  preset: smoke_ci
+  grid: {width: 11, height: 11, internal_wall_fraction: 0.10}
+  team: [scout_0, ambulance_0, fireman_0]
+  incidents: {victims: 1, fires: 1, service_ticks: 2}
+  horizon: 80

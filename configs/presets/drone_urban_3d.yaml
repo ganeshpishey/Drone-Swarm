@@ -1,0 +1,18 @@
+environment:
+  # True discrete 3D state: x/y navigation plus four z flight levels.
+  # Existing three-tick INTERACT remains the ground-level service primitive.
+  preset: drone_urban_3d
+  drone:
+    enabled: true
+    cruise_altitude_m: 30.0
+    building_height_m: 18.0
+    true_3d_mode: true
+    flight_levels: 4
+    cruise_flight_level: 3
+    building_height_levels: 2
+
+training:
+  scenario_manifest: null
+
+evaluation:
+  scenario_manifest: null

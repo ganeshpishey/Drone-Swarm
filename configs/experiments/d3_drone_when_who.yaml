@@ -1,0 +1,19 @@
+defaults: [../base.yaml, ../presets/drone_urban_3d.yaml]
+
+environment:
+  communication:
+    mode: when_who
+
+experiment_name: d3-drone-when-who
+
+locked_fields:
+  - environment.environment_version
+  - environment.preset
+  - environment.grid
+  - environment.team
+  - environment.incidents
+  - environment.sensors
+  - environment.motion
+  - environment.horizon
+  - environment.communication.mode
+  - environment.drone

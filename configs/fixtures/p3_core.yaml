@@ -1,0 +1,13 @@
+schema_version: relay-p3-fixtures-v1
+preset: p3_core
+training_use: forbidden
+fixtures:
+  - a_busy_a0
+  - a_busy_a1
+  - f_busy_f0
+  - f_busy_f1
+  - informed_a0
+  - informed_a1
+  - distance_a0
+  - distance_a1
+  - both_busy

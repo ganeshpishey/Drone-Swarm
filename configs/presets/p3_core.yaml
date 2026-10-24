@@ -1,0 +1,6 @@
+environment:
+  preset: p3_core
+  grid: {width: 21, height: 21, internal_wall_fraction: 0.16}
+  team: [scout_0, ambulance_0, ambulance_1, fireman_0, fireman_1]
+  incidents: {victims: 4, fires: 4, service_ticks: 3}
+  horizon: 360

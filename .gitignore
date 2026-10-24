@@ -1,0 +1,50 @@
+# Python environments and caches
+.venv/
+.python/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Build and package output
+build/
+dist/
+*.egg-info/
+
+# RELAY generated runs and scratch data
+runs/
+output/
+tmp/
+
+# Checkpoints/models must never be committed, even outside runs/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+**/checkpoints/
+
+# Generated experiment logs, replay data, and media
+*.parquet
+*.tfevents.*
+events.out.tfevents.*
+*.gif
+*.mp4
+*.avi
+*.webm
+*.log
+
+# Local Hydra and notebook state
+.hydra/
+multirun/
+.ipynb_checkpoints/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
