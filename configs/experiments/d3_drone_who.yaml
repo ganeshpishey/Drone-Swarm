@@ -1,0 +1,21 @@
+defaults: [../base.yaml, ../presets/drone_urban_3d.yaml]
+
+# WHO-only: every agent communicates, while the policy learns which teammate
+# should receive each message. The send decision itself is not learned here.
+environment:
+  communication:
+    mode: who_only
+
+experiment_name: d3-drone-who
+
+locked_fields:
+  - environment.environment_version
+  - environment.preset
+  - environment.grid
+  - environment.team
+  - environment.incidents
+  - environment.sensors
+  - environment.motion
+  - environment.horizon
+  - environment.communication.mode
+  - environment.drone

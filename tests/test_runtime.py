@@ -37,18 +37,20 @@ def test_typed_config_composition_and_unknown_key_rejection() -> None:
     assert first.config.training.total_timesteps == 64
     assert first.config.training.message_entropy_coef is None
     refined = resolve_config(
-        ROOT / "configs" / "experiments" / "v1b_always_comm.yaml",
+        ROOT / "configs" / "experiments" / "d1b_drone_always_comm.yaml",
         ["training.message_entropy_coef=0.001"],
     )
     assert refined.config.training.entropy_coef == 0.01
     assert refined.config.training.message_entropy_coef == 0.001
-    v1c = resolve_config(ROOT / "configs" / "experiments" / "v1c_always_comm.yaml")
-    assert action_entropy_coefficient(v1c, 0) == 0.01
-    assert action_entropy_coefficient(v1c, 1_000_000) == pytest.approx(0.0055)
-    assert action_entropy_coefficient(v1c, 2_000_000) == 0.001
+    fine_tune = resolve_config(
+        ROOT / "configs" / "experiments" / "d1c_drone_always_comm_finetune.yaml"
+    )
+    assert action_entropy_coefficient(fine_tune, 0) == 0.003
+    assert action_entropy_coefficient(fine_tune, 250_000) == pytest.approx(0.00175)
+    assert action_entropy_coefficient(fine_tune, 500_000) == 0.0005
     with pytest.raises(ValueError, match="invalid configuration"):
         resolve_config(source, ["training.unknown_field=1"])
-    scientific = ROOT / "configs" / "experiments" / "p2_full.yaml"
+    scientific = ROOT / "configs" / "experiments" / "d1_drone_nocomm.yaml"
     with pytest.raises(ValueError, match="fixed comparison field"):
         resolve_config(scientific, ["environment.grid.width=19"])
 

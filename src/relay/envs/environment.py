@@ -193,10 +193,11 @@ class RelayParallelEnv(ParallelEnv):  # type: ignore[misc]
             }
         return validated
 
-    def _sensing_events(self) -> tuple[dict[str, int], list[dict[str, Any]]]:
+    def _sensing_events(self) -> tuple[dict[str, int], list[dict[str, Any]], int]:
         state = self._require_state()
         visible_counts: dict[str, int] = {}
         discoveries: list[dict[str, Any]] = []
+        scout_new_cells = 0
         for agent_id, agent in state.agents.items():
             radius = (
                 self.config.scout_sensor_radius
@@ -205,6 +206,10 @@ class RelayParallelEnv(ParallelEnv):  # type: ignore[misc]
             )
             visible = visibility_mask(state.walls, (agent.x, agent.y), radius)
             visible_counts[agent_id] = int(visible.sum())
+            if agent.role is Role.SCOUT:
+                newly_seen = visible & ~state.scout_seen_cells
+                scout_new_cells += int(newly_seen.sum())
+                state.scout_seen_cells |= visible
             for incident_id, incident in state.incidents.items():
                 if (
                     incident.status is not IncidentStatus.RESOLVED
@@ -221,7 +226,7 @@ class RelayParallelEnv(ParallelEnv):  # type: ignore[misc]
                             "tick": state.tick,
                         }
                     )
-        return visible_counts, discoveries
+        return visible_counts, discoveries, scout_new_cells
 
     def _resolve_motion(
         self, actions: dict[str, dict[str, Any]]
@@ -420,6 +425,7 @@ class RelayParallelEnv(ParallelEnv):  # type: ignore[misc]
         completed: bool,
         timed_out: bool,
         discoveries: list[dict[str, Any]],
+        scout_new_cells: int,
         actions: dict[str, dict[str, Any]],
     ) -> tuple[np.float32, dict[str, np.float32], dict[str, float]]:
         state = self._require_state()
@@ -431,18 +437,45 @@ class RelayParallelEnv(ParallelEnv):  # type: ignore[misc]
         ]
         relevant_report = False
         scout_action = actions.get("scout_0")
-        if scout_action is not None and scout_action["send"] == 1:
-            recipient_id = AGENT_SLOTS[int(scout_action["recipient"])]
-            recipient = state.agents.get(recipient_id)
-            if recipient is not None:
-                required_roles = {
-                    IncidentKind.VICTIM.value: Role.AMBULANCE,
-                    IncidentKind.FIRE.value: Role.FIREMAN,
-                }
-                relevant_report = any(
-                    recipient.role is required_roles[event["kind"]]
-                    for event in scout_discoveries
+        required_roles = {
+            IncidentKind.VICTIM.value: Role.AMBULANCE,
+            IncidentKind.FIRE.value: Role.FIREMAN,
+        }
+        for event in scout_discoveries:
+            # A report is useful only when the specialist that can resolve the
+            # new incident cannot already see it locally. Broadcast modes do
+            # not use a recipient action; WHEN still requires the Scout to
+            # choose SEND on this tick.
+            recipient = next(
+                (
+                    agent
+                    for agent in state.agents.values()
+                    if agent.role is required_roles[event["kind"]]
+                ),
+                None,
+            )
+            if recipient is None:
+                continue
+            broadcast_sent = self.config.communication_mode is CommunicationMode.ALWAYS_BROADCAST or (
+                self.config.communication_mode is CommunicationMode.WHEN_BROADCAST
+                and scout_action is not None
+                and scout_action["send"] == 1
+            )
+            if broadcast_sent:
+                incident = state.incidents[event["incident_id"]]
+                recipient_visible = visibility_mask(
+                    state.walls,
+                    (recipient.x, recipient.y),
+                    self.config.specialist_sensor_radius,
                 )
+                if not recipient_visible[incident.y, incident.x]:
+                    relevant_report = True
+                    break
+            elif scout_action is not None and scout_action["send"] == 1:
+                recipient_id = AGENT_SLOTS[int(scout_action["recipient"])]
+                if recipient_id == recipient.agent_id:
+                    relevant_report = True
+                    break
         components = {
             "victim_resolution": np.float32(self.config.resolve_victim_reward * resolved_victims),
             "fire_resolution": np.float32(self.config.resolve_fire_reward * resolved_fires),
@@ -455,6 +488,9 @@ class RelayParallelEnv(ParallelEnv):  # type: ignore[misc]
             "scout_discovery_bonus": np.float32(
                 self.config.scout_discovery_bonus * len(scout_discoveries)
             ),
+            "scout_new_cell_bonus": np.float32(
+                self.config.scout_new_cell_bonus * scout_new_cells
+            ),
             "scout_relevant_report_bonus": np.float32(
                 self.config.scout_relevant_report_bonus if relevant_report else 0.0
             ),
@@ -464,10 +500,15 @@ class RelayParallelEnv(ParallelEnv):  # type: ignore[misc]
         # assignment without changing the shared rescue reward received by the
         # specialist agents.
         for name, value in components.items():
-            if name not in {"scout_discovery_bonus", "scout_relevant_report_bonus"}:
+            if name not in {
+                "scout_discovery_bonus",
+                "scout_new_cell_bonus",
+                "scout_relevant_report_bonus",
+            }:
                 total = np.float32(total + value)
         rewards = {agent_id: float(total) for agent_id in state.agents}
         rewards["scout_0"] += float(components["scout_discovery_bonus"])
+        rewards["scout_0"] += float(components["scout_new_cell_bonus"])
         rewards["scout_0"] += float(components["scout_relevant_report_bonus"])
         return total, components, rewards
 
@@ -488,7 +529,7 @@ class RelayParallelEnv(ParallelEnv):  # type: ignore[misc]
         packet_events, attempts = attempt_packets(state, validated, self.config, self._channel_rng)
         state.channel_rng_state = dict(copy.deepcopy(self._channel_rng.bit_generator.state))
         legality, motion_events = self._resolve_motion(validated)
-        visible_counts, discovery_events = self._sensing_events()
+        visible_counts, discovery_events, scout_new_cells = self._sensing_events()
         victims, fires, intervention_events = self._resolve_interventions(validated)
         state.tick += 1
         delivered, delivery_events = pop_due_packets(state)
@@ -498,7 +539,14 @@ class RelayParallelEnv(ParallelEnv):  # type: ignore[misc]
         )
         timed_out = state.tick >= self.config.horizon and not completed
         reward, components, rewards = self._reward(
-            victims, fires, attempts, completed, timed_out, discovery_events, validated
+            victims,
+            fires,
+            attempts,
+            completed,
+            timed_out,
+            discovery_events,
+            scout_new_cells,
+            validated,
         )
         post_hash = state_hash(state)
         post_positions = {agent_id: (agent.x, agent.y) for agent_id, agent in state.agents.items()}
@@ -524,6 +572,7 @@ class RelayParallelEnv(ParallelEnv):  # type: ignore[misc]
                 "post_positions": copy.deepcopy(post_positions),
                 "incident_states": copy.deepcopy(incident_states),
                 "visible_cell_counts": dict(visible_counts),
+                "scout_new_cells": scout_new_cells,
                 "discovery_events": copy.deepcopy(discovery_events),
                 "reward_components": dict(components),
                 "recipient_attempts": attempts,

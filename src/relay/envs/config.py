@@ -48,6 +48,9 @@ class EnvironmentConfig:
     # experiments. A Scout receives this bonus when it is the first agent to
     # discover an unresolved incident.
     scout_discovery_bonus: float = 0.0
+    # Optional one-time information-gain bonus. It is awarded only for cells
+    # newly observed by the Scout, never for revisiting already observed space.
+    scout_new_cell_bonus: float = 0.0
     # Optional additional shaping: award the Scout only when a first discovery
     # is paired with a SEND action addressed to a specialist able to resolve
     # that discovered incident. This is deliberately not a generic send bonus.
@@ -105,6 +108,8 @@ class EnvironmentConfig:
             raise ValueError("communication_cost must be non-negative")
         if self.scout_discovery_bonus < 0.0:
             raise ValueError("scout_discovery_bonus must be non-negative")
+        if self.scout_new_cell_bonus < 0.0:
+            raise ValueError("scout_new_cell_bonus must be non-negative")
         if self.scout_relevant_report_bonus < 0.0:
             raise ValueError("scout_relevant_report_bonus must be non-negative")
         if self.drone_cruise_altitude_m <= 0.0:

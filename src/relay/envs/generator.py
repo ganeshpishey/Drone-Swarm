@@ -291,6 +291,7 @@ def generate_scenario(
             channel_rng_state=dict(copy.deepcopy(streams["channel"].bit_generator.state)),
             tie_break_order=tuple(tie_break),
             discovered_incidents={},
+            scout_seen_cells=np.zeros((config.height, config.width), dtype=bool),
         )
         target_walls = round(
             (config.width - 2) * (config.height - 2) * config.internal_wall_fraction

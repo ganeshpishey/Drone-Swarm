@@ -74,6 +74,7 @@ def state_record(state: WorldState) -> dict[str, Any]:
         },
         "channel_rng_state": state.channel_rng_state,
         "tie_break_order": state.tie_break_order,
+        "scout_seen_cells": state.scout_seen_cells.astype(np.uint8),
     }
 
 

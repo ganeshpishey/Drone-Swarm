@@ -114,6 +114,7 @@ class WorldState:
     channel_rng_state: dict[str, Any]
     tie_break_order: tuple[str, ...]
     discovered_incidents: dict[str, str]
+    scout_seen_cells: np.ndarray
 
 
 class ScenarioGenerationError(RuntimeError):

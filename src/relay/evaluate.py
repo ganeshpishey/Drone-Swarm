@@ -67,6 +67,7 @@ def _environment_matches_checkpoint(
     for environment in (trained_copy, current_copy):
         rewards = environment.setdefault("rewards", {})
         rewards.setdefault("scout_discovery_bonus", 0.0)
+        rewards.setdefault("scout_new_cell_bonus", 0.0)
         rewards.setdefault("scout_relevant_report_bonus", 0.0)
     if not allow_channel_variation:
         return canonical_json(trained_copy) == canonical_json(current_copy)

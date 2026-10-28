@@ -1,0 +1,33 @@
+defaults: [../base.yaml, ../presets/drone_urban_3d.yaml]
+
+# Separate causal communication variant of D2. The Scout has wider sensing
+# than specialists and is rewarded only for first, broadcast discoveries that
+# the specialist able to resolve the incident cannot currently see.
+environment:
+  communication:
+    mode: when_broadcast
+  sensors:
+    scout_radius: 4
+    specialist_radius: 1
+  rewards:
+    scout_discovery_bonus: 0.25
+    scout_new_cell_bonus: 0.0
+    scout_relevant_report_bonus: 0.50
+
+training:
+  total_timesteps: 1000000
+  checkpoint_interval: 100000
+
+experiment_name: d2e-drone-when-informative
+
+locked_fields:
+  - environment.environment_version
+  - environment.preset
+  - environment.grid
+  - environment.team
+  - environment.incidents
+  - environment.sensors
+  - environment.motion
+  - environment.horizon
+  - environment.communication.mode
+  - environment.drone

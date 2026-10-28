@@ -53,6 +53,7 @@ class RewardSection:
     # Kept at zero for all existing experiments. Dedicated Scout-exploration
     # experiments can enable a bonus for first discovery of an incident.
     scout_discovery_bonus: float = 0.0
+    scout_new_cell_bonus: float = 0.0
     scout_relevant_report_bonus: float = 0.0
 
 
@@ -110,6 +111,7 @@ class EnvironmentSection:
             additional_latency_steps=self.communication.additional_latency_steps,
             packet_loss_probability=self.communication.packet_loss_probability,
             scout_discovery_bonus=self.rewards.scout_discovery_bonus,
+            scout_new_cell_bonus=self.rewards.scout_new_cell_bonus,
             scout_relevant_report_bonus=self.rewards.scout_relevant_report_bonus,
         )
 

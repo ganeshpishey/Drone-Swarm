@@ -1,0 +1,30 @@
+defaults: [../base.yaml, ../presets/drone_urban_3d.yaml]
+
+environment:
+  communication:
+    mode: always_broadcast
+
+# Conservative continuation from an already trained AlwaysComm checkpoint.
+# The environment and reward are deliberately unchanged, so results remain
+# comparable with D1 NoComm and D1b AlwaysComm.
+training:
+  total_timesteps: 500000
+  learning_rate: 0.000075
+  entropy_coef: 0.003
+  action_entropy_final_coef: 0.0005
+  message_entropy_coef: 0.0002
+  checkpoint_interval: 50000
+
+experiment_name: d1c-drone-always-comm-finetune
+
+locked_fields:
+  - environment.environment_version
+  - environment.preset
+  - environment.grid
+  - environment.team
+  - environment.incidents
+  - environment.sensors
+  - environment.motion
+  - environment.horizon
+  - environment.communication.mode
+  - environment.drone

@@ -1,0 +1,32 @@
+defaults: [../base.yaml, ../presets/drone_urban_3d.yaml]
+
+environment:
+  communication:
+    mode: always_broadcast
+  rewards:
+    # One-time bonuses only: revisiting visible terrain earns nothing.
+    scout_new_cell_bonus: 0.01
+    scout_discovery_bonus: 0.5
+    scout_relevant_report_bonus: 0.0
+
+training:
+  total_timesteps: 500000
+  learning_rate: 0.000075
+  entropy_coef: 0.003
+  action_entropy_final_coef: 0.0005
+  message_entropy_coef: 0.0002
+  checkpoint_interval: 50000
+
+experiment_name: d1d-drone-always-comm-scout-explore
+
+locked_fields:
+  - environment.environment_version
+  - environment.preset
+  - environment.grid
+  - environment.team
+  - environment.incidents
+  - environment.sensors
+  - environment.motion
+  - environment.horizon
+  - environment.communication.mode
+  - environment.drone

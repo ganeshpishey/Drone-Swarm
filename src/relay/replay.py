@@ -6,6 +6,7 @@ import argparse
 import json
 
 from relay.runtime.replay_store import replay_summary, verify_replay
+from relay.runtime.orbit_viewer import export_orbit_viewer
 from relay.runtime.replay_visuals import ReplayData, export_replay
 
 
@@ -25,6 +26,10 @@ def build_parser() -> argparse.ArgumentParser:
     export.add_argument("--fps", type=float, default=4.0)
     export.add_argument("--stride", type=int, default=1)
     export.add_argument("--perspective", default="global")
+    orbit = subparsers.add_parser("orbit", help="export an interactive 360-degree HTML replay")
+    orbit.add_argument("replay")
+    orbit.add_argument("--output", required=True)
+    orbit.add_argument("--stride", type=int, default=1)
     generate = subparsers.add_parser("generate")
     generate.add_argument("--config", required=True)
     generate.add_argument("--checkpoint", required=True)
@@ -99,6 +104,9 @@ def main(argv: list[str] | None = None) -> int:
             perspective=args.perspective,
             stride=args.stride,
         )
+        result = {"output": str(output)}
+    elif args.command == "orbit":
+        output = export_orbit_viewer(ReplayData(args.replay), args.output, stride=args.stride)
         result = {"output": str(output)}
     else:
         result = (

@@ -161,6 +161,20 @@ $replay = "runs\<evaluation-run-id>\replays\episode_000000.parquet"
 The renderer shows raised damaged buildings, rubble, incidents, drone movement,
 flight levels, and specialist service actions.
 
+### Interactive 360-degree viewer
+
+Create a browser-based 3D replay viewer with mouse orbit, zoom, timeline, and
+playback controls:
+
+```powershell
+.\.venv\Scripts\python.exe -m relay.replay orbit $replay `
+  --output output\drone_mission_360.html `
+  --stride 2
+```
+
+Open the resulting HTML file in a modern browser. Drag to rotate the camera,
+use the mouse wheel to zoom, and use the timeline to inspect each replay tick.
+
 ## Reproducibility
 
 - Keep the checkpoint, `resolved_config.yaml`, and `evaluation.json` for each result.

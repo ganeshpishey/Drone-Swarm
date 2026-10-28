@@ -1,0 +1,33 @@
+defaults: [../base.yaml, ../presets/drone_urban_3d.yaml]
+
+# Communication-focused variant. This is intentionally separate from D1b:
+# specialists have less local information and Scout reports are rewarded only
+# for first discoveries that the matching specialist cannot currently observe.
+environment:
+  communication:
+    mode: always_broadcast
+  sensors:
+    scout_radius: 4
+    specialist_radius: 1
+  rewards:
+    scout_discovery_bonus: 0.25
+    scout_new_cell_bonus: 0.0
+    scout_relevant_report_bonus: 0.50
+
+training:
+  total_timesteps: 1000000
+  checkpoint_interval: 100000
+
+experiment_name: d1e-drone-always-comm-informative
+
+locked_fields:
+  - environment.environment_version
+  - environment.preset
+  - environment.grid
+  - environment.team
+  - environment.incidents
+  - environment.sensors
+  - environment.motion
+  - environment.horizon
+  - environment.communication.mode
+  - environment.drone
