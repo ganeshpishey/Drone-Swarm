@@ -52,6 +52,8 @@ mkdir -p "$BASE_DIR"
 config_rows() {
   /usr/bin/python3 - "$CONFIG" "$MODE" <<'PY'
 import json
+import math
+import os
 import sys
 from pathlib import Path
 
@@ -67,6 +69,19 @@ selected = {
     "preflight-only": ["scout_0", "ambulance_0"],
     "stop": [],
 }[mode]
+scout_pose_override = os.environ.get("PX4_GZ_SCOUT_SPAWN_POSE", "").strip()
+if scout_pose_override:
+    if mode != "scout-only" or not os.environ.get("PX4_GZ_SCOUT_MODEL_OVERRIDE", "").strip():
+        raise SystemExit("PX4_GZ_SCOUT_SPAWN_POSE is permitted only with scout-only mode and PX4_GZ_SCOUT_MODEL_OVERRIDE.")
+    pose_fields = scout_pose_override.split(",")
+    if len(pose_fields) != 6:
+        raise SystemExit("PX4_GZ_SCOUT_SPAWN_POSE must contain six comma-separated numeric values.")
+    try:
+        pose_values = [float(value) for value in pose_fields]
+    except ValueError:
+        raise SystemExit("PX4_GZ_SCOUT_SPAWN_POSE must contain six comma-separated numeric values.")
+    if not all(math.isfinite(value) for value in pose_values):
+        raise SystemExit("PX4_GZ_SCOUT_SPAWN_POSE values must be finite.")
 seen_instances, seen_system_ids, seen_udp, seen_grpc = set(), set(), set(), set()
 for name in selected:
     item = config[name]
@@ -85,7 +100,7 @@ for name in selected:
     seen_system_ids.add(system_id)
     seen_udp.add(mavsdk_port)
     seen_grpc.add(grpc_port)
-    pose = str(item["spawn_pose"])
+    pose = scout_pose_override if name == "scout_0" and scout_pose_override else str(item["spawn_pose"])
     fields = pose.split(",")
     if len(fields) != 6:
         raise SystemExit(f"{name}: spawn_pose must contain six comma-separated values")
