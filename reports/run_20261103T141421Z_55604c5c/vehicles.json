@@ -1,0 +1,5339 @@
+{
+  "vehicles": {
+    "ambulance_0": {
+      "armed": false,
+      "battery_history": [
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:24.555149+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:24.892610+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:25.174523+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:25.454468+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": 0.0,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:25.749768+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:28.623086+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:31.941502+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:35.051192+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:38.324768+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:41.269959+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:46.059426+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:49.336305+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:53.048293+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:56.265180+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:59.769172+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:15:03.307039+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:15:07.118022+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:15:10.163940+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:15:13.732201+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:15:45.270124+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:15:47.890871+00:00",
+          "uav": "ambulance_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        }
+      ],
+      "communication_state": {
+        "connected": true,
+        "error": null,
+        "last_seen_monotonic_s": 218153.588699508,
+        "last_seen_utc": "2026-11-03T14:16:22.046893+00:00"
+      },
+      "connection_state": false,
+      "final_state": {
+        "armed": false,
+        "armed_fresh": false,
+        "attitude_euler": {
+          "pitch_deg": -0.01998870074748993,
+          "roll_deg": 0.0066343205980956554,
+          "yaw_deg": 90.39279174804688
+        },
+        "attitude_euler_fresh": false,
+        "available": false,
+        "battery_fresh": false,
+        "battery_status": {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "fresh": true,
+          "level": "NORMAL",
+          "observed_drain_percent_per_minute": null,
+          "remaining_percent": 100.0,
+          "sample_age_s": 4.9174996092915535e-05,
+          "sampled_at_utc": "2026-11-03T14:15:47.890871+00:00",
+          "source": "PX4_MAVSDK",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        "connected": false,
+        "connection_fresh": false,
+        "flight_mode": "HOLD",
+        "flight_mode_fresh": false,
+        "fresh": false,
+        "health_fresh": false,
+        "home_fresh": false,
+        "home_id": "ambulance_0:8301b9aa-4319-4de8-b3ed-f51cb95601e9",
+        "in_air": false,
+        "in_air_fresh": false,
+        "is_armable": true,
+        "peer_advertised_availability": "receiver_online_suggestion_only",
+        "position": {
+          "absolute_altitude_m": 1451.9810791015625,
+          "latitude_deg": 27.9875495,
+          "longitude_deg": 86.9242683,
+          "relative_altitude_m": 0.07600000500679016
+        },
+        "position_fresh": false,
+        "position_ned": {
+          "down_m": -0.03076171875,
+          "east_m": 0.02203480713069439,
+          "north_m": 0.00029836586327292025
+        },
+        "position_velocity_ned_fresh": false,
+        "role": "Medical-Support",
+        "sampled_at_utc": "2026-11-03T14:15:49.359341+00:00",
+        "sampled_monotonic_s": 218120.941025953,
+        "status_reason": "telemetry_stale_or_vehicle_unavailable_or_battery_policy",
+        "telemetry_errors": {
+          "armed": "no sample for 5.0s",
+          "attitude_euler": "no sample for 5.0s",
+          "battery": "no sample for 5.0s",
+          "flight_mode": "no sample for 5.0s",
+          "health": "no sample for 5.0s",
+          "home": "no sample for 5.0s",
+          "in_air": "no sample for 5.0s",
+          "position": "no sample for 5.0s",
+          "position_velocity_ned": "no sample for 5.0s"
+        },
+        "telemetry_field_ages_s": {
+          "armed": 34.70427650498459,
+          "attitude_euler": 33.23465652699815,
+          "battery": 34.70286470398423,
+          "connection": 118.05015968999942,
+          "flight_mode": 34.70374269699096,
+          "health": 34.70320989598986,
+          "home": 34.70257105198107,
+          "in_air": 33.680089385976316,
+          "position": 33.234359907975886,
+          "position_velocity_ned": 33.94546327297576
+        },
+        "telemetry_sampled_at_utc": {
+          "armed": "2026-11-03T14:15:47.889432+00:00",
+          "attitude_euler": "2026-11-03T14:15:49.359046+00:00",
+          "battery": "2026-11-03T14:15:47.890837+00:00",
+          "connection": "2026-11-03T14:14:24.543542+00:00",
+          "flight_mode": "2026-11-03T14:15:47.889962+00:00",
+          "health": "2026-11-03T14:15:47.890494+00:00",
+          "home": "2026-11-03T14:15:47.891130+00:00",
+          "in_air": "2026-11-03T14:15:48.913611+00:00",
+          "position": "2026-11-03T14:15:49.359341+00:00",
+          "position_velocity_ned": "2026-11-03T14:15:48.648241+00:00"
+        },
+        "telemetry_sampled_monotonic_s": {
+          "armed": 218119.471109356,
+          "attitude_euler": 218120.940729334,
+          "battery": 218119.472521157,
+          "connection": 218036.125226171,
+          "flight_mode": 218119.471643164,
+          "health": 218119.472175965,
+          "home": 218119.472814809,
+          "in_air": 218120.495296475,
+          "position": 218120.941025953,
+          "position_velocity_ned": 218120.229922588
+        },
+        "telemetry_source": "PX4_MAVSDK",
+        "telemetry_streams": {
+          "armed": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:19.658431+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:47.889432+00:00",
+            "last_sample_monotonic_s": 218119.471109356,
+            "last_started_at_utc": "2026-11-03T14:14:24.537356+00:00",
+            "restart_count": 8,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          },
+          "attitude_euler": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:13.981084+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:49.359046+00:00",
+            "last_sample_monotonic_s": 218120.940729334,
+            "last_started_at_utc": "2026-11-03T14:14:24.537565+00:00",
+            "restart_count": 7,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          },
+          "battery": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:20.063459+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:47.890837+00:00",
+            "last_sample_monotonic_s": 218119.472521157,
+            "last_started_at_utc": "2026-11-03T14:14:24.537484+00:00",
+            "restart_count": 8,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          },
+          "connection": {
+            "idle_timeout_s": null,
+            "last_sample_at_utc": "2026-11-03T14:14:24.543542+00:00",
+            "last_sample_monotonic_s": 218036.125226171,
+            "last_started_at_utc": "2026-11-03T14:14:24.536831+00:00",
+            "state": "active"
+          },
+          "flight_mode": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:19.975339+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:47.889962+00:00",
+            "last_sample_monotonic_s": 218119.471643164,
+            "last_started_at_utc": "2026-11-03T14:14:24.537388+00:00",
+            "restart_count": 8,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          },
+          "health": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:20.018042+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:47.890494+00:00",
+            "last_sample_monotonic_s": 218119.472175965,
+            "last_started_at_utc": "2026-11-03T14:14:24.537169+00:00",
+            "restart_count": 8,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          },
+          "home": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:20.102455+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:47.891130+00:00",
+            "last_sample_monotonic_s": 218119.472814809,
+            "last_started_at_utc": "2026-11-03T14:14:24.537455+00:00",
+            "restart_count": 8,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          },
+          "in_air": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:13.475629+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:48.913611+00:00",
+            "last_sample_monotonic_s": 218120.495296475,
+            "last_started_at_utc": "2026-11-03T14:14:24.537292+00:00",
+            "restart_count": 7,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          },
+          "position": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:14.026574+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:49.359341+00:00",
+            "last_sample_monotonic_s": 218120.941025953,
+            "last_started_at_utc": "2026-11-03T14:14:24.537422+00:00",
+            "restart_count": 7,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          },
+          "position_velocity_ned": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:21.735196+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:48.648241+00:00",
+            "last_sample_monotonic_s": 218120.229922588,
+            "last_started_at_utc": "2026-11-03T14:14:24.537519+00:00",
+            "restart_count": 8,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          }
+        },
+        "vehicle_id": "ambulance_0",
+        "velocity_ned": {
+          "down_velocity_m_s": -0.058645348995923996,
+          "east_velocity_m_s": 0.008663947694003582,
+          "north_velocity_m_s": -0.0037704564165323973
+        }
+      },
+      "in_air": false,
+      "mavsdk_system_id": 2,
+      "mission_assignments": [],
+      "position_history": [
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.912109375,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.05400000140070915
+          },
+          "timestamp_utc": "2026-11-03T14:14:24.672601+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.912109375,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.05300000309944153
+          },
+          "timestamp_utc": "2026-11-03T14:14:24.800029+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9080810546875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.049000002443790436
+          },
+          "timestamp_utc": "2026-11-03T14:14:25.012397+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9071044921875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.049000002443790436
+          },
+          "timestamp_utc": "2026-11-03T14:14:25.065637+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9061279296875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.04700000211596489
+          },
+          "timestamp_utc": "2026-11-03T14:14:25.283258+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9061279296875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.04700000211596489
+          },
+          "timestamp_utc": "2026-11-03T14:14:25.380174+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.905029296875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.04700000211596489
+          },
+          "timestamp_utc": "2026-11-03T14:14:25.638559+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.905029296875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.046000003814697266
+          },
+          "timestamp_utc": "2026-11-03T14:14:25.900417+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.905029296875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.046000003814697266
+          },
+          "timestamp_utc": "2026-11-03T14:14:26.013276+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.904052734375,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.0
+          },
+          "timestamp_utc": "2026-11-03T14:14:26.203090+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.903076171875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": -0.0010000000474974513
+          },
+          "timestamp_utc": "2026-11-03T14:14:26.439396+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.904052734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.924268,
+            "relative_altitude_m": 0.0
+          },
+          "timestamp_utc": "2026-11-03T14:14:26.748725+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.904052734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.924268,
+            "relative_altitude_m": 0.0
+          },
+          "timestamp_utc": "2026-11-03T14:14:26.948496+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.904052734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.924268,
+            "relative_altitude_m": 0.0
+          },
+          "timestamp_utc": "2026-11-03T14:14:27.069872+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.905029296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92426789999999,
+            "relative_altitude_m": 0.0
+          },
+          "timestamp_utc": "2026-11-03T14:14:27.253220+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.905029296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92426789999999,
+            "relative_altitude_m": 0.0
+          },
+          "timestamp_utc": "2026-11-03T14:14:27.351906+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.905029296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92426789999999,
+            "relative_altitude_m": 0.0
+          },
+          "timestamp_utc": "2026-11-03T14:14:27.398747+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.905029296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92426789999999,
+            "relative_altitude_m": 0.0
+          },
+          "timestamp_utc": "2026-11-03T14:14:27.592280+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9061279296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92426789999999,
+            "relative_altitude_m": 0.0010000000474974513
+          },
+          "timestamp_utc": "2026-11-03T14:14:27.908713+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9071044921875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92426789999999,
+            "relative_altitude_m": 0.0020000000949949026
+          },
+          "timestamp_utc": "2026-11-03T14:14:28.044036+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9080810546875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.924268,
+            "relative_altitude_m": 0.003000000026077032
+          },
+          "timestamp_utc": "2026-11-03T14:14:28.171856+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9090576171875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.924268,
+            "relative_altitude_m": 0.005000000353902578
+          },
+          "timestamp_utc": "2026-11-03T14:14:28.488599+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9100341796875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.005000000353902578
+          },
+          "timestamp_utc": "2026-11-03T14:14:28.707899+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9090576171875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.004000000189989805
+          },
+          "timestamp_utc": "2026-11-03T14:14:28.865819+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9071044921875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.0020000000949949026
+          },
+          "timestamp_utc": "2026-11-03T14:14:29.063377+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9071044921875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.003000000026077032
+          },
+          "timestamp_utc": "2026-11-03T14:14:29.390228+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9090576171875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.005000000353902578
+          },
+          "timestamp_utc": "2026-11-03T14:14:29.649492+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9110107421875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.006000000052154064
+          },
+          "timestamp_utc": "2026-11-03T14:14:29.971841+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9110107421875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.006000000052154064
+          },
+          "timestamp_utc": "2026-11-03T14:14:30.093988+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.912109375,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.00800000037997961
+          },
+          "timestamp_utc": "2026-11-03T14:14:30.255919+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9150390625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.010000000707805157
+          },
+          "timestamp_utc": "2026-11-03T14:14:30.657018+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9171142578125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.012000000104308128
+          },
+          "timestamp_utc": "2026-11-03T14:14:31.078743+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9171142578125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.013000000268220901
+          },
+          "timestamp_utc": "2026-11-03T14:14:31.417149+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9190673828125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.014000000432133675
+          },
+          "timestamp_utc": "2026-11-03T14:14:31.650658+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9200439453125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.015000000596046448
+          },
+          "timestamp_utc": "2026-11-03T14:14:31.789133+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.922119140625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.017000000923871994
+          },
+          "timestamp_utc": "2026-11-03T14:14:32.120005+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.922119140625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.018000001087784767
+          },
+          "timestamp_utc": "2026-11-03T14:14:32.269872+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.924072265625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.020000001415610313
+          },
+          "timestamp_utc": "2026-11-03T14:14:32.400124+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.926025390625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.021000001579523087
+          },
+          "timestamp_utc": "2026-11-03T14:14:32.752698+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.925048828125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.020000001415610313
+          },
+          "timestamp_utc": "2026-11-03T14:14:32.962861+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.924072265625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.020000001415610313
+          },
+          "timestamp_utc": "2026-11-03T14:14:33.142207+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.924072265625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.01900000125169754
+          },
+          "timestamp_utc": "2026-11-03T14:14:33.363180+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.923095703125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.018000001087784767
+          },
+          "timestamp_utc": "2026-11-03T14:14:33.665086+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9190673828125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.014000000432133675
+          },
+          "timestamp_utc": "2026-11-03T14:14:33.970430+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.916015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.01100000087171793
+          },
+          "timestamp_utc": "2026-11-03T14:14:34.183547+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.916015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.01100000087171793
+          },
+          "timestamp_utc": "2026-11-03T14:14:34.310274+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.916015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.01100000087171793
+          },
+          "timestamp_utc": "2026-11-03T14:14:34.352895+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9140625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.010000000707805157
+          },
+          "timestamp_utc": "2026-11-03T14:14:34.558420+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9150390625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.010000000707805157
+          },
+          "timestamp_utc": "2026-11-03T14:14:34.900158+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9180908203125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.013000000268220901
+          },
+          "timestamp_utc": "2026-11-03T14:14:35.199201+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9210205078125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.01600000075995922
+          },
+          "timestamp_utc": "2026-11-03T14:14:35.553455+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.924072265625,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.924268,
+            "relative_altitude_m": 0.01900000125169754
+          },
+          "timestamp_utc": "2026-11-03T14:14:35.971681+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.926025390625,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92426789999999,
+            "relative_altitude_m": 0.02200000174343586
+          },
+          "timestamp_utc": "2026-11-03T14:14:36.344805+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9271240234375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92426789999999,
+            "relative_altitude_m": 0.02200000174343586
+          },
+          "timestamp_utc": "2026-11-03T14:14:36.576056+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9290771484375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92426789999999,
+            "relative_altitude_m": 0.024000000208616257
+          },
+          "timestamp_utc": "2026-11-03T14:14:36.689051+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9300537109375,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242678,
+            "relative_altitude_m": 0.02500000037252903
+          },
+          "timestamp_utc": "2026-11-03T14:14:36.885744+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9310302734375,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242678,
+            "relative_altitude_m": 0.026000000536441803
+          },
+          "timestamp_utc": "2026-11-03T14:14:37.044188+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93212890625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242678,
+            "relative_altitude_m": 0.027000000700354576
+          },
+          "timestamp_utc": "2026-11-03T14:14:37.219772+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93310546875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242677,
+            "relative_altitude_m": 0.02800000086426735
+          },
+          "timestamp_utc": "2026-11-03T14:14:37.590242+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93408203125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242678,
+            "relative_altitude_m": 0.029000001028180122
+          },
+          "timestamp_utc": "2026-11-03T14:14:37.810729+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93408203125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242678,
+            "relative_altitude_m": 0.029000001028180122
+          },
+          "timestamp_utc": "2026-11-03T14:14:38.020010+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93408203125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242678,
+            "relative_altitude_m": 0.029000001028180122
+          },
+          "timestamp_utc": "2026-11-03T14:14:38.182907+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93310546875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92426789999999,
+            "relative_altitude_m": 0.029000001028180122
+          },
+          "timestamp_utc": "2026-11-03T14:14:38.419699+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93408203125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92426789999999,
+            "relative_altitude_m": 0.029000001028180122
+          },
+          "timestamp_utc": "2026-11-03T14:14:38.630549+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93408203125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92426789999999,
+            "relative_altitude_m": 0.030000001192092896
+          },
+          "timestamp_utc": "2026-11-03T14:14:38.725567+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93408203125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92426789999999,
+            "relative_altitude_m": 0.030000001192092896
+          },
+          "timestamp_utc": "2026-11-03T14:14:38.818240+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93505859375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.924268,
+            "relative_altitude_m": 0.030000001192092896
+          },
+          "timestamp_utc": "2026-11-03T14:14:38.943126+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93505859375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.924268,
+            "relative_altitude_m": 0.030000001192092896
+          },
+          "timestamp_utc": "2026-11-03T14:14:39.112298+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93310546875,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.029000001028180122
+          },
+          "timestamp_utc": "2026-11-03T14:14:39.287975+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93212890625,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.027000000700354576
+          },
+          "timestamp_utc": "2026-11-03T14:14:39.471931+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93212890625,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.027000000700354576
+          },
+          "timestamp_utc": "2026-11-03T14:14:39.629638+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9310302734375,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.026000000536441803
+          },
+          "timestamp_utc": "2026-11-03T14:14:39.790533+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9310302734375,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.026000000536441803
+          },
+          "timestamp_utc": "2026-11-03T14:14:40.021545+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9281005859375,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.024000000208616257
+          },
+          "timestamp_utc": "2026-11-03T14:14:40.188397+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9271240234375,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.02200000174343586
+          },
+          "timestamp_utc": "2026-11-03T14:14:40.386512+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.926025390625,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.021000001579523087
+          },
+          "timestamp_utc": "2026-11-03T14:14:40.557374+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.925048828125,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.020000001415610313
+          },
+          "timestamp_utc": "2026-11-03T14:14:40.691869+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.925048828125,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.92426809999999,
+            "relative_altitude_m": 0.020000001415610313
+          },
+          "timestamp_utc": "2026-11-03T14:14:40.780009+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.922119140625,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.018000001087784767
+          },
+          "timestamp_utc": "2026-11-03T14:14:41.072612+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9210205078125,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.017000000923871994
+          },
+          "timestamp_utc": "2026-11-03T14:14:41.357416+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9210205078125,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.01600000075995922
+          },
+          "timestamp_utc": "2026-11-03T14:14:41.750588+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9200439453125,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.015000000596046448
+          },
+          "timestamp_utc": "2026-11-03T14:14:42.146850+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9200439453125,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.015000000596046448
+          },
+          "timestamp_utc": "2026-11-03T14:14:42.359952+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9200439453125,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.015000000596046448
+          },
+          "timestamp_utc": "2026-11-03T14:14:42.591505+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9200439453125,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.015000000596046448
+          },
+          "timestamp_utc": "2026-11-03T14:14:42.760554+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9190673828125,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.015000000596046448
+          },
+          "timestamp_utc": "2026-11-03T14:14:43.237143+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9210205078125,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.01600000075995922
+          },
+          "timestamp_utc": "2026-11-03T14:14:43.628758+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9210205078125,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.01600000075995922
+          },
+          "timestamp_utc": "2026-11-03T14:14:43.837926+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.923095703125,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.018000001087784767
+          },
+          "timestamp_utc": "2026-11-03T14:14:44.159482+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9271240234375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.02200000174343586
+          },
+          "timestamp_utc": "2026-11-03T14:14:44.639719+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9271240234375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.02200000174343586
+          },
+          "timestamp_utc": "2026-11-03T14:14:44.791079+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9290771484375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.024000000208616257
+          },
+          "timestamp_utc": "2026-11-03T14:14:45.037511+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9290771484375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.02500000037252903
+          },
+          "timestamp_utc": "2026-11-03T14:14:45.216953+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9290771484375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.02500000037252903
+          },
+          "timestamp_utc": "2026-11-03T14:14:45.443458+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9300537109375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.026000000536441803
+          },
+          "timestamp_utc": "2026-11-03T14:14:45.657006+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9310302734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.026000000536441803
+          },
+          "timestamp_utc": "2026-11-03T14:14:45.865924+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9310302734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.027000000700354576
+          },
+          "timestamp_utc": "2026-11-03T14:14:46.082226+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9310302734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.027000000700354576
+          },
+          "timestamp_utc": "2026-11-03T14:14:46.291145+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93310546875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.029000001028180122
+          },
+          "timestamp_utc": "2026-11-03T14:14:46.627204+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93505859375,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.030000001192092896
+          },
+          "timestamp_utc": "2026-11-03T14:14:46.913268+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93505859375,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.030000001192092896
+          },
+          "timestamp_utc": "2026-11-03T14:14:47.172990+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93505859375,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.03100000135600567
+          },
+          "timestamp_utc": "2026-11-03T14:14:47.257323+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93701171875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.03200000151991844
+          },
+          "timestamp_utc": "2026-11-03T14:14:47.518196+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.947021484375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.04200000315904617
+          },
+          "timestamp_utc": "2026-11-03T14:14:47.832491+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9500732421875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.04500000178813934
+          },
+          "timestamp_utc": "2026-11-03T14:14:48.223235+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9560546875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.05100000277161598
+          },
+          "timestamp_utc": "2026-11-03T14:14:48.491098+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0020751953125,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.09700000286102295
+          },
+          "timestamp_utc": "2026-11-03T14:14:48.758376+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0211181640625,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.11600000411272049
+          },
+          "timestamp_utc": "2026-11-03T14:14:49.045216+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0230712890625,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.11800000816583633
+          },
+          "timestamp_utc": "2026-11-03T14:14:49.298206+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0340576171875,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.1290000081062317
+          },
+          "timestamp_utc": "2026-11-03T14:14:49.425358+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0380859375,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.13300000131130219
+          },
+          "timestamp_utc": "2026-11-03T14:14:49.653048+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0390625,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.1340000033378601
+          },
+          "timestamp_utc": "2026-11-03T14:14:49.766973+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0400390625,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.13500000536441803
+          },
+          "timestamp_utc": "2026-11-03T14:14:50.034085+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0400390625,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.13500000536441803
+          },
+          "timestamp_utc": "2026-11-03T14:14:50.145873+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0380859375,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.1340000033378601
+          },
+          "timestamp_utc": "2026-11-03T14:14:50.350253+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0360107421875,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.13100001215934753
+          },
+          "timestamp_utc": "2026-11-03T14:14:50.727816+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0350341796875,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.1300000101327896
+          },
+          "timestamp_utc": "2026-11-03T14:14:50.879851+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0340576171875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.1290000081062317
+          },
+          "timestamp_utc": "2026-11-03T14:14:51.234528+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0340576171875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.1290000081062317
+          },
+          "timestamp_utc": "2026-11-03T14:14:51.531801+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0330810546875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.1290000081062317
+          },
+          "timestamp_utc": "2026-11-03T14:14:51.754371+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0311279296875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12600000202655792
+          },
+          "timestamp_utc": "2026-11-03T14:14:52.101263+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0311279296875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12600000202655792
+          },
+          "timestamp_utc": "2026-11-03T14:14:52.350745+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.029052734375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.125
+          },
+          "timestamp_utc": "2026-11-03T14:14:52.649678+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.029052734375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.125
+          },
+          "timestamp_utc": "2026-11-03T14:14:52.886480+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.029052734375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12400000542402267
+          },
+          "timestamp_utc": "2026-11-03T14:14:53.050661+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12400000542402267
+          },
+          "timestamp_utc": "2026-11-03T14:14:53.344067+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12400000542402267
+          },
+          "timestamp_utc": "2026-11-03T14:14:53.461023+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:14:53.694894+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:14:53.991927+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:14:54.397039+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:14:54.713227+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:14:55.051814+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:14:55.352497+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:14:55.697894+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:14:56.075104+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:14:56.391733+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:14:56.752087+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:14:57.139844+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:14:57.455973+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:14:57.931954+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:14:58.250892+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.027099609375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:14:58.437631+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.027099609375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:14:58.651158+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:14:58.849481+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0330810546875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12800000607967377
+          },
+          "timestamp_utc": "2026-11-03T14:14:59.284252+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0330810546875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12800000607967377
+          },
+          "timestamp_utc": "2026-11-03T14:14:59.415276+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0330810546875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12800000607967377
+          },
+          "timestamp_utc": "2026-11-03T14:14:59.572546+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0321044921875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12700000405311584
+          },
+          "timestamp_utc": "2026-11-03T14:14:59.771310+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0321044921875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12700000405311584
+          },
+          "timestamp_utc": "2026-11-03T14:15:00.065954+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0321044921875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12700000405311584
+          },
+          "timestamp_utc": "2026-11-03T14:15:00.209034+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0311279296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12700000405311584
+          },
+          "timestamp_utc": "2026-11-03T14:15:00.517664+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0311279296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12700000405311584
+          },
+          "timestamp_utc": "2026-11-03T14:15:00.882464+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0311279296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12600000202655792
+          },
+          "timestamp_utc": "2026-11-03T14:15:01.653467+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0311279296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12600000202655792
+          },
+          "timestamp_utc": "2026-11-03T14:15:02.183195+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0311279296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12600000202655792
+          },
+          "timestamp_utc": "2026-11-03T14:15:02.520721+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0311279296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12600000202655792
+          },
+          "timestamp_utc": "2026-11-03T14:15:02.936172+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.030029296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12600000202655792
+          },
+          "timestamp_utc": "2026-11-03T14:15:03.446492+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.030029296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12600000202655792
+          },
+          "timestamp_utc": "2026-11-03T14:15:03.850299+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.030029296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.125
+          },
+          "timestamp_utc": "2026-11-03T14:15:04.160728+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.030029296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.125
+          },
+          "timestamp_utc": "2026-11-03T14:15:04.473730+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.030029296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.125
+          },
+          "timestamp_utc": "2026-11-03T14:15:04.775765+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.029052734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.125
+          },
+          "timestamp_utc": "2026-11-03T14:15:04.953360+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.029052734375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12400000542402267
+          },
+          "timestamp_utc": "2026-11-03T14:15:05.459403+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12400000542402267
+          },
+          "timestamp_utc": "2026-11-03T14:15:06.015504+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.028076171875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12300000339746475
+          },
+          "timestamp_utc": "2026-11-03T14:15:06.260532+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.027099609375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12200000882148743
+          },
+          "timestamp_utc": "2026-11-03T14:15:06.631034+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.027099609375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.12200000882148743
+          },
+          "timestamp_utc": "2026-11-03T14:15:06.821399+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0240478515625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.11900000274181366
+          },
+          "timestamp_utc": "2026-11-03T14:15:07.169112+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0230712890625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.11800000816583633
+          },
+          "timestamp_utc": "2026-11-03T14:15:07.289266+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0230712890625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.11800000816583633
+          },
+          "timestamp_utc": "2026-11-03T14:15:07.714262+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0220947265625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.11700000613927841
+          },
+          "timestamp_utc": "2026-11-03T14:15:08.031474+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0220947265625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.11700000613927841
+          },
+          "timestamp_utc": "2026-11-03T14:15:08.452103+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0211181640625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.11600000411272049
+          },
+          "timestamp_utc": "2026-11-03T14:15:09.146917+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0211181640625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.11600000411272049
+          },
+          "timestamp_utc": "2026-11-03T14:15:09.525094+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.02001953125,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.11500000208616257
+          },
+          "timestamp_utc": "2026-11-03T14:15:10.092718+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.01904296875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.11500000208616257
+          },
+          "timestamp_utc": "2026-11-03T14:15:10.506777+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.01904296875,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.11400000751018524
+          },
+          "timestamp_utc": "2026-11-03T14:15:10.898720+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.01806640625,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.11400000751018524
+          },
+          "timestamp_utc": "2026-11-03T14:15:11.387754+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.01806640625,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.11300000548362732
+          },
+          "timestamp_utc": "2026-11-03T14:15:12.019134+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.01708984375,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.1120000034570694
+          },
+          "timestamp_utc": "2026-11-03T14:15:12.341787+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.01611328125,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.1120000034570694
+          },
+          "timestamp_utc": "2026-11-03T14:15:12.707982+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.01611328125,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.11100000888109207
+          },
+          "timestamp_utc": "2026-11-03T14:15:12.893693+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0150146484375,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.11000000685453415
+          },
+          "timestamp_utc": "2026-11-03T14:15:13.060681+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0150146484375,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.11000000685453415
+          },
+          "timestamp_utc": "2026-11-03T14:15:13.422094+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0140380859375,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.10900000482797623
+          },
+          "timestamp_utc": "2026-11-03T14:15:13.863870+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0130615234375,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.1080000028014183
+          },
+          "timestamp_utc": "2026-11-03T14:15:14.409250+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1452.0120849609375,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242682,
+            "relative_altitude_m": 0.1080000028014183
+          },
+          "timestamp_utc": "2026-11-03T14:15:14.854063+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9801025390625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.07500000298023224
+          },
+          "timestamp_utc": "2026-11-03T14:15:46.620061+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9801025390625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.07500000298023224
+          },
+          "timestamp_utc": "2026-11-03T14:15:47.222261+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9801025390625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.07500000298023224
+          },
+          "timestamp_utc": "2026-11-03T14:15:47.704863+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9801025390625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.07600000500679016
+          },
+          "timestamp_utc": "2026-11-03T14:15:48.159867+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9810791015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.07600000500679016
+          },
+          "timestamp_utc": "2026-11-03T14:15:48.647487+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9810791015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242683,
+            "relative_altitude_m": 0.07600000500679016
+          },
+          "timestamp_utc": "2026-11-03T14:15:49.359341+00:00"
+        }
+      ],
+      "px4_instance": 1,
+      "sensor_health": {
+        "camera": null,
+        "lidar": {
+          "age_s": 0.05691541501437314,
+          "expected_frame": "lidar_link",
+          "expected_message_type": "gz.msgs.LaserScan",
+          "frame": "lidar_link",
+          "fresh": true,
+          "horizontal_samples": 180,
+          "largest_wall_gap_s": 0.8165991690184455,
+          "last_rejection": null,
+          "message_schema_validated": true,
+          "received_at_monotonic_s": 218153.627778548,
+          "rejected_message_count": 0,
+          "simulation_rate_hz": 5.000000000000003,
+          "simulation_time_s": 78.6,
+          "status": "healthy",
+          "topic": "/ambulance_0/lidar/points",
+          "valid_point_count": 1898,
+          "vertical_samples": 16,
+          "wall_rate_hz": 2.439584883140523
+        },
+        "yolo": null
+      },
+      "status_history": [
+        {
+          "armable": null,
+          "armed": null,
+          "available": false,
+          "connected": false,
+          "flight_mode": null,
+          "in_air": null,
+          "source": null,
+          "timestamp_utc": "2026-11-03T14:14:21.952387+00:00"
+        },
+        {
+          "armable": null,
+          "armed": null,
+          "available": false,
+          "connected": true,
+          "flight_mode": null,
+          "in_air": false,
+          "source": "PX4_MAVSDK",
+          "timestamp_utc": "2026-11-03T14:14:24.688540+00:00"
+        },
+        {
+          "armable": false,
+          "armed": false,
+          "available": false,
+          "connected": true,
+          "flight_mode": "HOLD",
+          "in_air": false,
+          "source": "PX4_MAVSDK",
+          "timestamp_utc": "2026-11-03T14:14:25.900417+00:00"
+        },
+        {
+          "armable": true,
+          "armed": false,
+          "available": true,
+          "connected": true,
+          "flight_mode": "HOLD",
+          "in_air": false,
+          "source": "PX4_MAVSDK",
+          "timestamp_utc": "2026-11-03T14:14:28.718738+00:00"
+        },
+        {
+          "armable": true,
+          "armed": false,
+          "available": false,
+          "connected": true,
+          "flight_mode": "HOLD",
+          "in_air": false,
+          "source": "PX4_MAVSDK",
+          "timestamp_utc": "2026-11-03T14:15:15.048000+00:00"
+        },
+        {
+          "armable": true,
+          "armed": false,
+          "available": true,
+          "connected": true,
+          "flight_mode": "HOLD",
+          "in_air": false,
+          "source": "PX4_MAVSDK",
+          "timestamp_utc": "2026-11-03T14:15:46.975099+00:00"
+        },
+        {
+          "armable": true,
+          "armed": false,
+          "available": false,
+          "connected": true,
+          "flight_mode": "HOLD",
+          "in_air": false,
+          "source": "PX4_MAVSDK",
+          "timestamp_utc": "2026-11-03T14:15:49.359341+00:00"
+        },
+        {
+          "armable": true,
+          "armed": false,
+          "available": false,
+          "connected": false,
+          "flight_mode": "HOLD",
+          "in_air": false,
+          "source": "PX4_MAVSDK",
+          "timestamp_utc": "2026-11-03T14:15:49.359341+00:00"
+        }
+      ],
+      "vehicle_name": "Medical-Support"
+    },
+    "scout_0": {
+      "armed": false,
+      "battery_history": [
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:24.362234+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:24.630164+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:24.974106+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:25.235973+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:25.515352+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:25.787338+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:26.071914+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:26.346895+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:29.240140+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:32.610609+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:35.815043+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:38.924399+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:42.056732+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:46.880115+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:49.903093+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:53.990339+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:14:57.112535+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:15:00.718070+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:15:04.031975+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:15:07.710456+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:15:10.656892+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:15:14.411866+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "level": "NORMAL",
+          "measurement_type": "PX4_TELEMETRY",
+          "observed_drain_percent_per_minute": null,
+          "percentage": 100.0,
+          "source": "PX4_MAVSDK",
+          "telemetry_fresh": true,
+          "timestamp_utc": "2026-11-03T14:15:48.912096+00:00",
+          "uav": "scout_0",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        }
+      ],
+      "communication_state": {
+        "connected": true,
+        "error": null,
+        "last_seen_monotonic_s": 218153.875966881,
+        "last_seen_utc": "2026-11-03T14:16:22.318357+00:00"
+      },
+      "connection_state": false,
+      "final_state": {
+        "armed": false,
+        "armed_fresh": false,
+        "attitude_euler": {
+          "pitch_deg": 0.03835215047001839,
+          "roll_deg": -0.09917400777339935,
+          "yaw_deg": 90.31736755371094
+        },
+        "attitude_euler_fresh": false,
+        "available": false,
+        "battery_fresh": false,
+        "battery_status": {
+          "capacity_consumed_ah": null,
+          "current_a": null,
+          "estimated_remaining_minutes": null,
+          "fresh": true,
+          "level": "NORMAL",
+          "observed_drain_percent_per_minute": null,
+          "remaining_percent": 100.0,
+          "sample_age_s": 3.6362005630508065e-05,
+          "sampled_at_utc": "2026-11-03T14:15:48.912096+00:00",
+          "source": "PX4_MAVSDK",
+          "voltage_v": 16.200000762939453,
+          "warning": null
+        },
+        "connected": false,
+        "connection_fresh": false,
+        "flight_mode": "HOLD",
+        "flight_mode_fresh": false,
+        "fresh": false,
+        "health_fresh": false,
+        "home_fresh": false,
+        "home_id": "scout_0:f755342c-a5a5-4029-9a94-c7ff6b85fa94",
+        "in_air": false,
+        "in_air_fresh": false,
+        "is_armable": true,
+        "peer_advertised_availability": "camera_bridge_online_suggestion_only",
+        "position": {
+          "absolute_altitude_m": 1451.966064453125,
+          "latitude_deg": 27.987549599999998,
+          "longitude_deg": 86.9242275,
+          "relative_altitude_m": 0.03100000135600567
+        },
+        "position_fresh": false,
+        "position_ned": {
+          "down_m": -0.0509033203125,
+          "east_m": -0.014100498519837856,
+          "north_m": 0.028650110587477684
+        },
+        "position_velocity_ned_fresh": false,
+        "role": "Scout",
+        "sampled_at_utc": "2026-11-03T14:15:49.359536+00:00",
+        "sampled_monotonic_s": 218120.941220998,
+        "status_reason": "telemetry_stale_or_vehicle_unavailable_or_battery_policy",
+        "telemetry_errors": {
+          "armed": "no sample for 5.0s",
+          "attitude_euler": "no sample for 5.0s",
+          "battery": "no sample for 5.0s",
+          "flight_mode": "no sample for 5.0s",
+          "health": "no sample for 5.0s",
+          "home": "no sample for 5.0s",
+          "in_air": "no sample for 5.0s",
+          "position": "no sample for 5.0s",
+          "position_velocity_ned": "no sample for 5.0s"
+        },
+        "telemetry_field_ages_s": {
+          "armed": 33.97558748800657,
+          "attitude_euler": 33.23411268700147,
+          "battery": 33.68158599801245,
+          "connection": 118.29354209601297,
+          "flight_mode": 33.97537266102154,
+          "health": 33.9751617530128,
+          "home": 33.68131209802232,
+          "in_air": 33.43091825800366,
+          "position": 33.680515406013,
+          "position_velocity_ned": 33.68023159602308
+        },
+        "telemetry_sampled_at_utc": {
+          "armed": "2026-11-03T14:15:48.618062+00:00",
+          "attitude_euler": "2026-11-03T14:15:49.359536+00:00",
+          "battery": "2026-11-03T14:15:48.912064+00:00",
+          "connection": "2026-11-03T14:14:24.300112+00:00",
+          "flight_mode": "2026-11-03T14:15:48.618287+00:00",
+          "health": "2026-11-03T14:15:48.618488+00:00",
+          "home": "2026-11-03T14:15:48.912337+00:00",
+          "in_air": "2026-11-03T14:15:49.162731+00:00",
+          "position": "2026-11-03T14:15:48.913135+00:00",
+          "position_velocity_ned": "2026-11-03T14:15:48.913417+00:00"
+        },
+        "telemetry_sampled_monotonic_s": {
+          "armed": 218120.199746197,
+          "attitude_euler": 218120.941220998,
+          "battery": 218120.493747687,
+          "connection": 218035.881791589,
+          "flight_mode": 218120.199961024,
+          "health": 218120.200171932,
+          "home": 218120.494021587,
+          "in_air": 218120.744415427,
+          "position": 218120.494818279,
+          "position_velocity_ned": 218120.495102089
+        },
+        "telemetry_source": "PX4_MAVSDK",
+        "telemetry_streams": {
+          "armed": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:21.591566+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:48.618062+00:00",
+            "last_sample_monotonic_s": 218120.199746197,
+            "last_started_at_utc": "2026-11-03T14:14:24.264260+00:00",
+            "restart_count": 8,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          },
+          "attitude_euler": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:14.065976+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:49.359536+00:00",
+            "last_sample_monotonic_s": 218120.941220998,
+            "last_started_at_utc": "2026-11-03T14:14:24.264528+00:00",
+            "restart_count": 7,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          },
+          "battery": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:22.346004+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:48.912064+00:00",
+            "last_sample_monotonic_s": 218120.493747687,
+            "last_started_at_utc": "2026-11-03T14:14:24.264454+00:00",
+            "restart_count": 8,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          },
+          "connection": {
+            "idle_timeout_s": null,
+            "last_sample_at_utc": "2026-11-03T14:14:24.300112+00:00",
+            "last_sample_monotonic_s": 218035.881791589,
+            "last_started_at_utc": "2026-11-03T14:14:24.263637+00:00",
+            "state": "active"
+          },
+          "flight_mode": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:21.644787+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:48.618287+00:00",
+            "last_sample_monotonic_s": 218120.199961024,
+            "last_started_at_utc": "2026-11-03T14:14:24.264324+00:00",
+            "restart_count": 8,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          },
+          "health": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:21.695084+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:48.618488+00:00",
+            "last_sample_monotonic_s": 218120.200171932,
+            "last_started_at_utc": "2026-11-03T14:14:24.264041+00:00",
+            "restart_count": 8,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          },
+          "home": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:22.374676+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:48.912337+00:00",
+            "last_sample_monotonic_s": 218120.494021587,
+            "last_started_at_utc": "2026-11-03T14:14:24.264424+00:00",
+            "restart_count": 8,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          },
+          "in_air": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:13.925047+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:49.162731+00:00",
+            "last_sample_monotonic_s": 218120.744415427,
+            "last_started_at_utc": "2026-11-03T14:14:24.264199+00:00",
+            "restart_count": 7,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          },
+          "position": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:22.402807+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:48.913135+00:00",
+            "last_sample_monotonic_s": 218120.494818279,
+            "last_started_at_utc": "2026-11-03T14:14:24.264381+00:00",
+            "restart_count": 8,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          },
+          "position_velocity_ned": {
+            "idle_timeout_s": 5.0,
+            "last_end_reason": "sample_idle_timeout",
+            "last_ended_at_utc": "2026-11-03T14:16:13.424917+00:00",
+            "last_error": "no sample for 5.0s",
+            "last_sample_at_utc": "2026-11-03T14:15:48.913417+00:00",
+            "last_sample_monotonic_s": 218120.495102089,
+            "last_started_at_utc": "2026-11-03T14:14:24.264496+00:00",
+            "restart_count": 7,
+            "retry_delay_s": 2.0,
+            "state": "retrying"
+          }
+        },
+        "vehicle_id": "scout_0",
+        "velocity_ned": {
+          "down_velocity_m_s": -0.06205728277564049,
+          "east_velocity_m_s": -0.00821056216955185,
+          "north_velocity_m_s": 0.0048909480683505535
+        }
+      },
+      "in_air": false,
+      "mavsdk_system_id": 1,
+      "mission_assignments": [],
+      "position_history": [
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.947021484375,
+            "latitude_deg": 27.9875501,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.01100000087171793
+          },
+          "timestamp_utc": "2026-11-03T14:14:24.405711+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.947021484375,
+            "latitude_deg": 27.9875501,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.012000000104308128
+          },
+          "timestamp_utc": "2026-11-03T14:14:24.491924+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9481201171875,
+            "latitude_deg": 27.9875501,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.013000000268220901
+          },
+          "timestamp_utc": "2026-11-03T14:14:24.676494+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.947021484375,
+            "latitude_deg": 27.9875501,
+            "longitude_deg": 86.9242273,
+            "relative_altitude_m": 0.01100000087171793
+          },
+          "timestamp_utc": "2026-11-03T14:14:25.016419+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.946044921875,
+            "latitude_deg": 27.98755,
+            "longitude_deg": 86.9242273,
+            "relative_altitude_m": 0.01100000087171793
+          },
+          "timestamp_utc": "2026-11-03T14:14:25.124139+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.943115234375,
+            "latitude_deg": 27.98755,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.00800000037997961
+          },
+          "timestamp_utc": "2026-11-03T14:14:25.287412+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.943115234375,
+            "latitude_deg": 27.98755,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.00800000037997961
+          },
+          "timestamp_utc": "2026-11-03T14:14:25.380729+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9400634765625,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.005000000353902578
+          },
+          "timestamp_utc": "2026-11-03T14:14:25.635945+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9400634765625,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.005000000353902578
+          },
+          "timestamp_utc": "2026-11-03T14:14:25.687727+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9381103515625,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.003000000026077032
+          },
+          "timestamp_utc": "2026-11-03T14:14:25.903516+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9381103515625,
+            "latitude_deg": 27.987549899999998,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.003000000026077032
+          },
+          "timestamp_utc": "2026-11-03T14:14:26.013830+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93701171875,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.0020000000949949026
+          },
+          "timestamp_utc": "2026-11-03T14:14:26.204648+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93505859375,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.0
+          },
+          "timestamp_utc": "2026-11-03T14:14:26.389054+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93505859375,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.0
+          },
+          "timestamp_utc": "2026-11-03T14:14:26.498523+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9310302734375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242273,
+            "relative_altitude_m": -0.003000000026077032
+          },
+          "timestamp_utc": "2026-11-03T14:14:26.690598+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9310302734375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242273,
+            "relative_altitude_m": -0.004000000189989805
+          },
+          "timestamp_utc": "2026-11-03T14:14:26.803686+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9281005859375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.007000000216066837
+          },
+          "timestamp_utc": "2026-11-03T14:14:26.956159+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9271240234375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.007000000216066837
+          },
+          "timestamp_utc": "2026-11-03T14:14:27.071092+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.925048828125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.009000000543892384
+          },
+          "timestamp_utc": "2026-11-03T14:14:27.256341+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.925048828125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.010000000707805157
+          },
+          "timestamp_utc": "2026-11-03T14:14:27.352266+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.924072265625,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.010000000707805157
+          },
+          "timestamp_utc": "2026-11-03T14:14:27.399592+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.922119140625,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.012000000104308128
+          },
+          "timestamp_utc": "2026-11-03T14:14:27.534661+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9190673828125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.015000000596046448
+          },
+          "timestamp_utc": "2026-11-03T14:14:27.912357+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9171142578125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.018000001087784767
+          },
+          "timestamp_utc": "2026-11-03T14:14:28.048827+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9150390625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.01900000125169754
+          },
+          "timestamp_utc": "2026-11-03T14:14:28.175937+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9110107421875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.023000001907348633
+          },
+          "timestamp_utc": "2026-11-03T14:14:28.499726+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9090576171875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.026000000536441803
+          },
+          "timestamp_utc": "2026-11-03T14:14:28.710207+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9080810546875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.026000000536441803
+          },
+          "timestamp_utc": "2026-11-03T14:14:28.871165+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9071044921875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.02800000086426735
+          },
+          "timestamp_utc": "2026-11-03T14:14:29.076421+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.903076171875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": -0.03100000135600567
+          },
+          "timestamp_utc": "2026-11-03T14:14:29.367867+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.902099609375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": -0.03200000151991844
+          },
+          "timestamp_utc": "2026-11-03T14:14:29.649813+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9000244140625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": -0.03500000014901161
+          },
+          "timestamp_utc": "2026-11-03T14:14:29.976551+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.8990478515625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": -0.03500000014901161
+          },
+          "timestamp_utc": "2026-11-03T14:14:30.094140+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.8980712890625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": -0.036000002175569534
+          },
+          "timestamp_utc": "2026-11-03T14:14:30.182845+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.8980712890625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": -0.036000002175569534
+          },
+          "timestamp_utc": "2026-11-03T14:14:30.320217+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.89404296875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": -0.04000000283122063
+          },
+          "timestamp_utc": "2026-11-03T14:14:30.564949+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.89404296875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": -0.04100000113248825
+          },
+          "timestamp_utc": "2026-11-03T14:14:30.731264+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.89111328125,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": -0.04400000348687172
+          },
+          "timestamp_utc": "2026-11-03T14:14:31.079886+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.89404296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": -0.04000000283122063
+          },
+          "timestamp_utc": "2026-11-03T14:14:31.355402+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.902099609375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242276,
+            "relative_altitude_m": -0.03200000151991844
+          },
+          "timestamp_utc": "2026-11-03T14:14:31.655269+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9061279296875,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242276,
+            "relative_altitude_m": -0.029000001028180122
+          },
+          "timestamp_utc": "2026-11-03T14:14:31.795911+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9130859375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242276,
+            "relative_altitude_m": -0.02200000174343586
+          },
+          "timestamp_utc": "2026-11-03T14:14:32.124403+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9140625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242276,
+            "relative_altitude_m": -0.021000001579523087
+          },
+          "timestamp_utc": "2026-11-03T14:14:32.270203+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9190673828125,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242276,
+            "relative_altitude_m": -0.015000000596046448
+          },
+          "timestamp_utc": "2026-11-03T14:14:32.343075+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9210205078125,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242276,
+            "relative_altitude_m": -0.014000000432133675
+          },
+          "timestamp_utc": "2026-11-03T14:14:32.488611+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9300537109375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242276,
+            "relative_altitude_m": -0.005000000353902578
+          },
+          "timestamp_utc": "2026-11-03T14:14:32.756853+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93603515625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.0010000000474974513
+          },
+          "timestamp_utc": "2026-11-03T14:14:32.971042+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9400634765625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.005000000353902578
+          },
+          "timestamp_utc": "2026-11-03T14:14:33.142540+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.945068359375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.010000000707805157
+          },
+          "timestamp_utc": "2026-11-03T14:14:33.366566+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9500732421875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.015000000596046448
+          },
+          "timestamp_utc": "2026-11-03T14:14:33.665426+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9560546875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242276,
+            "relative_altitude_m": 0.021000001579523087
+          },
+          "timestamp_utc": "2026-11-03T14:14:33.976015+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9581298828125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242276,
+            "relative_altitude_m": 0.023000001907348633
+          },
+          "timestamp_utc": "2026-11-03T14:14:34.186233+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9581298828125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": 0.023000001907348633
+          },
+          "timestamp_utc": "2026-11-03T14:14:34.310410+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9581298828125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": 0.023000001907348633
+          },
+          "timestamp_utc": "2026-11-03T14:14:34.353034+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9600830078125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": 0.02500000037252903
+          },
+          "timestamp_utc": "2026-11-03T14:14:34.553839+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9630126953125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": 0.02800000086426735
+          },
+          "timestamp_utc": "2026-11-03T14:14:34.904115+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.966064453125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": 0.03100000135600567
+          },
+          "timestamp_utc": "2026-11-03T14:14:35.200426+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.968017578125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": 0.032999999821186066
+          },
+          "timestamp_utc": "2026-11-03T14:14:35.557810+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.968017578125,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": 0.032999999821186066
+          },
+          "timestamp_utc": "2026-11-03T14:14:35.975026+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.965087890625,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.030000001192092896
+          },
+          "timestamp_utc": "2026-11-03T14:14:36.344993+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.965087890625,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.030000001192092896
+          },
+          "timestamp_utc": "2026-11-03T14:14:36.576206+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9620361328125,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.026000000536441803
+          },
+          "timestamp_utc": "2026-11-03T14:14:36.665728+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9610595703125,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.026000000536441803
+          },
+          "timestamp_utc": "2026-11-03T14:14:36.773447+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9600830078125,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.02500000037252903
+          },
+          "timestamp_utc": "2026-11-03T14:14:36.888863+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9600830078125,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.02500000037252903
+          },
+          "timestamp_utc": "2026-11-03T14:14:37.048490+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9591064453125,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.9242273,
+            "relative_altitude_m": 0.024000000208616257
+          },
+          "timestamp_utc": "2026-11-03T14:14:37.220356+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.95703125,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.9242273,
+            "relative_altitude_m": 0.02200000174343586
+          },
+          "timestamp_utc": "2026-11-03T14:14:37.594836+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9560546875,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.021000001579523087
+          },
+          "timestamp_utc": "2026-11-03T14:14:37.812897+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.955078125,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.020000001415610313
+          },
+          "timestamp_utc": "2026-11-03T14:14:38.022758+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.955078125,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.020000001415610313
+          },
+          "timestamp_utc": "2026-11-03T14:14:38.188297+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9541015625,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.01900000125169754
+          },
+          "timestamp_utc": "2026-11-03T14:14:38.373097+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9541015625,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.01900000125169754
+          },
+          "timestamp_utc": "2026-11-03T14:14:38.516192+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.953125,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.018000001087784767
+          },
+          "timestamp_utc": "2026-11-03T14:14:38.618855+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9541015625,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.018000001087784767
+          },
+          "timestamp_utc": "2026-11-03T14:14:38.725884+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9541015625,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.018000001087784767
+          },
+          "timestamp_utc": "2026-11-03T14:14:38.818532+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9560546875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.021000001579523087
+          },
+          "timestamp_utc": "2026-11-03T14:14:38.943309+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9581298828125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.023000001907348633
+          },
+          "timestamp_utc": "2026-11-03T14:14:39.097491+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9600830078125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.02500000037252903
+          },
+          "timestamp_utc": "2026-11-03T14:14:39.288882+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9600830078125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.02500000037252903
+          },
+          "timestamp_utc": "2026-11-03T14:14:39.474274+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9591064453125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.024000000208616257
+          },
+          "timestamp_utc": "2026-11-03T14:14:39.650959+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9581298828125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.023000001907348633
+          },
+          "timestamp_utc": "2026-11-03T14:14:39.800752+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.95703125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.02200000174343586
+          },
+          "timestamp_utc": "2026-11-03T14:14:40.021752+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.953125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": 0.017000000923871994
+          },
+          "timestamp_utc": "2026-11-03T14:14:40.193825+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9481201171875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242271,
+            "relative_altitude_m": 0.012000000104308128
+          },
+          "timestamp_utc": "2026-11-03T14:14:40.389292+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.944091796875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242271,
+            "relative_altitude_m": 0.009000000543892384
+          },
+          "timestamp_utc": "2026-11-03T14:14:40.560232+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9420166015625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242271,
+            "relative_altitude_m": 0.007000000216066837
+          },
+          "timestamp_utc": "2026-11-03T14:14:40.674979+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9400634765625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242271,
+            "relative_altitude_m": 0.005000000353902578
+          },
+          "timestamp_utc": "2026-11-03T14:14:40.780286+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93505859375,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242271,
+            "relative_altitude_m": 0.0
+          },
+          "timestamp_utc": "2026-11-03T14:14:41.055804+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93212890625,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": -0.0020000000949949026
+          },
+          "timestamp_utc": "2026-11-03T14:14:41.362243+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9281005859375,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.92422719999999,
+            "relative_altitude_m": -0.006000000052154064
+          },
+          "timestamp_utc": "2026-11-03T14:14:41.750883+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.924072265625,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242273,
+            "relative_altitude_m": -0.01100000087171793
+          },
+          "timestamp_utc": "2026-11-03T14:14:42.155562+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.922119140625,
+            "latitude_deg": 27.9875498,
+            "longitude_deg": 86.9242273,
+            "relative_altitude_m": -0.012000000104308128
+          },
+          "timestamp_utc": "2026-11-03T14:14:42.367471+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9200439453125,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.9242273,
+            "relative_altitude_m": -0.015000000596046448
+          },
+          "timestamp_utc": "2026-11-03T14:14:42.603206+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9190673828125,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.015000000596046448
+          },
+          "timestamp_utc": "2026-11-03T14:14:42.760852+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.916015625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.01900000125169754
+          },
+          "timestamp_utc": "2026-11-03T14:14:43.175435+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9150390625,
+            "latitude_deg": 27.9875497,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.01900000125169754
+          },
+          "timestamp_utc": "2026-11-03T14:14:43.341728+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9140625,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.021000001579523087
+          },
+          "timestamp_utc": "2026-11-03T14:14:43.594927+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9130859375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": -0.021000001579523087
+          },
+          "timestamp_utc": "2026-11-03T14:14:43.732459+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9100341796875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": -0.024000000208616257
+          },
+          "timestamp_utc": "2026-11-03T14:14:44.172392+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.905029296875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": -0.029000001028180122
+          },
+          "timestamp_utc": "2026-11-03T14:14:44.651964+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.8980712890625,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": -0.036000002175569534
+          },
+          "timestamp_utc": "2026-11-03T14:14:45.047484+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.8961181640625,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": -0.03800000250339508
+          },
+          "timestamp_utc": "2026-11-03T14:14:45.217862+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.89501953125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": -0.039000000804662704
+          },
+          "timestamp_utc": "2026-11-03T14:14:45.444309+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.8900146484375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": -0.04400000348687172
+          },
+          "timestamp_utc": "2026-11-03T14:14:45.664224+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.8861083984375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242276,
+            "relative_altitude_m": -0.04800000041723251
+          },
+          "timestamp_utc": "2026-11-03T14:14:45.870297+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.883056640625,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242276,
+            "relative_altitude_m": -0.05100000277161598
+          },
+          "timestamp_utc": "2026-11-03T14:14:46.084038+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.8770751953125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242276,
+            "relative_altitude_m": -0.05700000375509262
+          },
+          "timestamp_utc": "2026-11-03T14:14:46.632191+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.8780517578125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": -0.05700000375509262
+          },
+          "timestamp_utc": "2026-11-03T14:14:46.905353+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.8790283203125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": -0.0560000017285347
+          },
+          "timestamp_utc": "2026-11-03T14:14:47.041760+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.880126953125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": -0.05400000140070915
+          },
+          "timestamp_utc": "2026-11-03T14:14:47.201765+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.881103515625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": -0.05300000309944153
+          },
+          "timestamp_utc": "2026-11-03T14:14:47.294849+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.8861083984375,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": -0.04800000041723251
+          },
+          "timestamp_utc": "2026-11-03T14:14:47.515461+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.8870849609375,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": -0.04700000211596489
+          },
+          "timestamp_utc": "2026-11-03T14:14:47.634823+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.924072265625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": -0.010000000707805157
+          },
+          "timestamp_utc": "2026-11-03T14:14:47.819424+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.926025390625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": -0.00800000037997961
+          },
+          "timestamp_utc": "2026-11-03T14:14:47.949360+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9310302734375,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": -0.003000000026077032
+          },
+          "timestamp_utc": "2026-11-03T14:14:48.222683+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93701171875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.0020000000949949026
+          },
+          "timestamp_utc": "2026-11-03T14:14:48.477414+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.93701171875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.0020000000949949026
+          },
+          "timestamp_utc": "2026-11-03T14:14:48.598504+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.946044921875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.01100000087171793
+          },
+          "timestamp_utc": "2026-11-03T14:14:48.754398+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9490966796875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.013000000268220901
+          },
+          "timestamp_utc": "2026-11-03T14:14:49.039000+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9490966796875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.013000000268220901
+          },
+          "timestamp_utc": "2026-11-03T14:14:49.173578+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9490966796875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.013000000268220901
+          },
+          "timestamp_utc": "2026-11-03T14:14:49.335818+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9500732421875,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.015000000596046448
+          },
+          "timestamp_utc": "2026-11-03T14:14:49.426130+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9520263671875,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.017000000923871994
+          },
+          "timestamp_utc": "2026-11-03T14:14:49.653644+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9560546875,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.020000001415610313
+          },
+          "timestamp_utc": "2026-11-03T14:14:50.037624+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9591064453125,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.023000001907348633
+          },
+          "timestamp_utc": "2026-11-03T14:14:50.350133+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9600830078125,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.9242276,
+            "relative_altitude_m": 0.02500000037252903
+          },
+          "timestamp_utc": "2026-11-03T14:14:50.689283+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9610595703125,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.9242276,
+            "relative_altitude_m": 0.02500000037252903
+          },
+          "timestamp_utc": "2026-11-03T14:14:50.886631+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9610595703125,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.02500000037252903
+          },
+          "timestamp_utc": "2026-11-03T14:14:51.301313+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9600830078125,
+            "latitude_deg": 27.9875494,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.02500000037252903
+          },
+          "timestamp_utc": "2026-11-03T14:14:51.596730+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9600830078125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.02500000037252903
+          },
+          "timestamp_utc": "2026-11-03T14:14:51.753420+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9581298828125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.023000001907348633
+          },
+          "timestamp_utc": "2026-11-03T14:14:52.113650+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.955078125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242276,
+            "relative_altitude_m": 0.020000001415610313
+          },
+          "timestamp_utc": "2026-11-03T14:14:52.586499+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.955078125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242276,
+            "relative_altitude_m": 0.01900000125169754
+          },
+          "timestamp_utc": "2026-11-03T14:14:52.763428+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.953125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.018000001087784767
+          },
+          "timestamp_utc": "2026-11-03T14:14:53.049496+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.953125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.018000001087784767
+          },
+          "timestamp_utc": "2026-11-03T14:14:53.177824+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9520263671875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.017000000923871994
+          },
+          "timestamp_utc": "2026-11-03T14:14:53.346936+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9520263671875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.01600000075995922
+          },
+          "timestamp_utc": "2026-11-03T14:14:53.589152+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9510498046875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.01600000075995922
+          },
+          "timestamp_utc": "2026-11-03T14:14:53.858517+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9500732421875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.015000000596046448
+          },
+          "timestamp_utc": "2026-11-03T14:14:54.244565+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9500732421875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.014000000432133675
+          },
+          "timestamp_utc": "2026-11-03T14:14:54.519268+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9490966796875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.014000000432133675
+          },
+          "timestamp_utc": "2026-11-03T14:14:54.896797+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9490966796875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.014000000432133675
+          },
+          "timestamp_utc": "2026-11-03T14:14:55.182547+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9490966796875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.014000000432133675
+          },
+          "timestamp_utc": "2026-11-03T14:14:55.564103+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9490966796875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.014000000432133675
+          },
+          "timestamp_utc": "2026-11-03T14:14:55.856200+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9500732421875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.014000000432133675
+          },
+          "timestamp_utc": "2026-11-03T14:14:56.264046+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9500732421875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.015000000596046448
+          },
+          "timestamp_utc": "2026-11-03T14:14:56.618276+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9500732421875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.015000000596046448
+          },
+          "timestamp_utc": "2026-11-03T14:14:57.107753+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9510498046875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.015000000596046448
+          },
+          "timestamp_utc": "2026-11-03T14:14:57.427059+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9510498046875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.01600000075995922
+          },
+          "timestamp_utc": "2026-11-03T14:14:57.736194+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9520263671875,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.017000000923871994
+          },
+          "timestamp_utc": "2026-11-03T14:14:58.102064+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.955078125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.020000001415610313
+          },
+          "timestamp_utc": "2026-11-03T14:14:58.438155+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9560546875,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.020000001415610313
+          },
+          "timestamp_utc": "2026-11-03T14:14:58.651829+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242277,
+            "relative_altitude_m": 0.03100000135600567
+          },
+          "timestamp_utc": "2026-11-03T14:14:58.850161+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9700927734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": 0.03500000014901161
+          },
+          "timestamp_utc": "2026-11-03T14:14:59.283511+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9700927734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03500000014901161
+          },
+          "timestamp_utc": "2026-11-03T14:14:59.412437+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9700927734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03500000014901161
+          },
+          "timestamp_utc": "2026-11-03T14:14:59.570735+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9700927734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03500000014901161
+          },
+          "timestamp_utc": "2026-11-03T14:14:59.770291+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9700927734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03500000014901161
+          },
+          "timestamp_utc": "2026-11-03T14:15:00.065500+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9700927734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03500000014901161
+          },
+          "timestamp_utc": "2026-11-03T14:15:00.207390+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9700927734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03500000014901161
+          },
+          "timestamp_utc": "2026-11-03T14:15:00.516235+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9700927734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03500000014901161
+          },
+          "timestamp_utc": "2026-11-03T14:15:00.881666+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9700927734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03500000014901161
+          },
+          "timestamp_utc": "2026-11-03T14:15:01.652331+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9700927734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03400000184774399
+          },
+          "timestamp_utc": "2026-11-03T14:15:02.182605+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9700927734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03400000184774399
+          },
+          "timestamp_utc": "2026-11-03T14:15:02.519914+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9700927734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03400000184774399
+          },
+          "timestamp_utc": "2026-11-03T14:15:02.935555+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9700927734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03400000184774399
+          },
+          "timestamp_utc": "2026-11-03T14:15:03.445673+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9700927734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03400000184774399
+          },
+          "timestamp_utc": "2026-11-03T14:15:03.849616+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9700927734375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03400000184774399
+          },
+          "timestamp_utc": "2026-11-03T14:15:04.159157+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9691162109375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03400000184774399
+          },
+          "timestamp_utc": "2026-11-03T14:15:04.472633+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9691162109375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03400000184774399
+          },
+          "timestamp_utc": "2026-11-03T14:15:04.775019+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9691162109375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03400000184774399
+          },
+          "timestamp_utc": "2026-11-03T14:15:04.952764+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9691162109375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03400000184774399
+          },
+          "timestamp_utc": "2026-11-03T14:15:05.458390+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9691162109375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03400000184774399
+          },
+          "timestamp_utc": "2026-11-03T14:15:06.014863+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9691162109375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03400000184774399
+          },
+          "timestamp_utc": "2026-11-03T14:15:06.259942+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.9691162109375,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.032999999821186066
+          },
+          "timestamp_utc": "2026-11-03T14:15:06.629075+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.968017578125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.032999999821186066
+          },
+          "timestamp_utc": "2026-11-03T14:15:06.820649+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03200000151991844
+          },
+          "timestamp_utc": "2026-11-03T14:15:07.168596+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03200000151991844
+          },
+          "timestamp_utc": "2026-11-03T14:15:07.288479+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03200000151991844
+          },
+          "timestamp_utc": "2026-11-03T14:15:07.713087+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03200000151991844
+          },
+          "timestamp_utc": "2026-11-03T14:15:08.030252+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03100000135600567
+          },
+          "timestamp_utc": "2026-11-03T14:15:08.451202+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03100000135600567
+          },
+          "timestamp_utc": "2026-11-03T14:15:09.146169+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03100000135600567
+          },
+          "timestamp_utc": "2026-11-03T14:15:09.523771+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03100000135600567
+          },
+          "timestamp_utc": "2026-11-03T14:15:10.090114+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03100000135600567
+          },
+          "timestamp_utc": "2026-11-03T14:15:10.505568+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03100000135600567
+          },
+          "timestamp_utc": "2026-11-03T14:15:10.897824+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03100000135600567
+          },
+          "timestamp_utc": "2026-11-03T14:15:11.386942+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03100000135600567
+          },
+          "timestamp_utc": "2026-11-03T14:15:12.014932+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03100000135600567
+          },
+          "timestamp_utc": "2026-11-03T14:15:12.340985+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.92422739999999,
+            "relative_altitude_m": 0.03100000135600567
+          },
+          "timestamp_utc": "2026-11-03T14:15:12.707273+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242273,
+            "relative_altitude_m": 0.03200000151991844
+          },
+          "timestamp_utc": "2026-11-03T14:15:12.889731+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242273,
+            "relative_altitude_m": 0.03200000151991844
+          },
+          "timestamp_utc": "2026-11-03T14:15:13.060017+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242273,
+            "relative_altitude_m": 0.03200000151991844
+          },
+          "timestamp_utc": "2026-11-03T14:15:13.419254+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.967041015625,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242273,
+            "relative_altitude_m": 0.03200000151991844
+          },
+          "timestamp_utc": "2026-11-03T14:15:13.823285+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.968017578125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242273,
+            "relative_altitude_m": 0.03200000151991844
+          },
+          "timestamp_utc": "2026-11-03T14:15:14.279996+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.968017578125,
+            "latitude_deg": 27.9875495,
+            "longitude_deg": 86.9242273,
+            "relative_altitude_m": 0.03200000151991844
+          },
+          "timestamp_utc": "2026-11-03T14:15:14.850841+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.964111328125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": 0.02800000086426735
+          },
+          "timestamp_utc": "2026-11-03T14:15:46.223934+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.964111328125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": 0.029000001028180122
+          },
+          "timestamp_utc": "2026-11-03T14:15:46.974245+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.965087890625,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": 0.029000001028180122
+          },
+          "timestamp_utc": "2026-11-03T14:15:47.468222+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.965087890625,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": 0.030000001192092896
+          },
+          "timestamp_utc": "2026-11-03T14:15:47.940408+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.966064453125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": 0.03100000135600567
+          },
+          "timestamp_utc": "2026-11-03T14:15:48.424793+00:00"
+        },
+        {
+          "frame": "PX4_GLOBAL_POSITION",
+          "position": {
+            "absolute_altitude_m": 1451.966064453125,
+            "latitude_deg": 27.987549599999998,
+            "longitude_deg": 86.9242275,
+            "relative_altitude_m": 0.03100000135600567
+          },
+          "timestamp_utc": "2026-11-03T14:15:48.913135+00:00"
+        }
+      ],
+      "px4_instance": 0,
+      "sensor_health": {
+        "camera": {
+          "fresh": true,
+          "last_image_frame_identity_status": "exact_direct_message",
+          "last_image_height": 960,
+          "last_image_received_at_utc": "2026-11-03T14:16:19.128668+00:00",
+          "last_image_sequence": 2239,
+          "last_image_simulation_time_s": 77.768,
+          "last_image_width": 1280,
+          "measured_camera_rate_hz": 15.000610414104981,
+          "message_type": "gz.msgs.Image",
+          "observed_image_samples": 15,
+          "source_message_count": 1911,
+          "status": "receiving_frames",
+          "topic": "/world/earthquake_landslide_world/model/x500_mono_cam_down_lidar_0/link/camera_link/sensor/imager/image"
+        },
+        "lidar": {
+          "age_s": 0.13001484298729338,
+          "expected_frame": "lidar_link",
+          "expected_message_type": "gz.msgs.LaserScan",
+          "frame": "lidar_link",
+          "fresh": true,
+          "horizontal_samples": 180,
+          "largest_wall_gap_s": 0.8268263310019393,
+          "last_rejection": null,
+          "message_schema_validated": true,
+          "received_at_monotonic_s": 218153.890429599,
+          "rejected_message_count": 0,
+          "simulation_rate_hz": 5.0,
+          "simulation_time_s": 79.0,
+          "status": "healthy",
+          "topic": "/scout/lidar/points",
+          "valid_point_count": 2234,
+          "vertical_samples": 16,
+          "wall_rate_hz": 2.6675091608079304
+        },
+        "yolo": {
+          "detection_count": 0,
+          "fresh": true,
+          "inference_count": 15,
+          "last_inference_completed_at_utc": "2026-11-03T14:16:20.955177+00:00",
+          "last_inference_latency_ms": 1803.4822029876523,
+          "last_inference_rate_hz": 0.1460140496510372,
+          "model": "/home/ganesh/Drone Swarm/Drone-Swarm/yolo26n.pt",
+          "status": "inference_active"
+        }
+      },
+      "status_history": [
+        {
+          "armable": null,
+          "armed": null,
+          "available": false,
+          "connected": false,
+          "flight_mode": null,
+          "in_air": null,
+          "source": null,
+          "timestamp_utc": "2026-11-03T14:14:21.952387+00:00"
+        },
+        {
+          "armable": null,
+          "armed": null,
+          "available": false,
+          "connected": true,
+          "flight_mode": null,
+          "in_air": false,
+          "source": "PX4_MAVSDK",
+          "timestamp_utc": "2026-11-03T14:14:24.450405+00:00"
+        },
+        {
+          "armable": true,
+          "armed": false,
+          "available": true,
+          "connected": true,
+          "flight_mode": "HOLD",
+          "in_air": false,
+          "source": "PX4_MAVSDK",
+          "timestamp_utc": "2026-11-03T14:14:25.016419+00:00"
+        },
+        {
+          "armable": true,
+          "armed": false,
+          "available": false,
+          "connected": true,
+          "flight_mode": "HOLD",
+          "in_air": false,
+          "source": "PX4_MAVSDK",
+          "timestamp_utc": "2026-11-03T14:15:15.048290+00:00"
+        },
+        {
+          "armable": true,
+          "armed": false,
+          "available": true,
+          "connected": true,
+          "flight_mode": "HOLD",
+          "in_air": false,
+          "source": "PX4_MAVSDK",
+          "timestamp_utc": "2026-11-03T14:15:48.913417+00:00"
+        },
+        {
+          "armable": true,
+          "armed": false,
+          "available": false,
+          "connected": true,
+          "flight_mode": "HOLD",
+          "in_air": false,
+          "source": "PX4_MAVSDK",
+          "timestamp_utc": "2026-11-03T14:15:49.359536+00:00"
+        },
+        {
+          "armable": true,
+          "armed": false,
+          "available": false,
+          "connected": false,
+          "flight_mode": "HOLD",
+          "in_air": false,
+          "source": "PX4_MAVSDK",
+          "timestamp_utc": "2026-11-03T14:15:49.359536+00:00"
+        }
+      ],
+      "vehicle_name": "Scout"
+    }
+  }
+}

@@ -46,10 +46,16 @@ class PX4Controller:
         self,
         connection_uri: str = "udpin://0.0.0.0:14540",
         mavsdk_server_port: int = 50051,
+        mavsdk_server_address: str | None = None,
     ) -> None:
         self.connection_uri = connection_uri
         self.mavsdk_server_port = mavsdk_server_port
-        self.drone: Any = System(port=mavsdk_server_port)
+        # Supplying an address attaches to an already running server. Leaving
+        # it unset preserves the normal behavior of spawning a local server.
+        self.drone: Any = System(
+            mavsdk_server_address=mavsdk_server_address,
+            port=mavsdk_server_port,
+        )
         self._home: Any | None = None
 
     async def connect(self, timeout_s: float = 30.0) -> None:
@@ -111,8 +117,15 @@ class PX4Controller:
                 f"within {timeout_s:.0f} seconds"
             ) from error
 
-    async def goto_location(self, x: float, y: float, z: float) -> None:
-        """Fly to local north/east/altitude coordinates, in metres from home."""
+    async def goto_location(
+        self,
+        x: float,
+        y: float,
+        z: float,
+        timeout_s: float = 60.0,
+        yaw_deg: float = 0.0,
+    ) -> None:
+        """Fly to a local north/east/altitude waypoint and heading from home."""
         if self._home is None:
             raise RuntimeError("Call connect() before requesting a waypoint")
         latitude = self._home.latitude_deg + math.degrees(x / EARTH_RADIUS_M)
@@ -123,10 +136,19 @@ class PX4Controller:
             y / (EARTH_RADIUS_M * longitude_scale)
         )
         absolute_altitude = self._home.absolute_altitude_m + z
-        await self.drone.action.goto_location(
-            latitude, longitude, absolute_altitude, 0.0
-        )
-        await self._wait_for_waypoint(x, y, z)
+        try:
+            await asyncio.wait_for(
+                self.drone.action.goto_location(
+                    latitude, longitude, absolute_altitude, yaw_deg
+                ),
+                timeout=15.0,
+            )
+        except asyncio.TimeoutError as error:
+            raise TimeoutError(
+                "PX4 did not acknowledge the goto command within 15 seconds; "
+                "the survey will request RTL."
+            ) from error
+        await self._wait_for_waypoint(x, y, z, timeout_s=timeout_s)
 
     async def goto_position_ned(
         self,
@@ -206,15 +228,53 @@ class PX4Controller:
     async def _wait_for_waypoint(
         self, north_m: float, east_m: float, altitude_m: float, timeout_s: float = 60.0
     ) -> None:
+        latest: tuple[float, float, float, float, float] | None = None
+        next_report = asyncio.get_running_loop().time()
+
         async def wait() -> None:
+            nonlocal latest, next_report
             async for position in self.drone.telemetry.position():
                 north, east = self._local_offset(position.latitude_deg, position.longitude_deg)
                 horizontal_error = math.hypot(north - north_m, east - east_m)
                 altitude_error = abs(position.relative_altitude_m - altitude_m)
+                latest = (
+                    north,
+                    east,
+                    float(position.relative_altitude_m),
+                    horizontal_error,
+                    altitude_error,
+                )
+                now = asyncio.get_running_loop().time()
+                if now >= next_report:
+                    print(
+                        "Waypoint progress: "
+                        f"north={north:.1f}/{north_m:.1f} m, "
+                        f"east={east:.1f}/{east_m:.1f} m, "
+                        f"altitude={position.relative_altitude_m:.1f}/{altitude_m:.1f} m, "
+                        f"horizontal_error={horizontal_error:.1f} m"
+                    )
+                    next_report = now + 5.0
                 if horizontal_error <= 1.5 and altitude_error <= 1.0:
+                    print(
+                        "Waypoint reached: "
+                        f"north={north:.1f} m, east={east:.1f} m, "
+                        f"altitude={position.relative_altitude_m:.1f} m."
+                    )
                     return
 
-        await asyncio.wait_for(wait(), timeout=timeout_s)
+        try:
+            await asyncio.wait_for(wait(), timeout=timeout_s)
+        except asyncio.TimeoutError as error:
+            detail = "no position telemetry received"
+            if latest is not None:
+                detail = (
+                    f"last position north={latest[0]:.1f} m, east={latest[1]:.1f} m, "
+                    f"altitude={latest[2]:.1f} m; horizontal error="
+                    f"{latest[3]:.1f} m, altitude error={latest[4]:.1f} m"
+                )
+            raise TimeoutError(
+                f"Scout did not reach the waypoint within {timeout_s:.0f} seconds; {detail}."
+            ) from error
 
     def _local_offset(self, latitude_deg: float, longitude_deg: float) -> tuple[float, float]:
         if self._home is None:

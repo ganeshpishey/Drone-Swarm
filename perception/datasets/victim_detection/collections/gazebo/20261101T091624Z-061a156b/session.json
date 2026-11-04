@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "session_id": "20261101T091624Z-061a156b",
+  "dataset_type": "gazebo_synthetic",
+  "created_utc": "2026-11-01T09:16:24.467561+00:00",
+  "capture_config": {
+    "scene_id": "grounded-scout-target-smoke-v1",
+    "scene_class": "positive",
+    "world_sdf": "/tmp/day11b-grounded-target-20261101-EhGQGK/earthquake_landslide_apron_target_test.sdf",
+    "environment": {
+      "terrain": "existing apron world",
+      "lighting": "unchanged existing world",
+      "occlusion": "to be visually checked",
+      "debris_level": "existing apron scene"
+    },
+    "camera_pose_entity": "camera_link",
+    "camera_setup": {
+      "requested_altitude_m": null,
+      "view_description": "grounded Scout, unchanged production pose, downward camera",
+      "target_positions": [
+        "incident_victim_5 near camera footprint"
+      ]
+    },
+    "victims": [
+      {
+        "entity_name": "incident_victim_5",
+        "asset_model": "standing_person_small",
+        "pose_category": "unverified",
+        "orientation_description": "yaw 0; visually verify",
+        "occlusion_description": "visual review pending"
+      }
+    ]
+  },
+  "scene_class": "positive",
+  "world_name": "earthquake_landslide_world",
+  "world_sdf_sha256": "f2ef4ec5c0acd4b4be24ddcecede61e13919b5d6ff32f62ff2ff9cf882ef723f",
+  "camera_topic": "/world/earthquake_landslide_world/model/x500_mono_cam_down_lidar_0/link/camera_link/sensor/imager/image",
+  "pose_topic": "/world/earthquake_landslide_world/pose/info",
+  "lidar_topic_subscribed_by_reused_source": "/scout/lidar/points",
+  "image_message_type": "gz.msgs.Image",
+  "image_pixel_formats_supported": [
+    "RGB_INT8",
+    "BGR_INT8"
+  ],
+  "interval_s": 1.0,
+  "duration_s": 6.0,
+  "max_frames": 3,
+  "label_status": "not_reviewed",
+  "split": null,
+  "capture_utility": "capture_victim_dataset.py",
+  "captured_image_count": 3,
+  "completed_utc": "2026-11-01T09:16:27.716324+00:00",
+  "capture_status": "complete"
+}

@@ -20,6 +20,7 @@ dist/
 runs/
 output/
 tmp/
+perception/datasets/victim_detection/prepared/
 
 # Checkpoints/models must never be committed, even outside runs/
 *.pt

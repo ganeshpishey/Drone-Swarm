@@ -1,0 +1,1074 @@
+from __future__ import annotations
+
+import asyncio
+import io
+import json
+import math
+import socket
+import tempfile
+import threading
+import time
+import unittest
+from argparse import Namespace
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
+
+from integration.mavsdk_controller.day10_coordinate_frames import transform_local_ned
+from integration.mavsdk_controller.day10_coordinator_service import Day10CoordinatorService
+from integration.mavsdk_controller.day10_coordinator_service import _finite_values
+from integration.mavsdk_controller.day10_scout_manet_bridge import ScoutReportBridge
+from integration.mavsdk_controller.day10_vehicle_agent import VehicleAgent
+from integration.mavsdk_controller.day10_ground_station import snapshot
+from integration.mavsdk_controller.day10_terminal_monitor import (
+    BoundedPersistenceWriter,
+    REPORT_FILES,
+    TerminalRunMonitor,
+)
+import integration.mavsdk_controller.day10_terminal_monitor as terminal_monitor_module
+from integration.mavsdk_controller.swarm_manet import PeerUdpNode, decode_envelope, encode_envelope, make_envelope
+from integration.mavsdk_controller.response_lidar_guard import GazeboScanFeed
+
+
+SYNTHETIC_LOCALIZATION_POLICY = {
+    "schema_version": "scout-localization-policy-v1",
+    "accepted_calibration_ids": ["synthetic-test-calibration"],
+    "minimum_dispatch_confidence": 0.5,
+    "maximum_uncertainty_m": 1.0,
+    "minimum_supporting_returns": 3,
+    "maximum_camera_lidar_delta_s": 0.1,
+    "maximum_pose_age_s": 0.25,
+}
+
+
+def origin(vehicle: str, lat: float, lon: float, *, at: str | None = None) -> dict:
+    return {
+        "schema_version": "px4-home-origin-v1", "vehicle_id": vehicle,
+        "coordinate_frame": "local_ned_origin", "source": "PX4_MAVSDK_HOME_TELEMETRY",
+        "altitude_reference": "PX4_MAVSDK_absolute_altitude_common_datum",
+        "home_id": f"{vehicle}:home-1", "sampled_at_utc": at or datetime.now(timezone.utc).isoformat(),
+        "latitude_deg": lat, "longitude_deg": lon, "absolute_altitude_m": 100.0,
+    }
+
+
+def free_udp_port() -> int:
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+        sock.bind(("127.0.0.1", 0))
+        return int(sock.getsockname()[1])
+
+
+def make_service_args(root: Path, **overrides):
+    values = dict(
+        low_battery_percent=30.0, critical_battery_percent=20.0,
+        reserve_battery_percent=25.0, battery_max_age_s=10.0,
+        key_file=None,
+        bind="127.0.0.1", port=29999,
+        minimum_drain_span_s=30.0, state=root / "coordinator.json",
+        guidance_max_age_s=3.0, guidance_speed_m_s=0.3, origin_max_delta_s=30.0,
+        max_incident_distance_m=5000.0, telemetry_max_age_s=15.0,
+        outbound_minutes=1.0, task_minutes=1.0, return_minutes=1.0,
+        mission_ttl_s=60.0,
+        localization_policy=SYNTHETIC_LOCALIZATION_POLICY,
+    )
+    values.update(overrides)
+    return Namespace(**values)
+
+
+def report(*, frame="local_ned_m", ref="scout_0", point=(20.0, 5.0, -1.0), observed=None):
+    return {
+        "schema_version": "scout-incident-report-v1", "message_type": "incident_observation",
+        "ground_truth": False, "vehicle": "scout_0", "report_id": "camera-report-1",
+        "observed_at_utc": observed or datetime.now(timezone.utc).isoformat(),
+        "coordinate_reference_vehicle_id": ref,
+        "coordinate_origin_id": "scout_0:home-1" if ref == "scout_0" else None,
+        "detections": [{
+            "type": "person", "confidence": 0.93, "location_status": "validated",
+            "localization_status": "validated", "depth_status": "associated",
+            "dispatchable": True, "localization_uncertainty_m": 0.2,
+            "coordinate_origin_id": "scout_0:home-1",
+            "sensor_timestamps_monotonic_s": {
+                "image_capture": 100.0, "lidar_capture": 100.02, "scout_pose": 100.03,
+            },
+            "timestamp_delta_s": 0.02, "pose_age_s": 0.03,
+            "transformation_provenance": {
+                "calibration_id": "synthetic-test-calibration",
+                "camera_from_lidar": "empirically_verified_4x4",
+                "body_frd_from_lidar": "empirically_verified_4x4",
+                "body_frd_to_ned": "PX4_roll_pitch_yaw_rotation",
+                "coordinate_origin_id": "scout_0:home-1",
+                "timestamp_domain": "host_monotonic_capture",
+                "max_camera_lidar_delta_s": 0.1,
+                "max_pose_age_s": 0.25,
+                "max_dispatch_uncertainty_m": 1.0,
+                "minimum_dispatch_confidence": 0.5,
+                "minimum_supporting_returns": 3,
+            },
+            "supporting_returns": 6,
+            "reference_vehicle_id": ref,
+            "incident_world_location": {"coordinate_frame": frame, "position_m": list(point)},
+        }],
+    }
+
+
+class CoordinateTransformTests(unittest.TestCase):
+    def test_transform_same_origin_preserves_local_ned_axes(self) -> None:
+        stamp = datetime.now(timezone.utc).isoformat()
+        src, dst = origin("scout_0", 47.0, 8.0, at=stamp), origin("ambulance_0", 47.0, 8.0, at=stamp)
+        result = transform_local_ned([20, 5, -1], source_origin=src, target_origin=dst,
+            source_vehicle_id="scout_0", target_vehicle_id="ambulance_0",
+            coordinate_frame="local_ned_m", observed_at_utc=stamp)
+        for got, wanted in zip(result["coordinates"], (20, 5, -1)):
+            self.assertAlmostEqual(got, wanted, delta=0.03)
+        self.assertTrue(result["transform_id"].startswith("wgs84-ecef:"))
+
+    def test_transform_accounts_for_distinct_origins_and_refuses_stale_or_ambiguous_inputs(self) -> None:
+        stamp = datetime.now(timezone.utc)
+        source = origin("scout_0", 47.0, 8.0, at=stamp.isoformat())
+        target = origin("ambulance_0", 47.0001, 8.0, at=stamp.isoformat())
+        transformed = transform_local_ned([20, 0, 0], source_origin=source, target_origin=target,
+            source_vehicle_id="scout_0", target_vehicle_id="ambulance_0",
+            coordinate_frame="local_ned_m", observed_at_utc=stamp.isoformat())
+        self.assertAlmostEqual(transformed["coordinates"][0], 8.9, delta=0.2)
+        with self.assertRaisesRegex(ValueError, "local_ned_m"):
+            transform_local_ned([1, 2, 3], source_origin=source, target_origin=target,
+                source_vehicle_id="scout_0", target_vehicle_id="ambulance_0",
+                coordinate_frame="world", observed_at_utc=stamp.isoformat())
+        old = origin("scout_0", 47.0, 8.0, at="2020-01-01T00:00:00+00:00")
+        with self.assertRaisesRegex(ValueError, "stale"):
+            transform_local_ned([1, 2, 3], source_origin=old, target_origin=target,
+                source_vehicle_id="scout_0", target_vehicle_id="ambulance_0",
+                coordinate_frame="local_ned_m", observed_at_utc=stamp.isoformat())
+        with self.assertRaisesRegex(ValueError, "origin vehicle must be scout_1"):
+            transform_local_ned([1, 2, 3], source_origin=source, target_origin=target,
+                source_vehicle_id="scout_1", target_vehicle_id="ambulance_0",
+                coordinate_frame="local_ned_m", observed_at_utc=stamp.isoformat())
+
+
+class RuntimeSafetyTests(unittest.TestCase):
+    def test_bounded_persistence_coalesces_latest_state_and_writes_atomically(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "state.json"
+            writer = BoundedPersistenceWriter(max_queue=2)
+            writer.start()
+            writer.submit_coalesced(str(path), "atomic_json", (path, {"value": 1}))
+            writer.submit_coalesced(str(path), "atomic_json", (path, {"value": 2}))
+            writer.flush()
+            self.assertEqual(json.loads(path.read_text()), {"value": 2})
+            self.assertFalse(list(Path(directory).glob("*.tmp")))
+            writer.close()
+            self.assertFalse(writer._thread.is_alive())
+
+    def test_bounded_persistence_preserves_concurrent_critical_records(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "events.jsonl"
+            writer = BoundedPersistenceWriter(max_queue=8)
+            writer.start()
+            producers = []
+
+            def produce(producer_id: int) -> None:
+                for index in range(20):
+                    writer.submit("append_jsonl", (path, {"producer": producer_id, "index": index}))
+
+            for producer_id in range(4):
+                thread = threading.Thread(target=produce, args=(producer_id,))
+                producers.append(thread)
+                thread.start()
+            for thread in producers:
+                thread.join(timeout=5)
+                self.assertFalse(thread.is_alive())
+            writer.close()
+            rows = [json.loads(line) for line in path.read_text().splitlines()]
+            self.assertEqual(len(rows), 80)
+            self.assertEqual(len({(row["producer"], row["index"]) for row in rows}), 80)
+
+    def test_bounded_persistence_backpressures_instead_of_dropping_when_full(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            entered, release, producer_done = threading.Event(), threading.Event(), threading.Event()
+            path = Path(directory) / "events.jsonl"
+            writer = BoundedPersistenceWriter(max_queue=1)
+            writer.start()
+
+            def blocked(_value) -> None:
+                entered.set()
+                release.wait(timeout=2)
+
+            writer.submit("call", (blocked, None))
+            self.assertTrue(entered.wait(timeout=1))
+            writer.submit("append_jsonl", (path, {"id": 1}))
+            producer = threading.Thread(target=lambda: (
+                writer.submit("append_jsonl", (path, {"id": 2})), producer_done.set()))
+            producer.start()
+            time.sleep(0.03)
+            self.assertFalse(producer_done.is_set())
+            release.set()
+            producer.join(timeout=2)
+            self.assertTrue(producer_done.is_set())
+            writer.close()
+            rows = [json.loads(line) for line in path.read_text().splitlines()]
+            self.assertEqual([row["id"] for row in rows], [1, 2])
+
+    def test_coordinator_coalesces_high_rate_state_writes_to_five_hz(self) -> None:
+        service = Day10CoordinatorService.__new__(Day10CoordinatorService)
+        service._last_state_write_monotonic_s = 10.0
+        writes = []
+
+        def write_state():
+            writes.append(current[0])
+            service._last_state_write_monotonic_s = current[0]
+
+        current = [10.1]
+        service._write_state = write_state
+        self.assertFalse(service._write_state_if_due(now_monotonic_s=10.1))
+        self.assertEqual(writes, [])
+        current[0] = 10.21
+        self.assertTrue(service._write_state_if_due(now_monotonic_s=10.21))
+        self.assertEqual(len(writes), 1)
+        self.assertFalse(service._write_state_if_due(now_monotonic_s=10.25))
+        self.assertEqual(len(writes), 1)
+        current[0] = 10.42
+        self.assertTrue(service._write_state_if_due(now_monotonic_s=10.42))
+        self.assertEqual(len(writes), 2)
+
+    def test_live_telemetry_numeric_validator_rejects_invalid_samples_atomically(self) -> None:
+        result = _finite_values({"north_m": 1.25, "east_m": -2.0}, label="position_velocity_ned")
+        self.assertEqual(result, {"north_m": 1.25, "east_m": -2.0})
+        for invalid in (float("nan"), float("inf"), True, "not-a-number"):
+            with self.subTest(invalid=invalid), self.assertRaisesRegex(ValueError, "position_x"):
+                _finite_values({"x": invalid}, label="position")
+
+    def test_gazebo_scan_feed_validates_frame_sim_time_shape_and_freshness(self) -> None:
+        async def scenario() -> None:
+            class FakeStdout:
+                def __init__(self, lines): self.lines = iter(lines)
+                async def readline(self): return next(self.lines, b"")
+
+            class FakeProcess:
+                returncode = 0
+                def __init__(self, lines): self.stdout = FakeStdout(lines)
+
+            def message(*, frame="lidar_link", sec=1, ranges=None):
+                return {
+                    "frame": frame, "header": {"stamp": {"sec": sec, "nsec": 0}},
+                    "count": 2, "verticalCount": 1,
+                    "angle_min": -0.5, "angle_step": 1.0,
+                    "vertical_angle_min": 0.0, "vertical_angle_step": 0.0,
+                    "range_min": 0.2, "range_max": 25.0,
+                    "ranges": ranges or [2.0, 3.0],
+                }
+
+            import json
+            lines = [json.dumps(message()).encode() + b"\n",
+                     json.dumps({**message(sec=2), "header": {"stamp": {"sec": 2, "nanosec": 250000000}}}).encode() + b"\n",
+                     json.dumps({**message(sec=3), "header": {"stamp": {"sec": 3}}}).encode() + b"\n",
+                     json.dumps(message(frame="wrong_frame", sec=2)).encode() + b"\n",
+                     json.dumps(message(sec=2)).encode() + b"\n"]
+            feed = GazeboScanFeed("/ambulance_0/lidar/points", expected_frame="lidar_link",
+                                  expected_horizontal_samples=2, expected_vertical_samples=1)
+            feed.process = FakeProcess(lines)
+            await feed._read()
+            self.assertEqual(feed.frame, "lidar_link")
+            self.assertEqual(feed.simulation_time_s, 3.0)
+            self.assertEqual(feed.valid_point_count, 2)
+            self.assertEqual(feed.rejected_message_count, 2)
+            self.assertEqual(feed.last_rejection, "simulation_timestamp_not_increasing")
+            health = feed.health(now=feed.received_at + 0.1, max_age_s=0.2)
+            self.assertTrue(health["fresh"])
+            self.assertEqual(health["horizontal_samples"], 2)
+            self.assertEqual(health["vertical_samples"], 1)
+            self.assertEqual(health["expected_message_type"], "gz.msgs.LaserScan")
+            self.assertFalse(feed.health(now=feed.received_at + 0.3, max_age_s=0.2)["fresh"])
+
+        asyncio.run(scenario())
+
+    def test_event_driven_connection_state_does_not_expire_during_fresh_telemetry(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            service = Day10CoordinatorService(
+                make_service_args(Path(directory), telemetry_max_age_s=5.0),
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 21141), "ambulance_0": ("127.0.0.1", 21142)},
+            )
+            state = service.vehicle_state["scout_0"]
+            now = time.monotonic()
+            state.update({"connected": True, "in_air": False, "armed": False,
+                          "is_armable": True, "sampled_at_utc": datetime.now(timezone.utc).isoformat(),
+                          "connection_fresh": True})
+            for field in ("health", "in_air", "armed", "position", "battery"):
+                state[f"{field}_fresh"] = True
+                service.telemetry_times["scout_0"][field] = now
+            service.telemetry_times["scout_0"]["connection"] = now - 60.0
+            service.batteries["scout_0"].add_mavsdk_sample(
+                SimpleNamespace(remaining_percent=90.0, voltage_v=16.0,
+                                 current_battery_a=None, capacity_consumed_ah=None),
+                monotonic_s=now,
+            )
+            service._refresh_available("scout_0")
+            self.assertTrue(state["connection_fresh"])
+            self.assertTrue(state["fresh"])
+            self.assertTrue(state["available"])
+            service.node.close()
+
+    def test_recent_aggregate_timestamp_cannot_replace_fresh_required_telemetry_streams(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            service = Day10CoordinatorService(
+                make_service_args(Path(directory), telemetry_max_age_s=5.0),
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 21143), "ambulance_0": ("127.0.0.1", 21144)},
+            )
+            state = service.vehicle_state["ambulance_0"]
+            state.update({"connected": True, "in_air": False, "armed": False,
+                          "is_armable": True, "sampled_at_utc": datetime.now(timezone.utc).isoformat()})
+            now = time.monotonic()
+            service.batteries["ambulance_0"].add_mavsdk_sample(
+                SimpleNamespace(remaining_percent=90.0, voltage_v=16.0,
+                                current_battery_a=None, capacity_consumed_ah=None),
+                monotonic_s=now,
+            )
+            service._refresh_available("ambulance_0")
+            self.assertFalse(state["fresh"])
+            self.assertFalse(state["available"])
+            service.node.close()
+
+    def test_obstacle_guidance_uses_transition_connection_and_fresh_vehicle_streams(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            service = Day10CoordinatorService(
+                make_service_args(Path(directory), telemetry_max_age_s=5.0),
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 21151), "ambulance_0": ("127.0.0.1", 21152)},
+            )
+            now = time.monotonic()
+            state = service.vehicle_state["ambulance_0"]
+            state.update({"connected": True, "connection_error": None, "armed": False,
+                          "in_air": False, "flight_mode": "HOLD",
+                          "position_velocity_ned_fresh": True, "attitude_euler_fresh": True})
+            service.ambulance_nav.update({
+                "north_m": 0.0, "east_m": 0.0, "down_m": 0.0,
+                "north_velocity_m_s": 0.0, "east_velocity_m_s": 0.0,
+                "down_velocity_m_s": 0.0, "yaw_deg": 0.0,
+            })
+            service.nav_times["ambulance_0:position_velocity_ned"] = now
+            service.nav_times["ambulance_0:attitude_euler"] = now
+            for name in ("armed", "in_air", "flight_mode"):
+                service.telemetry_times["ambulance_0"][name] = now
+            service.telemetry_times["ambulance_0"]["connection"] = now - 60.0
+            service._refresh_ambulance_guidance()
+            self.assertEqual(service.obstacle_guidance["state"], "HOLD")
+            self.assertEqual(service.obstacle_guidance["reason"], "vehicle_not_airborne")
+            self.assertFalse(service.obstacle_guidance["flight_commands_sent"])
+            service.node.close()
+
+    def test_coordinator_snapshot_exposes_live_navigation_and_lidar_health(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            service = Day10CoordinatorService(
+                make_service_args(root),
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 21131), "ambulance_0": ("127.0.0.1", 21132)},
+            )
+            service.vehicle_state["scout_0"].update({
+                "position_ned": {"north_m": 1.0, "east_m": 2.0, "down_m": 3.0},
+                "velocity_ned": {"north_velocity_m_s": 0.1, "east_velocity_m_s": 0.0,
+                                  "down_velocity_m_s": 0.0},
+                "attitude_euler": {"roll_deg": 0.0, "pitch_deg": 0.0, "yaw_deg": 5.0},
+            })
+            service.lidar_health = {
+                "topic": "/ambulance_0/lidar/points", "frame": "lidar_link",
+                "simulation_time_s": 12.5, "horizontal_samples": 180,
+                "vertical_samples": 16, "valid_point_count": 900,
+                "wall_rate_hz": 5.0, "fresh": True,
+            }
+            snapshot_value = service.snapshot()
+            self.assertEqual(snapshot_value["vehicles"]["scout_0"]["position_ned"]["north_m"], 1.0)
+            self.assertEqual(snapshot_value["vehicles"]["scout_0"]["attitude_euler"]["yaw_deg"], 5.0)
+            self.assertEqual(snapshot_value["lidar"]["valid_point_count"], 900)
+            self.assertFalse(snapshot_value["flight_commands_sent"])
+            self.assertEqual(snapshot_value["lidar"]["simulation_time_s"], 12.5)
+            self.assertEqual(snapshot_value["vehicles"]["scout_0"]["position_ned"]["north_m"], 1.0)
+            service.node.close()
+
+    def test_coordinator_exports_bounded_observed_battery_history(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            service = Day10CoordinatorService(
+                make_service_args(root),
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 21121), "ambulance_0": ("127.0.0.1", 21122)},
+            )
+
+            class Battery:
+                remaining_percent = 87.0
+                voltage_v = 15.8
+                current_battery_a = 2.1
+                capacity_consumed_ah = 0.2
+
+            monitor = service.batteries["ambulance_0"]
+            sample_time = time.monotonic()
+            monitor.add_mavsdk_sample(Battery(), monotonic_s=sample_time,
+                                       sampled_at_utc="2026-11-01T10:00:00+00:00")
+            Battery.remaining_percent = 86.5
+            monitor.add_mavsdk_sample(Battery(), monotonic_s=sample_time + 0.01,
+                                       sampled_at_utc="2026-11-01T10:00:01+00:00")
+            exported = service.snapshot()["battery"]["ambulance_0"]
+            self.assertEqual(exported["remaining_percent"], 86.5)
+            self.assertEqual([sample["remaining_percent"] for sample in exported["history"]],
+                             [87.0, 86.5])
+            self.assertEqual(exported["history"][-1]["sampled_at_utc"],
+                             "2026-11-01T10:00:01+00:00")
+            for index in range(2, 125):
+                Battery.remaining_percent = 86.5 - (index - 1) * 0.01
+                monitor.add_mavsdk_sample(
+                    Battery(), monotonic_s=sample_time + index * 0.01,
+                    sampled_at_utc=f"2026-11-01T10:00:{index:02d}+00:00",
+                )
+            bounded = service.snapshot()["battery"]["ambulance_0"]["history"]
+            self.assertEqual(len(bounded), 120)
+            self.assertAlmostEqual(bounded[-1]["remaining_percent"], 85.27)
+            service.node.close()
+
+    def test_scout_forwarder_keeps_image_only_detections_unlocalized(self) -> None:
+        args = Namespace(key_file=None)
+        bridge = ScoutReportBridge(args, ("127.0.0.1", 8766))
+        record = {
+            "observation_id": "o1", "session_id": "s1", "sequence_number": 1,
+            "frame_received_utc": datetime.now(timezone.utc).isoformat(),
+            "frame_width": 1280, "frame_height": 960, "image_sequence": 42,
+            "detections": [{"type": "person", "confidence": .9}],
+            "incident_world_location": None, "incident_location_status": "unlocalized",
+        }
+        converted = bridge.report_from_record(record)
+        self.assertEqual(converted["coordinate_reference_vehicle_id"], None)
+        self.assertIsNone(converted["incident_world_location"])
+        self.assertEqual((converted["frame_width"], converted["frame_height"]), (1280, 960))
+        self.assertEqual(converted["image_sequence"], 42)
+        bridge.node.close()
+
+    def test_guidance_protocol_accepts_bounded_suggestion_only_data(self) -> None:
+        envelope = make_envelope(sender="ambulance_0", recipient="coordinator",
+            message_type="obstacle_guidance", sequence=1,
+            payload={"vehicle_id": "ambulance_0", "mission_id": "m1", "state": "HOLD",
+                     "reason": "missing_or_stale_scan", "sampled_at_utc": datetime.now(timezone.utc).isoformat(),
+                     "suggested_velocity_ned_m_s": [0.0, 0.0, 0.0],
+                     "suggestion_only": True, "flight_commands_sent": False})
+        self.assertEqual(decode_envelope(encode_envelope(envelope)), envelope)
+        bad = {**envelope, "payload": {**envelope["payload"], "suggested_velocity_ned_m_s": [10, 0, 0]}}
+        with self.assertRaisesRegex(ValueError, "within 5 m/s"):
+            encode_envelope(bad)
+
+    def test_vehicle_agent_persists_received_proposal_but_never_executes(self) -> None:
+        async def scenario(root: Path) -> None:
+            args = Namespace(vehicle="ambulance_0", key_file=None,
+                mission_file=root / "mission.json", state_file=root / "agent.json",
+                guidance_log=None, guidance_publish_s=1.0)
+            agent = VehicleAgent(args, ("127.0.0.1", 8765))
+            class FakeNode:
+                async def send_reliable(self, *args, **kwargs):
+                    self.sent = (args, kwargs)
+                    return "accepted"
+            agent.node = FakeNode()
+            payload = {"mission_id": "m1", "incident_id": "r1:0",
+                "target": {"coordinate_frame": "local_ned_m", "reference_vehicle_id": "ambulance_0",
+                           "transform_id": "wgs84-ecef:abc", "coordinates": [1.0, 2.0, -1.0]},
+                "expires_at_utc": (datetime.now(timezone.utc).replace(year=datetime.now(timezone.utc).year + 1)).isoformat()}
+            await agent.handle({"message_type": "mission_assignment", "payload": payload})
+            saved = json.loads(args.mission_file.read_text())
+            self.assertTrue(saved["acknowledged"])
+            self.assertFalse(saved["execution_enabled"])
+            self.assertFalse(saved["flight_commands_sent"])
+            self.assertEqual(agent.node.sent[0][1], "mission_ack")
+            self.assertEqual(agent.node.sent[0][2]["status"], "accepted_suggestion_only")
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_vehicle_agent_rejects_invalid_target_and_duplicate_active_assignment(self) -> None:
+        async def scenario(root: Path) -> None:
+            args = Namespace(vehicle="ambulance_0", key_file=None,
+                mission_file=root / "mission.json", state_file=root / "agent.json",
+                guidance_log=None, progress_log=None, guidance_publish_s=1.0)
+            agent = VehicleAgent(args, ("127.0.0.1", 8765))
+            class FakeNode:
+                sent = []
+                async def send_reliable(self, *call_args, **kwargs):
+                    self.sent.append(call_args)
+                    return "accepted"
+            agent.node = FakeNode()
+            future = (datetime.now(timezone.utc) + __import__('datetime').timedelta(minutes=2)).isoformat()
+            invalid = {"mission_id": "bad", "incident_id": "r:0",
+                "target": {"coordinate_frame": "world", "reference_vehicle_id": "ambulance_0",
+                           "transform_id": "none", "coordinates": [1.0, 2.0, -1.0]},
+                "expires_at_utc": future}
+            await agent.handle({"message_type": "mission_assignment", "payload": invalid})
+            self.assertIsNone(agent.mission_id)
+            self.assertFalse(args.mission_file.exists())
+            self.assertEqual(agent.node.sent[-1][1], "mission_ack")
+            self.assertEqual(agent.node.sent[-1][2]["status"], "rejected")
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_coordinator_rejects_reassignment_without_second_response_vehicle(self) -> None:
+        async def scenario(root: Path) -> None:
+            args = make_service_args(root, control_file=root / "control.jsonl")
+            service = Day10CoordinatorService(args,
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 21111), "ambulance_0": ("127.0.0.1", 21112)})
+            task = asyncio.create_task(service.monitor_control_file())
+            await asyncio.sleep(0.03)
+            args.control_file.write_text(json.dumps({"request_id": "r1", "command": "reassign_mission",
+                "mission_id": "m1", "vehicle_id": "scout_0"}) + "\n")
+            deadline = time.monotonic() + 1.0
+            while time.monotonic() < deadline and not any(
+                event["event"] == "mission_reassignment_unavailable" for event in service.events
+            ):
+                await asyncio.sleep(0.01)
+            service.stop_event.set()
+            await task
+            event = next(event for event in service.events
+                         if event["event"] == "mission_reassignment_unavailable")
+            self.assertEqual(event["reason"], "no_second_response-capable_UAV_in_active_scope")
+            service.node.close()
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_critical_battery_cancels_advisory_mission_without_flight_command(self) -> None:
+        async def scenario(root: Path) -> None:
+            args = make_service_args(root)
+            service = Day10CoordinatorService(args,
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 22111), "ambulance_0": ("127.0.0.1", 22112)})
+            now = datetime.now(timezone.utc)
+            service.coordinator.missions["m1"] = __import__(
+                "integration.mavsdk_controller.day10_mission_coordinator", fromlist=["MissionRecord"]
+            ).MissionRecord("m1", "incident:0", "ambulance_0", {}, "acknowledged",
+                            now.isoformat(), (now + __import__('datetime').timedelta(seconds=60)).isoformat())
+            calls = []
+            async def send_reliable(*call_args, **kwargs):
+                calls.append(call_args)
+                return "accepted"
+            service.node.send_reliable = send_reliable
+            await service._battery_policy_event("ambulance_0", {
+                "level": "CRITICAL", "warning": "critical_battery",
+                "observed_drain_percent_per_minute": 4.0,
+            })
+            self.assertEqual(service.coordinator.missions["m1"].state, "cancelled")
+            self.assertEqual(calls[0][1], "mission_status")
+            self.assertFalse(service.snapshot()["flight_commands_sent"])
+            service.node.close()
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_terminal_state_projection_prefers_integrated_live_state_and_marks_control_disabled(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            state_path = Path(directory) / "state.json"
+            state_path.write_text(json.dumps({"schema_version": "day10-coordinator-state-v1",
+                "generated_at_utc": "now", "vehicles": {"ambulance_0": {"fresh": False}},
+                "battery": {"ambulance_0": {"fresh": False}}, "incidents": [], "missions": [],
+                "communication": {}, "obstacle_guidance": {"state": "UNKNOWN", "fresh": False},
+                "flight_commands_sent": False, "offboard_execution_enabled": False}))
+            args = Namespace(coordinator_state=state_path, vehicle_status=None, battery_log={},
+                incident_registry=None, missions=None, communication=None)
+            view = snapshot(args)
+            self.assertFalse(view["vehicles"]["ambulance_0"]["fresh"])
+            self.assertFalse(view["offboard_execution_enabled"])
+
+    def test_terminal_report_writes_unique_complete_json_bundle(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config = {"scout_0": {"role": "Scout", "instance": 0, "system_id": 1},
+                      "ambulance_0": {"role": "Medical-Support", "instance": 1, "system_id": 2}}
+            peers = {"scout_0": ("127.0.0.1", 20001), "ambulance_0": ("127.0.0.1", 20002)}
+            output = io.StringIO()
+            monitor = TerminalRunMonitor(root / "reports", config, peers, stream=output)
+            monitor.banner()
+            monitor.event({"event": "heartbeat_received", "peer": "scout_0"})
+            monitor.communication_event({"phase": "send_attempt", "sender": "coordinator",
+                "recipient": "ambulance_0", "message_id": "m1", "message_type": "heartbeat",
+                "attempt": 1, "max_attempts": 2})
+            state = {"vehicles": {"scout_0": {"connected": True}, "ambulance_0": {"connected": False}},
+                     "battery": {}, "incidents": [], "missions": [], "communication": {},
+                     "lidar": {"topic": "/ambulance_0/lidar/points", "status": "waiting"}}
+            report_dir = monitor.finalize(end_state=state, run_status="INTERRUPTED",
+                run_configuration={"flight_stack": "PX4 SITL"}, duration_s=2.0)
+            report_files = set(p.name for p in report_dir.iterdir())
+            self.assertTrue(set(REPORT_FILES).issubset(report_files))
+            self.assertEqual(report_files - set(REPORT_FILES),
+                             {"events.jsonl", "communication.jsonl", "errors.jsonl"})
+            for filename in REPORT_FILES:
+                self.assertIsInstance(json.loads((report_dir / filename).read_text()), (dict, list))
+            summary = json.loads((report_dir / "run_summary.json").read_text())
+            self.assertEqual(summary["overall_status"], "INTERRUPTED")
+            self.assertEqual(summary["active_uavs"], ["scout_0", "ambulance_0"])
+            self.assertIn("Fireman", output.getvalue())
+            self.assertIn("HEARTBEAT RECEIVED", output.getvalue())
+            second = TerminalRunMonitor(root / "reports", config, peers, stream=io.StringIO())
+            self.assertNotEqual(second.output_dir, report_dir)
+
+    def test_terminal_monitor_preserves_valid_incremental_incomplete_bundle(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config = {"scout_0": {"role": "Scout", "instance": 0, "system_id": 1},
+                      "ambulance_0": {"role": "Medical-Support", "instance": 1, "system_id": 2}}
+            peers = {"scout_0": ("127.0.0.1", 20001), "ambulance_0": ("127.0.0.1", 20002)}
+            monitor = TerminalRunMonitor(root / "reports", config, peers, stream=io.StringIO())
+            monitor.event({"event": "scout_camera_frame_received", "image_sequence": 17,
+                           "unavailable_measurement": float("nan")})
+            monitor.communication_event({"phase": "ack_received", "sender": "scout_0",
+                                         "message_id": "m17", "status": "accepted"})
+            self.assertTrue(set(REPORT_FILES).issubset({path.name for path in monitor.output_dir.iterdir()}))
+            summary = json.loads((monitor.output_dir / "run_summary.json").read_text())
+            self.assertEqual(summary["overall_status"], "IN_PROGRESS")
+            event = json.loads((monitor.output_dir / "events.jsonl").read_text().splitlines()[0])
+            communication = json.loads((monitor.output_dir / "communication.jsonl").read_text().splitlines()[0])
+            self.assertEqual(event["unavailable_measurement"], None)
+            self.assertTrue(event["event_id"])
+            self.assertTrue(communication["event_id"])
+
+    def test_async_terminal_writer_flushes_event_and_sample_before_final_report(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config = {"scout_0": {"role": "Scout", "instance": 0, "system_id": 1},
+                      "ambulance_0": {"role": "Medical-Support", "instance": 1, "system_id": 2}}
+            peers = {"scout_0": ("127.0.0.1", 20001), "ambulance_0": ("127.0.0.1", 20002)}
+            monitor = TerminalRunMonitor(root / "reports", config, peers, stream=io.StringIO())
+            monitor.start_persistence()
+            monitor.event({"event": "coordinator_started", "run_id": "runtime-test"})
+            monitor.communication_event({"phase": "send_failed", "sender": "scout_0", "reason": "test"})
+            monitor.sample({"generated_at_utc": "test", "vehicles": {}, "battery": {}})
+            monitor.finalize(end_state={"vehicles": {}, "battery": {}, "incidents": [], "missions": [],
+                                        "communication": {}, "lidar": {}, "scout_lidar": {},
+                                        "scout_perception": {}},
+                             run_status="INTERRUPTED", run_configuration={}, duration_s=0.0)
+            self.assertTrue(monitor._persistence._closed)
+            event = json.loads((monitor.output_dir / "events.jsonl").read_text().splitlines()[0])
+            communication = json.loads((monitor.output_dir / "communication.jsonl").read_text().splitlines()[0])
+            errors = [json.loads(line) for line in (monitor.output_dir / "errors.jsonl").read_text().splitlines()]
+            self.assertEqual(event["run_id"], "runtime-test")
+            self.assertEqual(communication["phase"], "send_failed")
+            self.assertEqual(len(errors), 1)
+
+    def test_terminal_monitor_rate_limits_partial_snapshots_to_one_second(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            config = {"scout_0": {"role": "Scout", "instance": 0, "system_id": 1},
+                      "ambulance_0": {"role": "Medical-Support", "instance": 1, "system_id": 2}}
+            peers = {"scout_0": ("127.0.0.1", 20001),
+                     "ambulance_0": ("127.0.0.1", 20002)}
+            monitor = TerminalRunMonitor(
+                Path(directory) / "reports", config, peers, stream=io.StringIO())
+
+            with patch.object(terminal_monitor_module.time, "monotonic",
+                              side_effect=[10.0, 10.4, 11.0]):
+                with patch.object(monitor, "_write_partial_snapshot") as write_snapshot:
+                    monitor.sample({})
+                    self.assertEqual(write_snapshot.call_count, 1)
+
+                    monitor.sample({})
+                    self.assertEqual(write_snapshot.call_count, 1)
+
+                    monitor.sample({})
+                    self.assertEqual(write_snapshot.call_count, 2)
+
+    def test_coordinator_shutdown_automatically_finalizes_report_bundle(self) -> None:
+        async def scenario(root: Path) -> Path:
+            args = make_service_args(root, reports_dir=root / "reports")
+            service = Day10CoordinatorService(args,
+                {"scout_0": {"role": "Scout", "instance": 0, "system_id": 1},
+                 "ambulance_0": {"role": "Medical-Support", "instance": 1, "system_id": 2}},
+                {"scout_0": ("127.0.0.1", 21201), "ambulance_0": ("127.0.0.1", 21202)})
+            async def no_socket_bind(_host: str, _port: int) -> None:
+                return None
+            service.node.bind = no_socket_bind
+            service.stop_event.set()
+            await service.run()
+            return service.terminal.output_dir
+        with tempfile.TemporaryDirectory() as directory:
+            output = asyncio.run(scenario(Path(directory)))
+            files = {path.name for path in output.iterdir()}
+            self.assertTrue(set(REPORT_FILES).issubset(files))
+            self.assertEqual(files - set(REPORT_FILES),
+                             {"events.jsonl", "communication.jsonl", "errors.jsonl"})
+            report = json.loads((output / "run_summary.json").read_text())
+            self.assertEqual(report["overall_status"], "PARTIALLY_COMPLETED")
+            self.assertFalse(report["flight_commands_sent"])
+
+
+class EndToEndLoopbackTests(unittest.TestCase):
+    def test_unlocalized_image_detections_track_across_frames_without_dispatch(self) -> None:
+        async def scenario(root: Path) -> None:
+            service = Day10CoordinatorService(
+                make_service_args(root),
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 23211), "ambulance_0": ("127.0.0.1", 23212)},
+            )
+            session = "camera-session-test"
+            observed = datetime.now(timezone.utc)
+
+            def image_report(report_id: str, sequence: int, box: list[float], at: datetime) -> dict:
+                return {
+                    "schema_version": "scout-incident-report-v1",
+                    "message_type": "incident_observation", "ground_truth": False,
+                    "vehicle": "scout_0", "report_id": report_id,
+                    "session_id": session, "sequence_number": sequence,
+                    "observed_at_utc": at.isoformat(), "frame_width": 1280, "frame_height": 960,
+                    "coordinate_frame": "image_pixels", "incident_location_status": "unlocalized",
+                    "detections": [{"type": "person", "confidence": 0.8,
+                                    "localization_status": "unlocalized", "dispatchable": False,
+                                    "image_sequence": sequence * 10, "xyxy_pixels": box}],
+                }
+
+            try:
+                first = await service.process_report(
+                    image_report("image-report-1", 1, [100, 100, 200, 300], observed), "image-message-1")
+                second = await service.process_report(
+                    image_report("image-report-2", 2, [105, 102, 205, 302], observed + timedelta(seconds=2)),
+                    "image-message-2")
+                self.assertTrue(first["accepted"])
+                self.assertTrue(second["accepted"])
+                self.assertEqual(first["incident_ids"][0], second["incident_ids"][0])
+                self.assertEqual(len(service.coordinator.incidents), 1)
+                item = service.coordinator.incidents[first["incident_ids"][0]]
+                self.assertEqual(item["observation_count"], 2)
+                self.assertEqual(item["image_track"]["sequence"], 20)
+                self.assertEqual(item["status"], "provisional")
+                self.assertEqual(item["location_status"], "unlocalized")
+                self.assertIsNone(item["target"])
+                self.assertFalse(item["dispatchable"])
+            finally:
+                service.node.close()
+
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_unlocalized_image_tracker_does_not_merge_same_frame_or_disjoint_boxes(self) -> None:
+        async def scenario(root: Path) -> None:
+            service = Day10CoordinatorService(
+                make_service_args(root),
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 23221), "ambulance_0": ("127.0.0.1", 23222)},
+            )
+            now = datetime.now(timezone.utc)
+            try:
+                same_frame = {
+                    "schema_version": "scout-incident-report-v1", "message_type": "incident_observation",
+                    "ground_truth": False, "vehicle": "scout_0", "report_id": "same-frame",
+                    "session_id": "camera-session-test", "sequence_number": 1,
+                    "observed_at_utc": now.isoformat(), "frame_width": 1280, "frame_height": 960,
+                    "detections": [
+                        {"type": "person", "confidence": 0.8, "localization_status": "unlocalized",
+                         "image_sequence": 10, "xyxy_pixels": [100, 100, 200, 300]},
+                        {"type": "person", "confidence": 0.4, "localization_status": "unlocalized",
+                         "image_sequence": 10, "xyxy_pixels": [102, 101, 202, 301]},
+                    ],
+                }
+                first = await service.process_report(same_frame, "same-frame-message")
+                self.assertEqual(len(first["incident_ids"]), 2)
+                disjoint = {
+                    **same_frame, "report_id": "disjoint-frame", "sequence_number": 2,
+                    "observed_at_utc": (now + timedelta(seconds=1)).isoformat(),
+                    "detections": [{"type": "person", "confidence": 0.8,
+                                    "localization_status": "unlocalized", "image_sequence": 20,
+                                    "xyxy_pixels": [700, 100, 800, 300]}],
+                }
+                second = await service.process_report(disjoint, "disjoint-frame-message")
+                self.assertEqual(len(service.coordinator.incidents), 3)
+                self.assertNotIn(second["incident_ids"][0], first["incident_ids"])
+                self.assertTrue(all(not item["dispatchable"] for item in service.coordinator.incidents.values()))
+            finally:
+                service.node.close()
+
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_stale_and_future_scout_incident_timestamps_are_rejected(self) -> None:
+        async def scenario(root: Path) -> None:
+            service = Day10CoordinatorService(
+                make_service_args(root),
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 23111), "ambulance_0": ("127.0.0.1", 23112)},
+            )
+            try:
+                old = report(observed=(datetime.now(timezone.utc) - timedelta(seconds=301)).isoformat())
+                stale_result = await service.process_report(old, "stale-report-message")
+                self.assertFalse(stale_result["accepted"])
+                self.assertIn("stale or too far", stale_result["reason"])
+
+                future = report(observed=(datetime.now(timezone.utc) + timedelta(seconds=121)).isoformat())
+                future_result = await service.process_report(future, "future-report-message")
+                self.assertFalse(future_result["accepted"])
+                self.assertIn("stale or too far", future_result["reason"])
+                self.assertEqual(service.coordinator.incidents, {})
+            finally:
+                service.node.close()
+
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_invalid_incident_coordinates_and_duplicate_reports_fail_closed(self) -> None:
+        async def scenario(root: Path) -> None:
+            args = make_service_args(root)
+            service = Day10CoordinatorService(args,
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 23111), "ambulance_0": ("127.0.0.1", 23112)})
+            invalid = report()
+            invalid["detections"][0]["incident_world_location"]["position_m"] = [True, 2.0, -1.0]
+            result = await service.process_report(invalid, "invalid-coordinates-1")
+            self.assertFalse(result["accepted"])
+            self.assertIn("finite numeric", result["reason"])
+            valid_but_unlocalized = report(frame="image_pixels", ref=None)
+            first = await service.process_report(valid_but_unlocalized, "same-report-message")
+            duplicate = await service.process_report(valid_but_unlocalized, "same-report-message")
+            self.assertTrue(first["accepted"])
+            self.assertFalse(duplicate["accepted"])
+            self.assertTrue(duplicate["duplicate"])
+            service.node.close()
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_synthetic_incidents_are_blocked_operationally_and_explicitly_tagged_in_test_mode(self) -> None:
+        async def scenario(root: Path) -> None:
+            synthetic = report(frame="image_pixels", ref=None)
+            synthetic.update({"synthetic_test": True,
+                              "source": "synthetic_test_publisher_not_camera"})
+            operational = Day10CoordinatorService(
+                make_service_args(root / "operational"),
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 23131), "ambulance_0": ("127.0.0.1", 23132)},
+            )
+            try:
+                denied = await operational.process_report(synthetic, "synthetic-op-message")
+                self.assertFalse(denied["accepted"])
+                self.assertEqual(denied["reason"], "synthetic_incident_blocked_in_operational_mode")
+                self.assertEqual(operational.coordinator.incidents, {})
+            finally:
+                operational.node.close()
+
+            test_service = Day10CoordinatorService(
+                make_service_args(root / "test", allow_synthetic_test_incidents=True),
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 23133), "ambulance_0": ("127.0.0.1", 23134)},
+            )
+            try:
+                accepted = await test_service.process_report(synthetic, "synthetic-test-message")
+                self.assertTrue(accepted["accepted"])
+                incident = next(iter(test_service.coordinator.incidents.values()))
+                self.assertEqual(incident["incident_source"], "SYNTHETIC")
+                self.assertEqual(incident["source_uav_id"], "scout_0")
+                self.assertFalse(incident["dispatchable"])
+            finally:
+                test_service.node.close()
+
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_duplicate_report_id_with_new_transport_message_is_idempotent(self) -> None:
+        async def scenario(root: Path) -> None:
+            service = Day10CoordinatorService(
+                make_service_args(root),
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 23141), "ambulance_0": ("127.0.0.1", 23142)},
+            )
+            candidate = report(frame="image_pixels", ref=None)
+            candidate["source"] = "scout_rgb_camera_ai"
+            try:
+                first = await service.process_report(candidate, "transport-message-one")
+                replay = await service.process_report(candidate, "transport-message-two")
+                self.assertTrue(first["accepted"])
+                self.assertFalse(replay["accepted"])
+                self.assertTrue(replay["duplicate"])
+                self.assertEqual(replay["reason"], "duplicate_report_id")
+                self.assertEqual(len(service.coordinator.incidents), 1)
+                incident = next(iter(service.coordinator.incidents.values()))
+                self.assertEqual(incident["incident_source"], "REAL")
+                self.assertEqual(incident["source_uav_id"], "scout_0")
+                self.assertEqual(incident["detection_timestamp_utc"], candidate["observed_at_utc"])
+                self.assertEqual(incident["supporting_sensor_information"]["depth_status"], "associated")
+            finally:
+                service.node.close()
+
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_incident_without_coordinates_is_retained_unlocalized_and_not_dispatchable(self) -> None:
+        async def scenario(root: Path) -> None:
+            service = Day10CoordinatorService(
+                make_service_args(root),
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 23151), "ambulance_0": ("127.0.0.1", 23152)},
+            )
+            candidate = report()
+            detection = candidate["detections"][0]
+            detection.pop("incident_world_location")
+            detection.update({"localization_status": "unlocalized", "dispatchable": False})
+            try:
+                result = await service.process_report(candidate, "coordinate-free-message")
+                incident = next(iter(service.coordinator.incidents.values()))
+                self.assertTrue(result["accepted"])
+                self.assertEqual(result["proposals"], [])
+                self.assertIsNone(incident["target"])
+                self.assertFalse(incident["dispatchable"])
+                self.assertEqual(incident["localization_status"], "unlocalized")
+            finally:
+                service.node.close()
+
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_missing_report_id_still_gets_application_rejection_ack(self) -> None:
+        async def scenario(root: Path) -> None:
+            service = Day10CoordinatorService(
+                make_service_args(root),
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 23161), "ambulance_0": ("127.0.0.1", 23162)},
+            )
+            acknowledgements = []
+
+            async def capture_ack(recipient, report_id, status, reason=None, incident_ids=None):
+                acknowledgements.append((recipient, report_id, status, reason))
+
+            service._application_ack = capture_ack
+            try:
+                await service._handle_message({
+                    "sender": "scout_0", "message_type": "incident_observation",
+                    "message_id": "message-id-fallback", "payload": {
+                        "report": {"schema_version": "scout-incident-report-v1",
+                                   "message_type": "incident_observation", "ground_truth": False,
+                                   "vehicle": "scout_0",
+                                   "observed_at_utc": datetime.now(timezone.utc).isoformat(),
+                                   "detections": [{"type": "person", "confidence": 0.8}]},
+                    },
+                })
+                self.assertEqual(len(acknowledgements), 1)
+                self.assertEqual(acknowledgements[0][0:3],
+                                 ("scout_0", "message-id-fallback", "rejected"))
+                self.assertIn("report_id is required", acknowledgements[0][3])
+            finally:
+                service.node.close()
+
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_report_transform_policy_mission_delivery_and_application_ack(self) -> None:
+        async def scenario(root: Path) -> None:
+            coord_port, ambulance_port = free_udp_port(), free_udp_port()
+            args = make_service_args(root)
+            config = {
+                "scout_0": {"role": "Scout"},
+                "ambulance_0": {"role": "Medical-Support"},
+            }
+            coordinator = Day10CoordinatorService(args, config,
+                {"scout_0": ("127.0.0.1", free_udp_port()),
+                 "ambulance_0": ("127.0.0.1", ambulance_port)})
+            agent_args = Namespace(vehicle="ambulance_0", key_file=None,
+                mission_file=root / "ambulance_mission.json", state_file=root / "ambulance_state.json",
+                guidance_log=None, progress_log=None, guidance_publish_s=1.0)
+            ambulance = VehicleAgent(agent_args, ("127.0.0.1", coord_port))
+            await coordinator.node.bind("127.0.0.1", coord_port)
+            await ambulance.node.bind("127.0.0.1", ambulance_port)
+            now = datetime.now(timezone.utc)
+            now_mono = time.monotonic()
+            coordinator.origins["scout_0"] = origin("scout_0", 47, 8, at=now.isoformat())
+            coordinator.origins["ambulance_0"] = origin("ambulance_0", 47, 8, at=now.isoformat())
+            coordinator.vehicle_state["ambulance_0"].update({
+                "role": "Medical-Support", "connected": True, "in_air": False,
+                "armed": False, "is_armable": True, "available": True,
+                "sampled_at_utc": now.isoformat(), "fresh": True,
+            })
+            class Battery:
+                remaining_percent=90.0; voltage_v=16.0; current_battery_a=2.0; capacity_consumed_ah=0.1
+            monitor = coordinator.batteries["ambulance_0"]
+            monitor.add_mavsdk_sample(Battery(), monotonic_s=now_mono - 31,
+                                      sampled_at_utc=(now - __import__('datetime').timedelta(seconds=31)).isoformat())
+            Battery.remaining_percent=89.0
+            monitor.add_mavsdk_sample(Battery(), monotonic_s=now_mono,
+                                      sampled_at_utc=now.isoformat())
+            result = await coordinator.process_report(report(observed=now.isoformat()), "net-report-1")
+            self.assertTrue(result["accepted"])
+            self.assertTrue(result["proposals"][0]["eligible"])
+            deadline = time.monotonic() + 2.0
+            mission = next(iter(coordinator.coordinator.missions.values()))
+            while mission.state != "acknowledged" and time.monotonic() < deadline:
+                await asyncio.sleep(0.01)
+            self.assertEqual(mission.state, "acknowledged")
+            self.assertFalse(coordinator.communication.get("ambulance_0", {}).get("error"))
+            self.assertEqual(coordinator.obstacle_guidance.get("state"), "HOLD")
+            self.assertEqual(coordinator.obstacle_guidance.get("reason"), "telemetry_unavailable")
+            saved = json.loads(agent_args.mission_file.read_text())
+            self.assertEqual(saved["mission_id"], mission.mission_id)
+            self.assertFalse(saved["flight_commands_sent"])
+            self.assertEqual(saved["coordinate_frame"], "local_ned_m")
+            await coordinator._handle_message({
+                "sender": "scout_0", "message_type": "mission_status",
+                "message_id": "wrong-status-sender",
+                "payload": {"mission_id": mission.mission_id, "status": "enroute"},
+            })
+            self.assertEqual(mission.state, "acknowledged")
+            progress = await ambulance.report_progress({
+                "mission_id": mission.mission_id, "status": "enroute",
+            })
+            self.assertTrue(progress["accepted"])
+            self.assertEqual(mission.state, "enroute")
+            progress = await ambulance.report_progress({
+                "mission_id": mission.mission_id, "status": "avoiding_obstacle",
+            })
+            self.assertTrue(progress["accepted"])
+            self.assertEqual(mission.state, "avoiding_obstacle")
+            guidance_envelope = make_envelope(sender="ambulance_0", recipient="coordinator",
+                message_type="obstacle_guidance", sequence=1,
+                payload={"vehicle_id": "ambulance_0", "mission_id": mission.mission_id,
+                         "state": "DETOUR", "reason": "live_adapter_suggestion",
+                         "sampled_at_utc": now.isoformat(),
+                         "suggested_velocity_ned_m_s": [0.0, 0.2, 0.0],
+                         "suggestion_only": True, "flight_commands_sent": False})
+            await coordinator._handle_message(guidance_envelope)
+            self.assertEqual(coordinator.obstacle_guidance["state"], "DETOUR")
+            self.assertFalse(json.loads(agent_args.mission_file.read_text())["flight_commands_sent"])
+            cancelled = await coordinator.cancel_mission(
+                mission.mission_id, reason="integration_test_cancel", request_id="cancel-1"
+            )
+            self.assertTrue(cancelled["accepted"])
+            deadline = time.monotonic() + 2.0
+            while time.monotonic() < deadline:
+                if agent_args.state_file.exists() and json.loads(agent_args.state_file.read_text()).get("state") == "cancelled":
+                    break
+                await asyncio.sleep(0.01)
+            self.assertEqual(json.loads(agent_args.mission_file.read_text())["state"], "cancelled")
+            coordinator.node.close(); ambulance.node.close()
+
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_untransformed_scout_report_is_retained_but_never_dispatched(self) -> None:
+        async def scenario(root: Path) -> None:
+            args = make_service_args(root)
+            service = Day10CoordinatorService(args,
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 11111), "ambulance_0": ("127.0.0.1", 11112)})
+            bad = report(frame="image_pixels", ref=None)
+            result = await service.process_report(bad, "untransformed-1")
+            self.assertTrue(result["accepted"])
+            self.assertEqual(result["proposals"], [])
+            incident = next(iter(service.coordinator.incidents.values()))
+            self.assertIn("local_ned_m", incident["dispatch_block_reason"])
+            service.node.close()
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_valid_transform_still_fails_closed_without_live_available_ambulance(self) -> None:
+        async def scenario(root: Path) -> None:
+            args = make_service_args(root)
+            service = Day10CoordinatorService(args,
+                {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 11111), "ambulance_0": ("127.0.0.1", 11112)})
+            stamp = datetime.now(timezone.utc).isoformat()
+            service.origins["scout_0"] = origin("scout_0", 47, 8, at=stamp)
+            service.origins["ambulance_0"] = origin("ambulance_0", 47, 8, at=stamp)
+            result = await service.process_report(report(observed=stamp), "unavailable-ambulance-1")
+            self.assertTrue(result["accepted"])
+            self.assertEqual(len(result["proposals"]), 1)
+            self.assertFalse(result["proposals"][0]["eligible"])
+            self.assertEqual(result["proposals"][0]["reason"], "vehicle_unavailable_or_status_stale")
+            self.assertEqual(service.coordinator.missions, {})
+            service.node.close()
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1,0 +1,316 @@
+{
+  "incidents": [
+    {
+      "confidence": 0.9147524237632751,
+      "depth_status": "unavailable",
+      "dispatch_block_reason": "incident must have validated local_ned_m coordinates",
+      "dispatchable": false,
+      "image_track": {
+        "bbox_xyxy": [
+          148.4794158935547,
+          402.6956787109375,
+          490.329345703125,
+          591.0563354492188
+        ],
+        "frame_height": 960,
+        "frame_width": 1280,
+        "observed_at_utc": "2026-11-02T17:44:46.031010+00:00",
+        "sequence": 1684,
+        "session_id": "7d26adea555e427a98a8f8cc68b97bb0"
+      },
+      "incident_id": "scout-7d26adea-frame-000001:0",
+      "localization_provenance": null,
+      "localization_rejection_reason": "camera_lidar_capture_clock_and_verified_calibration_required",
+      "localization_status": "unlocalized",
+      "localization_uncertainty_m": null,
+      "location_status": "unlocalized",
+      "observation_count": 11,
+      "observation_history": [
+        {
+          "confidence": 0.9147524237632751,
+          "image_sequence": 0,
+          "observed_at_utc": "2026-11-02T17:43:35.962004+00:00",
+          "report_id": "scout-7d26adea-frame-000001"
+        },
+        {
+          "confidence": 0.9145373106002808,
+          "image_sequence": 205,
+          "observed_at_utc": "2026-11-02T17:43:45.432979+00:00",
+          "report_id": "scout-7d26adea-frame-000002"
+        },
+        {
+          "confidence": 0.9145373106002808,
+          "image_sequence": 370,
+          "observed_at_utc": "2026-11-02T17:43:52.214793+00:00",
+          "report_id": "scout-7d26adea-frame-000003"
+        },
+        {
+          "confidence": 0.9145373106002808,
+          "image_sequence": 537,
+          "observed_at_utc": "2026-11-02T17:43:59.747279+00:00",
+          "report_id": "scout-7d26adea-frame-000004"
+        },
+        {
+          "confidence": 0.9145373106002808,
+          "image_sequence": 706,
+          "observed_at_utc": "2026-11-02T17:44:06.666403+00:00",
+          "report_id": "scout-7d26adea-frame-000005"
+        },
+        {
+          "confidence": 0.9145373106002808,
+          "image_sequence": 853,
+          "observed_at_utc": "2026-11-02T17:44:12.911762+00:00",
+          "report_id": "scout-7d26adea-frame-000006"
+        },
+        {
+          "confidence": 0.9145373106002808,
+          "image_sequence": 1045,
+          "observed_at_utc": "2026-11-02T17:44:20.679025+00:00",
+          "report_id": "scout-7d26adea-frame-000007"
+        },
+        {
+          "confidence": 0.9145373106002808,
+          "image_sequence": 1207,
+          "observed_at_utc": "2026-11-02T17:44:26.984719+00:00",
+          "report_id": "scout-7d26adea-frame-000008"
+        },
+        {
+          "confidence": 0.9145373106002808,
+          "image_sequence": 1368,
+          "observed_at_utc": "2026-11-02T17:44:33.195027+00:00",
+          "report_id": "scout-7d26adea-frame-000009"
+        },
+        {
+          "confidence": 0.9145373106002808,
+          "image_sequence": 1526,
+          "observed_at_utc": "2026-11-02T17:44:39.676866+00:00",
+          "report_id": "scout-7d26adea-frame-000010"
+        },
+        {
+          "confidence": 0.9145373106002808,
+          "image_sequence": 1684,
+          "observed_at_utc": "2026-11-02T17:44:46.031010+00:00",
+          "report_id": "scout-7d26adea-frame-000011"
+        }
+      ],
+      "observed_at_utc": "2026-11-02T17:44:46.031010+00:00",
+      "report_id": "scout-7d26adea-frame-000011",
+      "sensor_timestamps": {
+        "camera_decode_receive": null,
+        "lidar_capture": null
+      },
+      "status": "provisional",
+      "target": null,
+      "type": "victim",
+      "vehicle": "scout_0"
+    },
+    {
+      "confidence": 0.48083165287971497,
+      "depth_status": "unavailable",
+      "dispatch_block_reason": "incident must have validated local_ned_m coordinates",
+      "dispatchable": false,
+      "image_track": {
+        "bbox_xyxy": [
+          736.987060546875,
+          112.4968032836914,
+          784.084716796875,
+          201.54119873046875
+        ],
+        "frame_height": 960,
+        "frame_width": 1280,
+        "observed_at_utc": "2026-11-02T17:44:46.031010+00:00",
+        "sequence": 1684,
+        "session_id": "7d26adea555e427a98a8f8cc68b97bb0"
+      },
+      "incident_id": "scout-7d26adea-frame-000001:1",
+      "localization_provenance": null,
+      "localization_rejection_reason": "camera_lidar_capture_clock_and_verified_calibration_required",
+      "localization_status": "unlocalized",
+      "localization_uncertainty_m": null,
+      "location_status": "unlocalized",
+      "observation_count": 11,
+      "observation_history": [
+        {
+          "confidence": 0.43222275376319885,
+          "image_sequence": 0,
+          "observed_at_utc": "2026-11-02T17:43:35.962004+00:00",
+          "report_id": "scout-7d26adea-frame-000001"
+        },
+        {
+          "confidence": 0.48083165287971497,
+          "image_sequence": 205,
+          "observed_at_utc": "2026-11-02T17:43:45.432979+00:00",
+          "report_id": "scout-7d26adea-frame-000002"
+        },
+        {
+          "confidence": 0.48083165287971497,
+          "image_sequence": 370,
+          "observed_at_utc": "2026-11-02T17:43:52.214793+00:00",
+          "report_id": "scout-7d26adea-frame-000003"
+        },
+        {
+          "confidence": 0.48083165287971497,
+          "image_sequence": 537,
+          "observed_at_utc": "2026-11-02T17:43:59.747279+00:00",
+          "report_id": "scout-7d26adea-frame-000004"
+        },
+        {
+          "confidence": 0.48083165287971497,
+          "image_sequence": 706,
+          "observed_at_utc": "2026-11-02T17:44:06.666403+00:00",
+          "report_id": "scout-7d26adea-frame-000005"
+        },
+        {
+          "confidence": 0.48083165287971497,
+          "image_sequence": 853,
+          "observed_at_utc": "2026-11-02T17:44:12.911762+00:00",
+          "report_id": "scout-7d26adea-frame-000006"
+        },
+        {
+          "confidence": 0.48083165287971497,
+          "image_sequence": 1045,
+          "observed_at_utc": "2026-11-02T17:44:20.679025+00:00",
+          "report_id": "scout-7d26adea-frame-000007"
+        },
+        {
+          "confidence": 0.48083165287971497,
+          "image_sequence": 1207,
+          "observed_at_utc": "2026-11-02T17:44:26.984719+00:00",
+          "report_id": "scout-7d26adea-frame-000008"
+        },
+        {
+          "confidence": 0.48083165287971497,
+          "image_sequence": 1368,
+          "observed_at_utc": "2026-11-02T17:44:33.195027+00:00",
+          "report_id": "scout-7d26adea-frame-000009"
+        },
+        {
+          "confidence": 0.48083165287971497,
+          "image_sequence": 1526,
+          "observed_at_utc": "2026-11-02T17:44:39.676866+00:00",
+          "report_id": "scout-7d26adea-frame-000010"
+        },
+        {
+          "confidence": 0.48083165287971497,
+          "image_sequence": 1684,
+          "observed_at_utc": "2026-11-02T17:44:46.031010+00:00",
+          "report_id": "scout-7d26adea-frame-000011"
+        }
+      ],
+      "observed_at_utc": "2026-11-02T17:44:46.031010+00:00",
+      "report_id": "scout-7d26adea-frame-000011",
+      "sensor_timestamps": {
+        "camera_decode_receive": null,
+        "lidar_capture": null
+      },
+      "status": "provisional",
+      "target": null,
+      "type": "victim",
+      "vehicle": "scout_0"
+    },
+    {
+      "confidence": 0.18662598729133606,
+      "depth_status": "unavailable",
+      "dispatch_block_reason": "incident must have validated local_ned_m coordinates",
+      "dispatchable": false,
+      "image_track": {
+        "bbox_xyxy": [
+          714.6394653320312,
+          113.32781982421875,
+          783.77880859375,
+          233.51080322265625
+        ],
+        "frame_height": 960,
+        "frame_width": 1280,
+        "observed_at_utc": "2026-11-02T17:44:46.031010+00:00",
+        "sequence": 1684,
+        "session_id": "7d26adea555e427a98a8f8cc68b97bb0"
+      },
+      "incident_id": "scout-7d26adea-frame-000001:2",
+      "localization_provenance": null,
+      "localization_rejection_reason": "camera_lidar_capture_clock_and_verified_calibration_required",
+      "localization_status": "unlocalized",
+      "localization_uncertainty_m": null,
+      "location_status": "unlocalized",
+      "observation_count": 11,
+      "observation_history": [
+        {
+          "confidence": 0.1513621062040329,
+          "image_sequence": 0,
+          "observed_at_utc": "2026-11-02T17:43:35.962004+00:00",
+          "report_id": "scout-7d26adea-frame-000001"
+        },
+        {
+          "confidence": 0.18662598729133606,
+          "image_sequence": 205,
+          "observed_at_utc": "2026-11-02T17:43:45.432979+00:00",
+          "report_id": "scout-7d26adea-frame-000002"
+        },
+        {
+          "confidence": 0.18662598729133606,
+          "image_sequence": 370,
+          "observed_at_utc": "2026-11-02T17:43:52.214793+00:00",
+          "report_id": "scout-7d26adea-frame-000003"
+        },
+        {
+          "confidence": 0.18662598729133606,
+          "image_sequence": 537,
+          "observed_at_utc": "2026-11-02T17:43:59.747279+00:00",
+          "report_id": "scout-7d26adea-frame-000004"
+        },
+        {
+          "confidence": 0.18662598729133606,
+          "image_sequence": 706,
+          "observed_at_utc": "2026-11-02T17:44:06.666403+00:00",
+          "report_id": "scout-7d26adea-frame-000005"
+        },
+        {
+          "confidence": 0.18662598729133606,
+          "image_sequence": 853,
+          "observed_at_utc": "2026-11-02T17:44:12.911762+00:00",
+          "report_id": "scout-7d26adea-frame-000006"
+        },
+        {
+          "confidence": 0.18662598729133606,
+          "image_sequence": 1045,
+          "observed_at_utc": "2026-11-02T17:44:20.679025+00:00",
+          "report_id": "scout-7d26adea-frame-000007"
+        },
+        {
+          "confidence": 0.18662598729133606,
+          "image_sequence": 1207,
+          "observed_at_utc": "2026-11-02T17:44:26.984719+00:00",
+          "report_id": "scout-7d26adea-frame-000008"
+        },
+        {
+          "confidence": 0.18662598729133606,
+          "image_sequence": 1368,
+          "observed_at_utc": "2026-11-02T17:44:33.195027+00:00",
+          "report_id": "scout-7d26adea-frame-000009"
+        },
+        {
+          "confidence": 0.18662598729133606,
+          "image_sequence": 1526,
+          "observed_at_utc": "2026-11-02T17:44:39.676866+00:00",
+          "report_id": "scout-7d26adea-frame-000010"
+        },
+        {
+          "confidence": 0.18662598729133606,
+          "image_sequence": 1684,
+          "observed_at_utc": "2026-11-02T17:44:46.031010+00:00",
+          "report_id": "scout-7d26adea-frame-000011"
+        }
+      ],
+      "observed_at_utc": "2026-11-02T17:44:46.031010+00:00",
+      "report_id": "scout-7d26adea-frame-000011",
+      "sensor_timestamps": {
+        "camera_decode_receive": null,
+        "lidar_capture": null
+      },
+      "status": "provisional",
+      "target": null,
+      "type": "victim",
+      "vehicle": "scout_0"
+    }
+  ]
+}

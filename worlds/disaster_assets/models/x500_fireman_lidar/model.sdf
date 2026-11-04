@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version="1.9">
+  <model name="x500_fireman_lidar">
+    <self_collide>false</self_collide>
+    <include merge="true">
+      <uri>model://x500</uri>
+    </include>
+
+    <!-- Sensor add-on only; preserve the PX4 frame, motors, and propellers. -->
+    <link name="lidar_link">
+      <pose relative_to="base_link">0 0 0.06 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>0.000001</ixx>
+          <iyy>0.000001</iyy>
+          <izz>0.000001</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <sensor name="lidar" type="gpu_lidar">
+        <topic>/fireman_0/lidar/points</topic>
+        <gz_frame_id>lidar_link</gz_frame_id>
+        <pose>0 0 0 0 0 0</pose>
+        <update_rate>5</update_rate>
+        <lidar>
+          <scan>
+            <horizontal>
+            <samples>90</samples>
+              <resolution>1</resolution>
+              <min_angle>-3.141593</min_angle>
+              <max_angle>3.141593</max_angle>
+            </horizontal>
+            <vertical>
+            <samples>8</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.261799</min_angle>
+              <max_angle>0.261799</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>0.20</min>
+            <max>25.0</max>
+            <resolution>0.02</resolution>
+          </range>
+        </lidar>
+        <always_on>true</always_on>
+        <visualize>false</visualize>
+      </sensor>
+    </link>
+    <joint name="LidarJoint" type="fixed">
+      <parent>base_link</parent>
+      <child>lidar_link</child>
+    </joint>
+  </model>
+</sdf>

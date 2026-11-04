@@ -1,0 +1,3 @@
+{"image": "images/frame_00000.png", "metadata": "metadata/frame_00000.json", "sequence": 1484, "sha256": "51a9bff5bc327d661e5ccea3014edbbc5c76b5f79baebd4bed3051a400613864", "sim_time_s": 52.468}
+{"image": "images/frame_00001.png", "metadata": "metadata/frame_00001.json", "sequence": 1513, "sha256": "51a9bff5bc327d661e5ccea3014edbbc5c76b5f79baebd4bed3051a400613864", "sim_time_s": 53.436}
+{"image": "images/frame_00002.png", "metadata": "metadata/frame_00002.json", "sequence": 1542, "sha256": "51a9bff5bc327d661e5ccea3014edbbc5c76b5f79baebd4bed3051a400613864", "sim_time_s": 54.4}

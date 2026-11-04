@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<sdf version="1.9">
+  <model name="smoke_only">
+    <plugin filename="gz-sim-particle-emitter-system" name="gz::sim::systems::ParticleEmitter">
+    </plugin>
+    <static>true</static>
+    <link name="smoke_source">
+      <particle_emitter name="smoke_particles" type="box">
+        <pose>0 0 0.15 0 -1.570796 0</pose>
+        <emitting>true</emitting>
+        <size>0.38 0.34 0.08</size>
+        <particle_size>0.78 0.78 0.92</particle_size>
+        <lifetime>3.4</lifetime>
+        <min_velocity>0.35</min_velocity>
+        <max_velocity>0.78</max_velocity>
+        <scale_rate>0.22</scale_rate>
+        <rate>8</rate>
+        <particle_scatter_ratio>0.12</particle_scatter_ratio>
+        <material>
+          <diffuse>1 1 1 0.78</diffuse>
+          <pbr>
+            <metal>
+              <albedo_map>model://smoke_only/materials/textures/smoke.png</albedo_map>
+            </metal>
+          </pbr>
+        </material>
+        <color_range_image>materials/textures/smoke_life.png</color_range_image>
+      </particle_emitter>
+    </link>
+  </model>
+</sdf>

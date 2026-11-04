@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "session_id": "20261101T091034Z-ebff1fa3",
+  "dataset_type": "gazebo_synthetic",
+  "scene_id": "apron-world-baseline-unvaried",
+  "world_name": "earthquake_landslide_world",
+  "camera_topic": "/world/earthquake_landslide_world/model/x500_mono_cam_down_lidar_0/link/camera_link/sensor/imager/image",
+  "image_file": "images/frame_00000.png",
+  "image_sha256": "51a9bff5bc327d661e5ccea3014edbbc5c76b5f79baebd4bed3051a400613864",
+  "image_acquisition_sim_s": 52.468,
+  "image_sequence": 1484,
+  "image_frame_id": "camera_link",
+  "image_width": 1280,
+  "image_height": 960,
+  "image_pixel_format": "RGB_INT8",
+  "frame_identity_method": "same_gazebo_image_message_consumed_by_detector",
+  "frame_identity_status": "exact_direct_message",
+  "image_receive_monotonic_s": 125755.249243243,
+  "image_sequence_status": "in_order",
+  "image_sequence_missing_before": 0,
+  "camera_pose_entity_requested": "x500_mono_cam_down_lidar_0::camera_link",
+  "camera_pose_entity_resolved": null,
+  "camera_world_pose": null,
+  "victims": [
+    {
+      "entity_name": "incident_victim_1",
+      "asset_model": "survivor_female",
+      "pose_category": "unverified",
+      "orientation_description": "world yaw 0.3 rad; visual review pending",
+      "occlusion_description": "visual review pending",
+      "resolved_world_entity": "incident_victim_1",
+      "world_pose": {
+        "position_m": {
+          "x": -72.6,
+          "y": -54.3,
+          "z": 1.659423
+        },
+        "orientation_xyzw": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.14943813247359927,
+          "w": 0.9887710779360422
+        }
+      },
+      "pose_lookup_status": "matched"
+    },
+    {
+      "entity_name": "incident_victim_2",
+      "asset_model": "survivor_male",
+      "pose_category": "unverified",
+      "orientation_description": "world yaw 2.1 rad; visual review pending",
+      "occlusion_description": "visual review pending",
+      "resolved_world_entity": "incident_victim_2",
+      "world_pose": {
+        "position_m": {
+          "x": -70.3,
+          "y": -54.2,
+          "z": 2.129575
+        },
+        "orientation_xyzw": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.867423225594017,
+          "w": 0.4975710478917269
+        }
+      },
+      "pose_lookup_status": "matched"
+    },
+    {
+      "entity_name": "incident_victim_3",
+      "asset_model": "survivor_female",
+      "pose_category": "unverified",
+      "orientation_description": "world yaw -0.7 rad; visual review pending",
+      "occlusion_description": "visual review pending",
+      "resolved_world_entity": "incident_victim_3",
+      "world_pose": {
+        "position_m": {
+          "x": -68.3,
+          "y": -54.5,
+          "z": 2.497331
+        },
+        "orientation_xyzw": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": -0.3428978074554513,
+          "w": 0.939372712847379
+        }
+      },
+      "pose_lookup_status": "matched"
+    },
+    {
+      "entity_name": "incident_victim_5",
+      "asset_model": "standing_person_small",
+      "pose_category": "unverified",
+      "orientation_description": "world yaw 0 rad; visual review pending",
+      "occlusion_description": "visual review pending",
+      "resolved_world_entity": "incident_victim_5",
+      "world_pose": {
+        "position_m": {
+          "x": -74.5,
+          "y": -52.5,
+          "z": 1.682516
+        },
+        "orientation_xyzw": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 1.0
+        }
+      },
+      "pose_lookup_status": "matched"
+    },
+    {
+      "entity_name": "incident_victim_6",
+      "asset_model": "rescue_randy_sitting_small",
+      "pose_category": "unverified",
+      "orientation_description": "world yaw 1.2 rad; visual review pending",
+      "occlusion_description": "visual review pending",
+      "resolved_world_entity": "incident_victim_6",
+      "world_pose": {
+        "position_m": {
+          "x": -68.0,
+          "y": -52.0,
+          "z": 2.155283
+        },
+        "orientation_xyzw": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.5646424733950354,
+          "w": 0.8253356149096782
+        }
+      },
+      "pose_lookup_status": "matched"
+    }
+  ],
+  "world_pose_snapshot_sim_s": 52.464,
+  "world_pose_snapshot_receive_monotonic_s": 125755.218629696,
+  "world_pose_snapshot_delta_from_image_sim_s": 0.0040000000000048885,
+  "world_pose_snapshot_status": "nearest_available_pose_vector",
+  "annotation_status": "not_reviewed"
+}

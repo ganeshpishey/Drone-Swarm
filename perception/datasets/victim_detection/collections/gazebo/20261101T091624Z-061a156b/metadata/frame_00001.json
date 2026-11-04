@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "session_id": "20261101T091624Z-061a156b",
+  "dataset_type": "gazebo_synthetic",
+  "scene_id": "grounded-scout-target-smoke-v1",
+  "world_name": "earthquake_landslide_world",
+  "camera_topic": "/world/earthquake_landslide_world/model/x500_mono_cam_down_lidar_0/link/camera_link/sensor/imager/image",
+  "image_file": "images/frame_00001.png",
+  "image_sha256": "51a9bff5bc327d661e5ccea3014edbbc5c76b5f79baebd4bed3051a400613864",
+  "image_acquisition_sim_s": 38.4,
+  "image_sequence": 1064,
+  "image_frame_id": "camera_link",
+  "image_width": 1280,
+  "image_height": 960,
+  "image_pixel_format": "RGB_INT8",
+  "frame_identity_method": "same_gazebo_image_message_consumed_by_detector",
+  "frame_identity_status": "exact_direct_message",
+  "image_receive_monotonic_s": 126106.170341926,
+  "image_sequence_status": "in_order",
+  "image_sequence_missing_before": 0,
+  "camera_pose_entity_requested": "camera_link",
+  "camera_pose_entity_resolved": "camera_link",
+  "camera_world_pose": {
+    "position_m": {
+      "x": 1.4210854715202004e-14,
+      "y": 7.105427357601002e-15,
+      "z": 0.10000000000000009
+    },
+    "orientation_xyzw": {
+      "x": 3.372334732502381e-26,
+      "y": 0.7070727237013729,
+      "z": -3.02616779781614e-26,
+      "w": 0.7071408370314374
+    }
+  },
+  "victims": [
+    {
+      "entity_name": "incident_victim_5",
+      "asset_model": "standing_person_small",
+      "pose_category": "unverified",
+      "orientation_description": "yaw 0; visually verify",
+      "occlusion_description": "visual review pending",
+      "resolved_world_entity": "incident_victim_5",
+      "world_pose": {
+        "position_m": {
+          "x": -76.0,
+          "y": -60.0,
+          "z": 1.682516
+        },
+        "orientation_xyzw": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 1.0
+        }
+      },
+      "pose_lookup_status": "matched"
+    }
+  ],
+  "world_pose_snapshot_sim_s": 38.408,
+  "world_pose_snapshot_receive_monotonic_s": 126106.137913669,
+  "world_pose_snapshot_delta_from_image_sim_s": 0.008000000000002672,
+  "world_pose_snapshot_status": "nearest_available_pose_vector",
+  "annotation_status": "not_reviewed"
+}

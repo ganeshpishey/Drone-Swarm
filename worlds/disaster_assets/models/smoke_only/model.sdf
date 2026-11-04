@@ -8,12 +8,12 @@
       <particle_emitter name="smoke_particles" type="box">
         <pose>0 0 0.15 0 -1.570796 0</pose>
         <emitting>true</emitting>
-        <size>0.38 0.34 0.08</size>
-        <particle_size>0.78 0.78 0.92</particle_size>
+        <size>0.34 0.30 0.07</size>
+        <particle_size>0.66 0.66 0.78</particle_size>
         <lifetime>3.4</lifetime>
         <min_velocity>0.35</min_velocity>
         <max_velocity>0.78</max_velocity>
-        <scale_rate>0.22</scale_rate>
+        <scale_rate>0.18</scale_rate>
         <rate>8</rate>
         <particle_scatter_ratio>0.12</particle_scatter_ratio>
         <material>

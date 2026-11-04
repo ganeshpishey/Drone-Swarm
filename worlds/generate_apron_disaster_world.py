@@ -50,15 +50,15 @@ SURVIVORS = (
     ("incident_victim_6", "rescue_randy_sitting_small", -68.0, -52.0, 1.2),
 )
 # Fire and smoke are separate model entities so they can be moved independently.
-# Two smoke plumes rise above the first two fire locations.
+# Smoke plumes are positioned separately from the fires and launch pads.
 FIRES = (
     ("incident_fire_1", "fire_only", -76.5, -52.5, 0.0),
     ("incident_fire_2", "fire_only", -66.0, -56.5, 0.0),
     ("incident_fire_3", "fire_only", -67.0, -60.0, 0.0),
 )
 SMOKE_PLUMES = (
-    ("incident_smoke_1", "smoke_only", -76.5, -52.5, 0.0),
-    ("incident_smoke_2", "smoke_only", -66.0, -56.5, 0.0),
+    ("incident_smoke_1", "smoke_only", -68.4, -53.4, 0.0),
+    ("incident_smoke_2", "smoke_only", -69.0, -57.5, 0.0),
 )
 APRON_WALLS = (
     ("apron_wall_left", -79.55, -56.0, 2.31, 0.24, 16.8, 1.5),

@@ -1,0 +1,58 @@
+{
+  "errors": [
+    {
+      "attempt": 2,
+      "delivery_state": "FAILED",
+      "event_id": "7b4073ab-24c6-4390-8a81-f0bfa4b3c32f",
+      "message_id": "0e85c18d-bd29-4a6e-be35-683e92b710fc",
+      "message_type": "heartbeat",
+      "phase": "send_failed",
+      "reason": "ack_timeout",
+      "recipient": "scout_0",
+      "sender": "coordinator",
+      "sequence": 1,
+      "severity": "ERROR",
+      "timestamp_utc": "2026-11-03T17:34:13.808522+00:00"
+    },
+    {
+      "attempt": 2,
+      "delivery_state": "FAILED",
+      "event_id": "45a95c6f-51bc-453e-9a44-69e1fd603ca8",
+      "message_id": "4a7aa4c0-1973-45f1-9f83-d39611e178c9",
+      "message_type": "heartbeat",
+      "phase": "send_failed",
+      "reason": "ack_timeout",
+      "recipient": "ambulance_0",
+      "sender": "coordinator",
+      "sequence": 3,
+      "severity": "ERROR",
+      "timestamp_utc": "2026-11-03T17:34:14.613141+00:00"
+    },
+    {
+      "attempt": 2,
+      "delivery_state": "FAILED",
+      "event_id": "7b4073ab-24c6-4390-8a81-f0bfa4b3c32f",
+      "message_id": "0e85c18d-bd29-4a6e-be35-683e92b710fc",
+      "message_type": "heartbeat",
+      "phase": "send_failed",
+      "reason": "ack_timeout",
+      "recipient": "scout_0",
+      "sender": "coordinator",
+      "sequence": 1,
+      "timestamp_utc": "2026-11-03T17:34:13.808522+00:00"
+    },
+    {
+      "attempt": 2,
+      "delivery_state": "FAILED",
+      "event_id": "45a95c6f-51bc-453e-9a44-69e1fd603ca8",
+      "message_id": "4a7aa4c0-1973-45f1-9f83-d39611e178c9",
+      "message_type": "heartbeat",
+      "phase": "send_failed",
+      "reason": "ack_timeout",
+      "recipient": "ambulance_0",
+      "sender": "coordinator",
+      "sequence": 3,
+      "timestamp_utc": "2026-11-03T17:34:14.613141+00:00"
+    }
+  ]
+}

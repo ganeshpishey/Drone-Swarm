@@ -1,0 +1,64 @@
+{
+  "schema_version": "scout-camera-calibration-v1",
+  "camera_name": "scout_downward_rgb",
+  "calibration_status": "nominal_intrinsics_from_simulator_sdf; optical_axis_mapping_not_empirically_verified",
+  "source_sdf": "/tmp/PX4-Autopilot/Tools/simulation/gz/models/mono_cam/model.sdf",
+  "image_width_px": 1280,
+  "image_height_px": 960,
+  "horizontal_fov_rad": 1.74,
+  "intrinsics_px": {
+    "fx": 539.9363327026367,
+    "fy": 539.9363708496094,
+    "cx": 640.0,
+    "cy": 480.0
+  },
+  "vertical_fov_rad_derived": 1.453401713389793,
+  "distortion_model": "PLUMB_BOB; runtime CameraInfo coefficients all zero",
+  "camera_pose_in_scout_base_sdf": {
+    "translation_m": [
+      0.0,
+      0.0,
+      -0.14
+    ],
+    "rpy_rad": [
+      0.0,
+      1.5707,
+      0.0
+    ],
+    "source": "x500_mono_cam_down_lidar/model.sdf camera include pose composed with x500_base/model.sdf base_link model pose"
+  },
+  "notes": [
+    "Intrinsics are derived from the Gazebo SDF field of view and image dimensions, not from empirical image calibration.",
+    "Before localization, verify the camera optical-axis and pixel-axis conventions against the mounted sensor and a known scene observation.",
+    "World locations must be derived from detections, synchronized Scout pose, calibrated camera geometry, and sensor-built map data; do not use Gazebo entity poses.",
+    "Runtime CameraInfo at simulation time 53.1 s confirms the Gazebo K matrix uses principal point (width/2, height/2) = (640, 480); older pixel-center values (639.5, 479.5) were corrected. This does not empirically validate image optical axes or extrinsics.",
+    "The camera include pose is in merged vehicle-model coordinates. Composing it with x500_base's 0.24 m base_link model pose places camera_link at z=-0.14 m in base_link coordinates; SDF-derived only, not empirical calibration."
+  ],
+  "runtime_camera_info_observation": {
+    "measurement_timestamp_domain": "gazebo_simulation_time",
+    "measurement_timestamp_s": 53.1,
+    "frame_id": "camera_link",
+    "image_width_px": 1280,
+    "image_height_px": 960,
+    "intrinsics_k_row_major": [
+      539.9363327026367,
+      0,
+      640,
+      0,
+      539.9363708496094,
+      480,
+      0,
+      0,
+      1
+    ],
+    "distortion_coefficients": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "capture_file": "/tmp/scout_camera_info_live_20261101.json",
+    "meaning": "one live simulated CameraInfo message; nominal simulator calibration evidence only, not empirical target calibration"
+  }
+}

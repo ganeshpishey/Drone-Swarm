@@ -3657,12 +3657,12 @@
     <include>
       <uri>model://smoke_only</uri>
       <name>incident_smoke_1</name>
-      <pose>-76.5 -52.5 2.902124 0 0 0.0</pose>
+      <pose>-68.4 -53.4 2.419161 0 0 0</pose>
     </include>
     <include>
       <uri>model://smoke_only</uri>
       <name>incident_smoke_2</name>
-      <pose>-66.0 -56.5 4.096024 0 0 0.0</pose>
+      <pose>-69.0 -57.5 1.880773 0 0 0</pose>
     </include>
   </world>
 </sdf>

@@ -1,0 +1,10 @@
+{
+  "fireman_0": {
+    "role": "Fire-Response",
+    "instance": 0,
+    "system_id": 1,
+    "mavsdk_port": 14540,
+    "mavsdk_server_port": 50074,
+    "mavsdk_server_address": "127.0.0.1"
+  }
+}

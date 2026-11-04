@@ -1,0 +1,89 @@
+{
+  "errors": [
+    {
+      "attempt": 2,
+      "delivery_state": "FAILED",
+      "event_id": "613c5c19-9cdc-4ec6-a6c3-494c18cdde5c",
+      "message_id": "8657ae10-42cc-45bf-99b5-81873d4e1af6",
+      "message_type": "heartbeat",
+      "phase": "send_failed",
+      "reason": "ack_timeout",
+      "recipient": "scout_0",
+      "sender": "coordinator",
+      "sequence": 1,
+      "severity": "ERROR",
+      "timestamp_utc": "2026-11-03T17:42:15.965792+00:00"
+    },
+    {
+      "attempt": 2,
+      "delivery_state": "FAILED",
+      "event_id": "25e415e0-8ce0-4d2c-aaf6-6e05a6278d73",
+      "message_id": "690261e6-43fd-4e44-aa97-f9502f47b06f",
+      "message_type": "heartbeat",
+      "phase": "send_failed",
+      "reason": "ack_timeout",
+      "recipient": "ambulance_0",
+      "sender": "coordinator",
+      "sequence": 3,
+      "severity": "ERROR",
+      "timestamp_utc": "2026-11-03T17:42:16.768723+00:00"
+    },
+    {
+      "ack_received_monotonic_s": 230772.533835451,
+      "attempt": 1,
+      "deadline_monotonic_s": 230772.491832095,
+      "delivery_state": "FAILED",
+      "event_id": "32a3ce4a-fadb-44a5-9e7f-ff0b74a9c13a",
+      "message_id": "1b515a6c-43c2-46e8-947a-2739fb3ce31c",
+      "message_type": "heartbeat",
+      "phase": "send_failed",
+      "reason": "ack_arrived_after_deadline",
+      "recipient": "ambulance_0",
+      "sender": "coordinator",
+      "sequence": 959,
+      "severity": "ERROR",
+      "timestamp_utc": "2026-11-03T17:46:40.956956+00:00"
+    },
+    {
+      "attempt": 2,
+      "delivery_state": "FAILED",
+      "event_id": "613c5c19-9cdc-4ec6-a6c3-494c18cdde5c",
+      "message_id": "8657ae10-42cc-45bf-99b5-81873d4e1af6",
+      "message_type": "heartbeat",
+      "phase": "send_failed",
+      "reason": "ack_timeout",
+      "recipient": "scout_0",
+      "sender": "coordinator",
+      "sequence": 1,
+      "timestamp_utc": "2026-11-03T17:42:15.965792+00:00"
+    },
+    {
+      "attempt": 2,
+      "delivery_state": "FAILED",
+      "event_id": "25e415e0-8ce0-4d2c-aaf6-6e05a6278d73",
+      "message_id": "690261e6-43fd-4e44-aa97-f9502f47b06f",
+      "message_type": "heartbeat",
+      "phase": "send_failed",
+      "reason": "ack_timeout",
+      "recipient": "ambulance_0",
+      "sender": "coordinator",
+      "sequence": 3,
+      "timestamp_utc": "2026-11-03T17:42:16.768723+00:00"
+    },
+    {
+      "ack_received_monotonic_s": 230772.533835451,
+      "attempt": 1,
+      "deadline_monotonic_s": 230772.491832095,
+      "delivery_state": "FAILED",
+      "event_id": "32a3ce4a-fadb-44a5-9e7f-ff0b74a9c13a",
+      "message_id": "1b515a6c-43c2-46e8-947a-2739fb3ce31c",
+      "message_type": "heartbeat",
+      "phase": "send_failed",
+      "reason": "ack_arrived_after_deadline",
+      "recipient": "ambulance_0",
+      "sender": "coordinator",
+      "sequence": 959,
+      "timestamp_utc": "2026-11-03T17:46:40.956956+00:00"
+    }
+  ]
+}

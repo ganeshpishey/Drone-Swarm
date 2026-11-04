@@ -1,0 +1,5 @@
+path: perception/datasets/victim_detection/run03_prepared
+train: images/train
+val: images/val
+names:
+  0: person

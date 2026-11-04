@@ -57,14 +57,19 @@ async def run(
         print(f"Scout reached hover altitude; holding for {hover_s:.0f} seconds.")
         await record("hover_start")
         await asyncio.sleep(hover_s)
-        await record("hover_end")
+        try:
+            # A stalled telemetry stream must not keep the vehicle hovering
+            # by blocking the transition into the landing cleanup below.
+            await asyncio.wait_for(record("hover_end"), timeout=5.0)
+        except asyncio.TimeoutError:
+            print("Timed out recording hover-end telemetry; proceeding to land.")
     except Exception as error:
         print(f"Scout hover check failed: {error}")
     finally:
         if connected:
             try:
                 print("Requesting Scout to land...")
-                await controller.land()
+                await asyncio.wait_for(controller.land(), timeout=10.0)
                 await controller.wait_until_landed(timeout_s=60.0)
                 print("PX4 telemetry confirms Scout landed.")
                 await record("landed")

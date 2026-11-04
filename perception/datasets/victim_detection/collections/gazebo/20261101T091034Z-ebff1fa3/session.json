@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "session_id": "20261101T091034Z-ebff1fa3",
+  "dataset_type": "gazebo_synthetic",
+  "created_utc": "2026-11-01T09:10:34.632199+00:00",
+  "capture_config": {
+    "scene_id": "apron-world-baseline-unvaried",
+    "scene_class": "positive",
+    "world_sdf": "worlds/earthquake_landslide_apron_world.sdf",
+    "environment": {
+      "terrain": "existing apron disaster world; visual review pending",
+      "lighting": "existing world lighting; visual review pending",
+      "occlusion": "not assessed before rendered capture",
+      "debris_level": "existing world layout"
+    },
+    "camera_pose_entity": "x500_mono_cam_down_lidar_0::camera_link",
+    "camera_setup": {
+      "requested_altitude_m": null,
+      "view_description": "configured grounded Scout spawn; verify from live pose snapshot",
+      "target_positions": [
+        "to be visually reviewed"
+      ]
+    },
+    "victims": [
+      {
+        "entity_name": "incident_victim_1",
+        "asset_model": "survivor_female",
+        "pose_category": "unverified",
+        "orientation_description": "world yaw 0.3 rad; visual review pending",
+        "occlusion_description": "visual review pending"
+      },
+      {
+        "entity_name": "incident_victim_2",
+        "asset_model": "survivor_male",
+        "pose_category": "unverified",
+        "orientation_description": "world yaw 2.1 rad; visual review pending",
+        "occlusion_description": "visual review pending"
+      },
+      {
+        "entity_name": "incident_victim_3",
+        "asset_model": "survivor_female",
+        "pose_category": "unverified",
+        "orientation_description": "world yaw -0.7 rad; visual review pending",
+        "occlusion_description": "visual review pending"
+      },
+      {
+        "entity_name": "incident_victim_5",
+        "asset_model": "standing_person_small",
+        "pose_category": "unverified",
+        "orientation_description": "world yaw 0 rad; visual review pending",
+        "occlusion_description": "visual review pending"
+      },
+      {
+        "entity_name": "incident_victim_6",
+        "asset_model": "rescue_randy_sitting_small",
+        "pose_category": "unverified",
+        "orientation_description": "world yaw 1.2 rad; visual review pending",
+        "occlusion_description": "visual review pending"
+      }
+    ]
+  },
+  "scene_class": "positive",
+  "world_name": "earthquake_landslide_world",
+  "world_sdf_sha256": "8bed53b603c57e0ca31508ceb2d1b0777d908b099d27a075d2a336527f105359",
+  "camera_topic": "/world/earthquake_landslide_world/model/x500_mono_cam_down_lidar_0/link/camera_link/sensor/imager/image",
+  "pose_topic": "/world/earthquake_landslide_world/pose/info",
+  "lidar_topic_subscribed_by_reused_source": "/scout/lidar/points",
+  "image_message_type": "gz.msgs.Image",
+  "image_pixel_formats_supported": [
+    "RGB_INT8",
+    "BGR_INT8"
+  ],
+  "interval_s": 1.0,
+  "duration_s": 6.0,
+  "max_frames": 3,
+  "label_status": "not_reviewed",
+  "split": null,
+  "capture_utility": "capture_victim_dataset.py",
+  "captured_image_count": 3,
+  "completed_utc": "2026-11-01T09:10:37.954531+00:00",
+  "capture_status": "complete"
+}
