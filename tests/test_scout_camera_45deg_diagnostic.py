@@ -1,4 +1,3 @@
-import copy
 import math
 import unittest
 import xml.etree.ElementTree as ET
@@ -9,6 +8,16 @@ ROOT = Path(__file__).resolve().parents[1]
 PRODUCTION = ROOT / "worlds/disaster_assets/models/x500_mono_cam_down_lidar/model.sdf"
 DIAGNOSTIC = ROOT / "worlds/diagnostics/scout_camera_45deg/model.sdf"
 CONFIG = ROOT / "worlds/diagnostics/scout_camera_45deg/model.config"
+
+
+def element_signature(element):
+    """Compare SDF structure while ignoring indentation and XML tail whitespace."""
+    return (
+        element.tag,
+        tuple(sorted(element.attrib.items())),
+        (element.text or "").strip(),
+        tuple(element_signature(child) for child in element),
+    )
 
 
 class ScoutCamera45DegreeDiagnosticTests(unittest.TestCase):
@@ -29,9 +38,11 @@ class ScoutCamera45DegreeDiagnosticTests(unittest.TestCase):
         expected = (0.0, 0.0, 0.10, 0.0, math.pi / 4.0, 0.0)
         actual = tuple(float(x) for x in include.findtext("pose").split())
         joint_pose = tuple(float(x) for x in joint.findtext("pose").split())
+        self.assertEqual(len(actual), 6)
+        self.assertEqual(len(joint_pose), 6)
         for got, want in zip(actual, expected):
             self.assertAlmostEqual(got, want, places=8)
-        for got, want in zip(joint_pose, expected[3:]):
+        for got, want in zip(joint_pose[3:], expected[3:]):
             self.assertAlmostEqual(got, want, places=8)
 
     def test_production_lidar_sensor_and_mount_are_unchanged(self):
@@ -41,9 +52,11 @@ class ScoutCamera45DegreeDiagnosticTests(unittest.TestCase):
             self.assertIsNotNone(model.find("link[@name='lidar_link']"))
         prod_lidar = production.find("link[@name='lidar_link']")
         diag_lidar = diagnostic.find("link[@name='lidar_link']")
-        self.assertEqual(ET.tostring(prod_lidar), ET.tostring(diag_lidar))
-        self.assertEqual(ET.tostring(production.find("joint[@name='LidarJoint']")),
-                         ET.tostring(diagnostic.find("joint[@name='LidarJoint']")))
+        self.assertEqual(element_signature(prod_lidar), element_signature(diag_lidar))
+        self.assertEqual(
+            element_signature(production.find("joint[@name='LidarJoint']")),
+            element_signature(diagnostic.find("joint[@name='LidarJoint']")),
+        )
 
     def test_pose_publisher_contract_is_present(self):
         model = ET.parse(DIAGNOSTIC).getroot().find("model")
