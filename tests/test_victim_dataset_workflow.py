@@ -128,6 +128,7 @@ def test_sequence_tracking_counts_missing_frames():
     source._image_messages_received = 0
     source._image_receive_times = deque(maxlen=512)
     source._lidar_messages_received = 0
+    source._pointcloud_messages_received = 0
     source._sequence_gaps = 0
     source._lidar_sequence_gaps = 0
     source._duplicates = 0

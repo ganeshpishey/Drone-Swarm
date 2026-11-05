@@ -13,13 +13,13 @@
     </include>
     <include merge="true">
       <uri>model://mono_cam</uri>
-      <pose>0 0 0.10 0 0.4363323129985824 0</pose>
+      <pose>0.10 0 0.40 0 0.4363323129985824 0</pose>
       <name>mono_cam</name>
     </include>
     <joint name="CameraJoint" type="fixed">
       <parent>base_link</parent>
       <child>camera_link</child>
-      <pose relative_to="base_link">0 0 0 0 0.4363323129985824 0</pose>
+      <pose relative_to="base_link">0.10 0 0.16 0 0.4363323129985824 0</pose>
     </joint>
 
     <!-- Identical to the production Scout LiDAR mount and sensor. -->

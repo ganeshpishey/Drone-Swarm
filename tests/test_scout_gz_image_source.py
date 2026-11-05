@@ -9,6 +9,7 @@ import numpy as np
 
 from integration.mavsdk_controller.scout_gz_image_source import (
     GazeboScoutImageSource, image_message_to_bgr, temporal_pair_within_bound,
+    pointcloud_packed_to_xyz,
 )
 from integration.mavsdk_controller.scout_perception_runtime import PtsOrderTracker
 
@@ -66,6 +67,82 @@ class GazeboImageSourceTests(unittest.TestCase):
         self.assertEqual(metadata["image_width"], 2)
         self.assertEqual(metadata["image_height"], 2)
         self.assertGreater(np.unique(frame.reshape(-1, 3), axis=0).shape[0], 1)
+
+    def test_pointcloud_packed_decodes_xyz_with_padding(self) -> None:
+        import struct
+
+        payload = (
+            struct.pack("<fff", 1.0, 2.0, 3.0) + b"PAD!" +
+            struct.pack("<fff", 4.0, 5.0, 6.0) + b"PAD!"
+        )
+        message = SimpleNamespace(
+            width=2, height=1, point_step=16, row_step=32,
+            is_bigendian=False, data=payload,
+            field=[
+                SimpleNamespace(name="x", offset=0, datatype=6, count=1),
+                SimpleNamespace(name="y", offset=4, datatype=6, count=1),
+                SimpleNamespace(name="z", offset=8, datatype=6, count=1),
+            ],
+            header=SimpleNamespace(
+                stamp=SimpleNamespace(sec=12, nsec=345_000_000),
+                data=[
+                    SimpleNamespace(key="seq", value=["19"]),
+                    SimpleNamespace(key="frame_id", value=["lidar_link"]),
+                ],
+            ),
+        )
+        points, metadata = pointcloud_packed_to_xyz(message)
+        self.assertEqual(points, [(1.0, 2.0, 3.0), (4.0, 5.0, 6.0)])
+        self.assertEqual(metadata["pointcloud_sequence"], 19)
+        self.assertEqual(metadata["pointcloud_acquisition_sim_s"], 12.345)
+        self.assertEqual(metadata["pointcloud_points_finite"], 2)
+
+    def test_pointcloud_packed_filters_nonfinite_points(self) -> None:
+        import struct
+
+        message = SimpleNamespace(
+            width=2, height=1, point_step=12, row_step=24,
+            is_bigendian=False,
+            data=struct.pack("<ffffff", 1, 2, 3, float("nan"), 0, 1),
+            field=[
+                SimpleNamespace(name="x", offset=0, datatype=6, count=1),
+                SimpleNamespace(name="y", offset=4, datatype=6, count=1),
+                SimpleNamespace(name="z", offset=8, datatype=6, count=1),
+            ],
+            header=SimpleNamespace(
+                stamp=SimpleNamespace(sec=1, nsec=0),
+                data=[SimpleNamespace(key="frame_id", value=["lidar_link"])],
+            ),
+        )
+        points, metadata = pointcloud_packed_to_xyz(message)
+        self.assertEqual(points, [(1.0, 2.0, 3.0)])
+        self.assertEqual(metadata["pointcloud_points_total"], 2)
+
+    def test_pointcloud_packed_rejects_bad_frame_layout_and_truncated_data(self) -> None:
+        import struct
+
+        def make_message(frame="lidar_link", data=None, datatype=6):
+            return SimpleNamespace(
+                width=1, height=1, point_step=12, row_step=12,
+                is_bigendian=False,
+                data=struct.pack("<fff", 1, 2, 3) if data is None else data,
+                field=[
+                    SimpleNamespace(name="x", offset=0, datatype=datatype, count=1),
+                    SimpleNamespace(name="y", offset=4, datatype=6, count=1),
+                    SimpleNamespace(name="z", offset=8, datatype=6, count=1),
+                ],
+                header=SimpleNamespace(
+                    stamp=SimpleNamespace(sec=1, nsec=0),
+                    data=[SimpleNamespace(key="frame_id", value=[frame])],
+                ),
+            )
+
+        with self.assertRaisesRegex(ValueError, "frame_mismatch"):
+            pointcloud_packed_to_xyz(make_message(frame="wrong_frame"))
+        with self.assertRaisesRegex(ValueError, "float32"):
+            pointcloud_packed_to_xyz(make_message(datatype=3))
+        with self.assertRaisesRegex(ValueError, "truncated"):
+            pointcloud_packed_to_xyz(make_message(data=b"short"))
 
     def test_temporal_pair_bound_handles_float_rounding_without_widening_meaningfully(self) -> None:
         self.assertTrue(temporal_pair_within_bound(0.1, 0.1))

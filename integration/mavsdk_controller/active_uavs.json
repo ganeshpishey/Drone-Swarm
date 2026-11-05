@@ -7,9 +7,13 @@
     "mavsdk_port": 14540,
     "mavsdk_server_port": 50051,
     "model_name": "x500_mono_cam_down_lidar",
-    "spawn_pose": "-76,-61,1.70,0,0,0",
+    "spawn_pose": "-75,-60,1.70,0,0,0",
     "lidar_topic": "/scout/lidar/points",
-    "waypoint_ned_m": [3.0, 0.0, 4.0]
+    "waypoint_ned_m": [
+      3.0,
+      0.0,
+      4.0
+    ]
   },
   "ambulance_0": {
     "role": "Medical-Support",
@@ -21,6 +25,10 @@
     "model_name": "x500_ambulance_lidar",
     "spawn_pose": "-72,-61,1.70,0,0,0",
     "lidar_topic": "/ambulance_0/lidar/points",
-    "waypoint_ned_m": [0.0, 3.0, 4.0]
+    "waypoint_ned_m": [
+      0.0,
+      3.0,
+      4.0
+    ]
   }
 }

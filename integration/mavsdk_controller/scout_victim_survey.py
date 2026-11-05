@@ -36,6 +36,7 @@ async def run(args: argparse.Namespace, stop_requested: asyncio.Event) -> None:
     controller = PX4Controller(
         f"udpin://0.0.0.0:{int(scout['mavsdk_port'])}",
         mavsdk_server_port=int(scout["mavsdk_server_port"]),
+        mavsdk_server_address="127.0.0.1",
     )
     airborne = False
     connected = False

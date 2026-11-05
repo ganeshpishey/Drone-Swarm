@@ -56,6 +56,68 @@ def temporal_pair_within_bound(delta_s: float, bound_s: float, *, epsilon_s: flo
     return 0.0 <= delta_s <= bound_s + epsilon_s
 
 
+
+def pointcloud_packed_to_xyz(message: Any, *, expected_frame: str = "lidar_link"):
+    """Decode validated Gazebo PointCloudPacked XYZ values in sensor-frame metres."""
+    import numpy as np
+
+    stamp, sequence, frame_id = _stamp_and_sequence(message.header)
+    if frame_id != expected_frame:
+        raise ValueError(f"pointcloud_frame_mismatch:{frame_id}")
+
+    width, height = int(message.width), int(message.height)
+    point_step, row_step = int(message.point_step), int(message.row_step)
+    if (width <= 0 or height <= 0 or width * height > 10_000_000
+            or point_step <= 0 or row_step < width * point_step):
+        raise ValueError("pointcloud_dimensions_or_strides_invalid")
+    if len(message.data) < row_step * height:
+        raise ValueError("pointcloud_payload_truncated")
+
+    offsets = {}
+    for field in message.field:
+        if field.name in ("x", "y", "z"):
+            if field.name in offsets:
+                raise ValueError(f"pointcloud_duplicate_field:{field.name}")
+            if int(field.datatype) != 6 or int(field.count) != 1:
+                raise ValueError(f"pointcloud_field_must_be_float32:{field.name}")
+            offset = int(field.offset)
+            if offset < 0 or offset + 4 > point_step:
+                raise ValueError(f"pointcloud_field_offset_invalid:{field.name}")
+            offsets[field.name] = offset
+    if set(offsets) != {"x", "y", "z"}:
+        raise ValueError("pointcloud_xyz_fields_missing")
+
+    endian = ">" if message.is_bigendian else "<"
+    dtype = np.dtype({
+        "names": ["x", "y", "z"],
+        "formats": [endian + "f4"] * 3,
+        "offsets": [offsets["x"], offsets["y"], offsets["z"]],
+        "itemsize": point_step,
+    })
+    records = np.ndarray(
+        (height, width), dtype=dtype, buffer=message.data,
+        strides=(row_step, point_step),
+    )
+    xyz = np.column_stack((
+        records["x"].ravel(), records["y"].ravel(), records["z"].ravel()
+    )).astype(np.float64, copy=False)
+    xyz = xyz[np.isfinite(xyz).all(axis=1)]
+    points = [tuple(map(float, row)) for row in xyz]
+
+    metadata = {
+        "pointcloud_acquisition_sim_s": stamp,
+        "pointcloud_sequence": sequence,
+        "pointcloud_frame_id": frame_id,
+        "pointcloud_width": width,
+        "pointcloud_height": height,
+        "pointcloud_points_total": width * height,
+        "pointcloud_points_finite": len(points),
+        "pointcloud_message_type": "gz.msgs.PointCloudPacked",
+        "pointcloud_timestamp_domain": "gazebo_simulation_time",
+    }
+    return points, metadata
+
+
 def image_message_to_bgr(message: Any) -> tuple[np.ndarray, dict[str, Any]]:
     """Decode an actual Gazebo RGB/BGR Image message and preserve its identity."""
     width, height, step = int(message.width), int(message.height), int(message.step)
@@ -89,7 +151,9 @@ class GazeboScoutImageSource:
     """Bounded latest-image input with direct image and LiDAR sim-time metadata."""
 
     def __init__(self, *, world: str, image_topic: str | None = None,
-                 lidar_topic: str = "/scout/lidar/points", max_lidar_age_s: float = 0.5,
+                 lidar_topic: str = "/scout/lidar/points",
+                 pointcloud_topic: str = "/scout/lidar/points/points",
+                 max_lidar_age_s: float = 0.5,
                  lidar_rate_hz: float = 5.0):
         if not world or max_lidar_age_s <= 0 or lidar_rate_hz <= 0:
             raise ValueError("invalid Gazebo image source configuration")
@@ -101,6 +165,7 @@ class GazeboScoutImageSource:
             from gz.transport13 import Node
             from gz.msgs10.image_pb2 import Image
             from gz.msgs10.laserscan_pb2 import LaserScan
+            from gz.msgs10.pointcloud_packed_pb2 import PointCloudPacked
             from gz.msgs10.clock_pb2 import Clock
         except ImportError as error:
             raise RuntimeError("Gazebo Harmonic Python Transport 13 bindings are unavailable") from error
@@ -114,6 +179,7 @@ class GazeboScoutImageSource:
             "link/camera_link/sensor/imager/image"
         )
         self.lidar_topic = lidar_topic
+        self.pointcloud_topic = pointcloud_topic
         self.clock_topic = f"/world/{world}/clock"
         self.max_lidar_age_s = max_lidar_age_s
         self.max_timestamp_delta_s = 0.5 / lidar_rate_hz
@@ -125,6 +191,8 @@ class GazeboScoutImageSource:
         self._image_messages_received = 0
         self._image_receive_times: deque[float] = deque(maxlen=512)
         self._lidar_messages_received = 0
+        self._pointcloud_messages_received = 0
+        self._pointcloud: deque[dict[str, Any]] = deque(maxlen=16)
         self._sequence_gaps = 0
         self._duplicates = 0
         self._reordered = 0
@@ -143,10 +211,11 @@ class GazeboScoutImageSource:
         self._subscriptions = (
             self.node.subscribe(Image, self.image_topic, self._on_image),
             self.node.subscribe(LaserScan, self.lidar_topic, self._on_lidar),
+            self.node.subscribe(PointCloudPacked, self.pointcloud_topic, self._on_pointcloud),
             self.node.subscribe(Clock, self.clock_topic, self._on_clock),
         )
         if not all(self._subscriptions):
-            raise RuntimeError("failed_to_subscribe_to_gazebo_image_lidar_or_clock")
+            raise RuntimeError("failed_to_subscribe_to_gazebo_image_lidar_pointcloud_or_clock")
 
     def _on_image(self, message: Any) -> None:
         received = time.monotonic()
@@ -238,6 +307,76 @@ class GazeboScoutImageSource:
                 self._last_lidar_stamp = stamp
             self._lidar.append(item)
 
+    def _on_pointcloud(self, message: Any) -> None:
+        received = time.monotonic()
+        try:
+            points, metadata = pointcloud_packed_to_xyz(message)
+        except (AttributeError, TypeError, ValueError):
+            return
+        item = {
+            **metadata,
+            "points_xyz_sensor_m": points,
+            "receive_monotonic_s": received,
+        }
+        with self._condition:
+            self._pointcloud_messages_received += 1
+            self._pointcloud.append(item)
+            self._condition.notify_all()
+
+    def pointcloud_snapshot(self, image: ImageFrame) -> dict[str, Any]:
+        """Return nearest cloud; temporal association never authorizes dispatch."""
+        with self._condition:
+            clouds = list(self._pointcloud)
+            current = self._sim_time_s
+
+        base = {
+            "image_acquisition_sim_s": image.sim_time_s,
+            "pointcloud_topic": self.pointcloud_topic,
+            "timestamp_domain": "gazebo_simulation_time",
+            "temporal_pair_is_dispatchable": False,
+            "dispatchable": False,
+            "localization_status": "not_performed",
+        }
+        if not clouds:
+            return {
+                **base,
+                "synchronization_status": "rejected",
+                "rejection_reason": "no_pointcloud_received",
+                "points_xyz_sensor_m": [],
+            }
+
+        cloud = min(
+            clouds,
+            key=lambda item: abs(
+                item["pointcloud_acquisition_sim_s"] - image.sim_time_s
+            ),
+        )
+        delta = abs(cloud["pointcloud_acquisition_sim_s"] - image.sim_time_s)
+        age = (
+            None if current is None
+            else current - cloud["pointcloud_acquisition_sim_s"]
+        )
+        reason = None
+        if current is None:
+            reason = "gazebo_world_clock_unavailable"
+        elif age is None or age < 0 or age > self.max_lidar_age_s:
+            reason = "pointcloud_stale_or_future"
+        elif not temporal_pair_within_bound(delta, self.max_timestamp_delta_s):
+            reason = "camera_pointcloud_delta_exceeds_half_lidar_period"
+
+        return {
+            **base,
+            **{key: value for key, value in cloud.items()
+               if key != "points_xyz_sensor_m"},
+            "points_xyz_sensor_m": cloud["points_xyz_sensor_m"],
+            "image_pointcloud_abs_delta_s": delta,
+            "pointcloud_age_sim_s": age,
+            "synchronization_status": (
+                "rejected" if reason else "temporally_paired_unverified"
+            ),
+            "rejection_reason": reason,
+        }
+
     def _on_clock(self, message: Any) -> None:
         stamp = message.sim
         current = int(stamp.sec) + int(stamp.nsec) * 1e-9
@@ -252,6 +391,7 @@ class GazeboScoutImageSource:
                 self._lidar_duplicates = 0
                 self._lidar_reordered = 0
                 self._lidar.clear()
+                self._pointcloud.clear()
                 self._latest = None
             self._sim_time_s = current
             self._clock_fit = fit
@@ -286,6 +426,7 @@ class GazeboScoutImageSource:
                 "image_message_rate_hz": image_rate_hz,
                 "image_rate_window_s": 10.0,
                 "lidar_messages_received": self._lidar_messages_received,
+                "pointcloud_messages_received": self._pointcloud_messages_received,
                 "image_sequence_missing_total": self._sequence_gaps,
                 "duplicate_image_total": self._duplicates,
                 "reordered_image_total": self._reordered,

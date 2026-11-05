@@ -27,6 +27,7 @@ async def run(
     controller = PX4Controller(
         f"udpin://0.0.0.0:{int(drone_config['mavsdk_port'])}",
         mavsdk_server_port=int(drone_config["mavsdk_server_port"]),
+        mavsdk_server_address="127.0.0.1",
     )
     connected = False
 

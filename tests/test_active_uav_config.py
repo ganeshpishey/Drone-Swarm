@@ -35,7 +35,7 @@ class ActiveUavConfigTests(unittest.TestCase):
             config["scout_0"]["model_name"], "x500_mono_cam_down_lidar"
         )
         self.assertEqual(config["ambulance_0"]["model_name"], "x500_ambulance_lidar")
-        self.assertEqual(config["scout_0"]["spawn_pose"], "-76,-61,1.70,0,0,0")
+        self.assertEqual(config["scout_0"]["spawn_pose"], "-75,-60,1.70,0,0,0")
         self.assertEqual(config["ambulance_0"]["spawn_pose"], "-72,-61,1.70,0,0,0")
         self.assertEqual(config["scout_0"]["lidar_topic"], "/scout/lidar/points")
         self.assertEqual(

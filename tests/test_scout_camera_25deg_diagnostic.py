@@ -34,14 +34,15 @@ class ScoutCamera25DegreeDiagnosticTests(unittest.TestCase):
         model = ET.parse(DIAGNOSTIC_25).getroot().find("model")
         include = next(x for x in model.findall("include") if x.findtext("name") == "mono_cam")
         joint = model.find("joint[@name='CameraJoint']")
-        expected = (0.0, 0.0, 0.10, 0.0, math.radians(25.0), 0.0)
+        expected_include = (0.10, 0.0, 0.40, 0.0, math.radians(25.0), 0.0)
+        expected_joint = (0.10, 0.0, 0.16, 0.0, math.radians(25.0), 0.0)
         actual = tuple(float(x) for x in include.findtext("pose").split())
         joint_pose = tuple(float(x) for x in joint.findtext("pose").split())
         self.assertEqual(len(actual), 6)
         self.assertEqual(len(joint_pose), 6)
-        for got, want in zip(actual, expected):
+        for got, want in zip(actual, expected_include):
             self.assertAlmostEqual(got, want, places=8)
-        for got, want in zip(joint_pose[3:], expected[3:]):
+        for got, want in zip(joint_pose, expected_joint):
             self.assertAlmostEqual(got, want, places=8)
 
     def test_production_lidar_sensor_and_mount_are_unchanged(self):

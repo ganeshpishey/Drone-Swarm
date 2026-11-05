@@ -107,8 +107,19 @@ def validate_envelope(
         raise ValueError("timestamp_utc must include a timezone")
     now = now_utc or datetime.now(timezone.utc)
     age = (now - parsed.astimezone(timezone.utc)).total_seconds()
-    if age < -MAX_CLOCK_SKEW_S or age > max_age_s:
-        raise ValueError("message timestamp is stale or too far in the future")
+    if age < -MAX_CLOCK_SKEW_S:
+        raise ValueError(
+            f"message timestamp is too far in the future "
+            f"(age_s={age:.3f}, timestamp_utc={stamp!r}, "
+            f"sender={value.get('sender', 'UNKNOWN')!r})"
+        )
+    if age > max_age_s:
+        raise ValueError(
+            f"message timestamp is stale "
+            f"(age_s={age:.3f}, max_age_s={max_age_s:.3f}, "
+            f"timestamp_utc={stamp!r}, "
+            f"sender={value.get('sender', 'UNKNOWN')!r})"
+        )
     if value["message_type"] == "mission_assignment":
         expires = payload.get("expires_at_utc")
         try:
