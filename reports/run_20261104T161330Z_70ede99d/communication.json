@@ -1,0 +1,15 @@
+{
+  "messages": [],
+  "packet_loss": "NOT_MEASURED",
+  "peers": {
+    "ambulance_0": {
+      "host": "127.0.0.1",
+      "port": 8767
+    },
+    "scout_0": {
+      "host": "127.0.0.1",
+      "port": 8766
+    }
+  },
+  "transport": "direct UDP; physical radio not verified"
+}

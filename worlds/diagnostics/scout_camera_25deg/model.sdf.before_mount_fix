@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version="1.9">
+  <!--
+    Disposable camera/LiDAR overlap experiment.
+    The production camera is tilted from nadir (90 deg down) to 25 deg
+    forward-down. The stock X500, mono_cam sensor, LiDAR geometry and topics
+    remain unchanged. This model is intended for scout-only SITL diagnostics.
+  -->
+  <model name="x500_mono_cam_down_lidar">
+    <self_collide>false</self_collide>
+    <include merge="true">
+      <uri>x500</uri>
+    </include>
+    <include merge="true">
+      <uri>model://mono_cam</uri>
+      <pose>0 0 0.10 0 0.4363323129985824 0</pose>
+      <name>mono_cam</name>
+    </include>
+    <joint name="CameraJoint" type="fixed">
+      <parent>base_link</parent>
+      <child>camera_link</child>
+      <pose relative_to="base_link">0 0 0 0 0.4363323129985824 0</pose>
+    </joint>
+
+    <!-- Identical to the production Scout LiDAR mount and sensor. -->
+    <link name="lidar_link">
+      <pose relative_to="base_link">0 0 0.06 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>0.000001</ixx>
+          <iyy>0.000001</iyy>
+          <izz>0.000001</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <sensor name="lidar" type="gpu_lidar">
+        <topic>/scout/lidar/points</topic>
+        <gz_frame_id>lidar_link</gz_frame_id>
+        <pose>0 0 0 0 0 0</pose>
+        <update_rate>5</update_rate>
+        <lidar>
+          <scan>
+            <horizontal>
+              <samples>180</samples>
+              <resolution>1</resolution>
+              <min_angle>-3.141593</min_angle>
+              <max_angle>3.141593</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>16</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.261799</min_angle>
+              <max_angle>0.261799</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>0.20</min>
+            <max>25.0</max>
+            <resolution>0.02</resolution>
+          </range>
+        </lidar>
+        <always_on>true</always_on>
+        <visualize>false</visualize>
+      </sensor>
+    </link>
+    <joint name="LidarJoint" type="fixed">
+      <parent>base_link</parent>
+      <child>lidar_link</child>
+    </joint>
+
+    <!-- Required by the launcher's diagnostic-model override contract. -->
+    <plugin filename="gz-sim-pose-publisher-system"
+            name="gz::sim::systems::PosePublisher">
+      <publish_model_pose>true</publish_model_pose>
+      <publish_nested_model_pose>true</publish_nested_model_pose>
+      <publish_link_pose>true</publish_link_pose>
+      <publish_sensor_pose>true</publish_sensor_pose>
+      <use_pose_vector_msg>true</use_pose_vector_msg>
+      <update_frequency>30</update_frequency>
+      <topic>/scout/diagnostic/pose</topic>
+    </plugin>
+  </model>
+</sdf>

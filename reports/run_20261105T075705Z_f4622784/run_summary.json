@@ -1,0 +1,189 @@
+{
+  "active_uavs": [
+    "scout_0",
+    "ambulance_0"
+  ],
+  "battery_summaries": {
+    "ambulance_0": {
+      "capacity_consumed_ah": null,
+      "current_a": null,
+      "estimated_remaining_minutes": null,
+      "level": "NORMAL",
+      "measurement_type": "PX4_TELEMETRY",
+      "observed_drain_percent_per_minute": null,
+      "percentage": 100.0,
+      "source": "PX4_MAVSDK",
+      "telemetry_fresh": true,
+      "timestamp_utc": "2026-11-05T08:13:26.564407+00:00",
+      "uav": "ambulance_0",
+      "voltage_v": 16.200000762939453,
+      "warning": null
+    },
+    "scout_0": {
+      "capacity_consumed_ah": null,
+      "current_a": null,
+      "estimated_remaining_minutes": null,
+      "level": "NORMAL",
+      "measurement_type": "PX4_TELEMETRY",
+      "observed_drain_percent_per_minute": null,
+      "percentage": 100.0,
+      "source": "PX4_MAVSDK",
+      "telemetry_fresh": true,
+      "timestamp_utc": "2026-11-05T08:13:25.562471+00:00",
+      "uav": "scout_0",
+      "voltage_v": 16.200000762939453,
+      "warning": null
+    }
+  },
+  "communication_counts": {
+    "acknowledged": 4102,
+    "failed": 96,
+    "send_attempts": 4106,
+    "unique_messages_sent": 3885
+  },
+  "duration_s": 1351.603025763994,
+  "end_timestamp_utc": "2026-11-05T08:26:36.079278+00:00",
+  "error_count": 195,
+  "excluded_uavs": [
+    "fireman_0"
+  ],
+  "flight_commands_sent": false,
+  "incident_counts": {
+    "total": 0,
+    "unlocalized": 0,
+    "validated": 0
+  },
+  "known_limitations": [
+    "Direct UDP endpoints do not prove physical MANET radio operation.",
+    "A stopped coordinator session is not proof of mission or rescue completion."
+  ],
+  "mission_counts": {
+    "cancelled": 0,
+    "completed": 0,
+    "failed": 0,
+    "total": 0
+  },
+  "offboard_execution_enabled": false,
+  "overall_status": "INTERRUPTED",
+  "project_name": "Cooperative Multi-UAV Disaster Response",
+  "rescue_outcomes": {
+    "verified_completion_count": 0,
+    "verified_completion_events": []
+  },
+  "run_id": "RUN_20261105T075705Z_f4622784",
+  "sensor_health_summaries": {
+    "ambulance_lidar": {
+      "age_s": 516.471489507996,
+      "expected_frame": "lidar_link",
+      "expected_message_type": "gz.msgs.LaserScan",
+      "frame": "lidar_link",
+      "fresh": false,
+      "horizontal_samples": 180,
+      "largest_wall_gap_s": null,
+      "last_rejection": null,
+      "message_schema_validated": true,
+      "received_at_monotonic_s": 300744.593426858,
+      "rejected_message_count": 0,
+      "simulation_rate_hz": 0.0,
+      "simulation_time_s": 501.6,
+      "status": "stale_or_unavailable",
+      "topic": "/ambulance_0/lidar/points",
+      "valid_point_count": 1898,
+      "vertical_samples": 16,
+      "wall_rate_hz": 0.0
+    },
+    "scout_camera": {
+      "fresh": false,
+      "last_image_frame_identity_status": "exact_direct_message",
+      "last_image_height": 960,
+      "last_image_received_at_utc": "2026-11-05T08:17:06.627709+00:00",
+      "last_image_sequence": 14921,
+      "last_image_simulation_time_s": 500.6,
+      "last_image_width": 1280,
+      "measured_camera_rate_hz": 18.567455338122517,
+      "message_type": "gz.msgs.Image",
+      "observed_image_samples": 105,
+      "source_message_count": 14441,
+      "status": "stale",
+      "topic": "/world/earthquake_landslide_world/model/x500_mono_cam_down_lidar_0/link/camera_link/sensor/imager/image"
+    },
+    "scout_lidar": {
+      "age_s": 516.5240962050157,
+      "expected_frame": "lidar_link",
+      "expected_message_type": "gz.msgs.LaserScan",
+      "frame": "lidar_link",
+      "fresh": false,
+      "horizontal_samples": 180,
+      "largest_wall_gap_s": null,
+      "last_rejection": null,
+      "message_schema_validated": true,
+      "received_at_monotonic_s": 300744.54064972,
+      "rejected_message_count": 0,
+      "simulation_rate_hz": 0.0,
+      "simulation_time_s": 501.6,
+      "status": "stale",
+      "topic": "/scout/lidar/points",
+      "valid_point_count": 2137,
+      "vertical_samples": 16,
+      "wall_rate_hz": 0.0
+    },
+    "scout_yolo": {
+      "detection_count": 0,
+      "fresh": false,
+      "inference_count": 105,
+      "last_inference_completed_at_utc": "2026-11-05T08:17:08.630248+00:00",
+      "last_inference_latency_ms": 1977.700968971476,
+      "last_inference_rate_hz": 0.1423547512214687,
+      "model": "/home/ganesh/Drone Swarm/Drone-Swarm/yolo26n.pt",
+      "status": "stale"
+    }
+  },
+  "simulation_configuration": {
+    "active_vehicle_config": {
+      "ambulance_0": {
+        "instance": 1,
+        "lidar_topic": "/ambulance_0/lidar/points",
+        "mavsdk_port": 14541,
+        "mavsdk_server_port": 50052,
+        "model_name": "x500_ambulance_lidar",
+        "px4_gcs_udp_port": 18571,
+        "role": "Medical-Support",
+        "spawn_pose": "-72,-61,1.70,0,0,0",
+        "system_id": 2,
+        "waypoint_ned_m": [
+          0.0,
+          3.0,
+          4.0
+        ]
+      },
+      "scout_0": {
+        "instance": 0,
+        "lidar_topic": "/scout/lidar/points",
+        "mavsdk_port": 14540,
+        "mavsdk_server_port": 50051,
+        "model_name": "x500_mono_cam_down_lidar",
+        "px4_gcs_udp_port": 18570,
+        "role": "Scout",
+        "spawn_pose": "-75,-60,1.70,0,0,0",
+        "system_id": 1,
+        "waypoint_ned_m": [
+          3.0,
+          0.0,
+          4.0
+        ]
+      }
+    },
+    "bind": "127.0.0.1",
+    "communication": "direct UDP; physical radio not verified",
+    "coordinator_port": 8765,
+    "excluded_vehicles": [
+      "fireman_0"
+    ],
+    "flight_stack": "PX4 SITL",
+    "simulation": "Gazebo Harmonic",
+    "state_file": "/tmp/drone-swarm-active-uavs-1000/run-20261105T075645Z-eDCSxA/runtime/coordinator_state.json"
+  },
+  "start_timestamp_utc": "2026-11-05T07:57:05.226447+00:00",
+  "test_and_validation_results": [],
+  "warning_count": 0
+}

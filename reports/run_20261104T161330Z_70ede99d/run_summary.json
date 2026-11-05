@@ -1,0 +1,19 @@
+{
+  "active_uavs": [
+    "scout_0",
+    "ambulance_0"
+  ],
+  "duration_s": null,
+  "end_timestamp_utc": null,
+  "excluded_uavs": [
+    "fireman_0"
+  ],
+  "flight_commands_sent": false,
+  "incident_count": 2,
+  "mission_count": 0,
+  "offboard_execution_enabled": false,
+  "overall_status": "IN_PROGRESS",
+  "project_name": "Cooperative Multi-UAV Disaster Response",
+  "run_id": "RUN_20261104T161330Z_70ede99d",
+  "start_timestamp_utc": "2026-11-04T16:13:30.684415+00:00"
+}

@@ -1,0 +1,63 @@
+{
+  "incidents": [
+    {
+      "camera_frame_id": 18056,
+      "confidence": 0.1478004902601242,
+      "depth_status": "unavailable",
+      "detection_timestamp_utc": "2026-11-05T01:58:40.628616+00:00",
+      "dispatch_block_reason": "incident must have validated local_ned_m coordinates",
+      "dispatchable": false,
+      "image_track": {
+        "bbox_xyxy": [
+          737.39111328125,
+          1.2735099792480469,
+          844.94189453125,
+          34.495635986328125
+        ],
+        "frame_height": 960,
+        "frame_width": 1280,
+        "observed_at_utc": "2026-11-05T01:58:40.628616+00:00",
+        "sequence": 18056,
+        "session_id": "baae9426179647109646ea745ad6765b"
+      },
+      "incident_id": "scout-baae9426-frame-000133:0",
+      "incident_source": "REAL",
+      "localization_confidence": null,
+      "localization_provenance": null,
+      "localization_rejection_reason": "camera_lidar_capture_clock_and_verified_calibration_required",
+      "localization_status": "unlocalized",
+      "localization_uncertainty_m": null,
+      "location_status": "unlocalized",
+      "observation_count": 1,
+      "observation_history": [
+        {
+          "confidence": 0.1478004902601242,
+          "image_sequence": 18056,
+          "observed_at_utc": "2026-11-05T01:58:40.628616+00:00",
+          "report_id": "scout-baae9426-frame-000133"
+        }
+      ],
+      "observed_at_utc": "2026-11-05T01:58:40.628616+00:00",
+      "report_id": "scout-baae9426-frame-000133",
+      "sensor_source": "scout_rgb_camera_ai",
+      "sensor_timestamps": {
+        "camera_decode_receive": null,
+        "lidar_capture": null
+      },
+      "source_uav_id": "scout_0",
+      "status": "provisional",
+      "supporting_sensor_information": {
+        "depth_status": "unavailable",
+        "sensor_timestamps_monotonic_s": {
+          "camera_decode_receive": null,
+          "lidar_capture": null
+        },
+        "supporting_returns": null,
+        "transformation_provenance": null
+      },
+      "target": null,
+      "type": "victim",
+      "vehicle": "scout_0"
+    }
+  ]
+}

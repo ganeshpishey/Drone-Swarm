@@ -1,0 +1,34 @@
+{
+  "scout_0": {
+    "role": "Scout",
+    "instance": 0,
+    "system_id": 1,
+    "px4_gcs_udp_port": 18570,
+    "mavsdk_port": 14540,
+    "mavsdk_server_port": 50051,
+    "model_name": "x500_mono_cam_down_lidar",
+    "spawn_pose": "-71,-55,8.0,0,0,0",
+    "lidar_topic": "/scout/lidar/points",
+    "waypoint_ned_m": [
+      3.0,
+      0.0,
+      4.0
+    ]
+  },
+  "ambulance_0": {
+    "role": "Medical-Support",
+    "instance": 1,
+    "system_id": 2,
+    "px4_gcs_udp_port": 18571,
+    "mavsdk_port": 14541,
+    "mavsdk_server_port": 50052,
+    "model_name": "x500_ambulance_lidar",
+    "spawn_pose": "-72,-61,1.70,0,0,0",
+    "lidar_topic": "/ambulance_0/lidar/points",
+    "waypoint_ned_m": [
+      0.0,
+      3.0,
+      4.0
+    ]
+  }
+}
