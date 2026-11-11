@@ -119,10 +119,18 @@ class BatteryPolicyTests(unittest.TestCase):
 
 class TelemetryStreamSupervisionTests(unittest.TestCase):
     def test_battery_watchdog_uses_battery_age_without_relaxing_other_streams(self) -> None:
-        args = SimpleNamespace(battery_max_age_s=10.0, telemetry_stream_timeout_s=5.0)
+        args = SimpleNamespace(
+            battery_max_age_s=10.0,
+            battery_stream_timeout_s=30.0,
+            telemetry_stream_timeout_s=5.0,
+        )
         self.assertIsNone(_telemetry_idle_timeout_s("connection", args))
-        self.assertEqual(_telemetry_idle_timeout_s("battery", args), 10.0)
+        self.assertEqual(_telemetry_idle_timeout_s("battery", args), 30.0)
         self.assertEqual(_telemetry_idle_timeout_s("position", args), 5.0)
+
+        # Changing the freshness policy must not change stream supervision.
+        args.battery_max_age_s = 4.0
+        self.assertEqual(_telemetry_idle_timeout_s("battery", args), 30.0)
 
     def test_cleanly_ended_stream_is_recreated_and_samples_resume(self) -> None:
         async def exercise() -> None:

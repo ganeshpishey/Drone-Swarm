@@ -117,6 +117,63 @@ def _ecef_vector_to_ned(vector: tuple[float, float, float], lat_deg: float,
     )
 
 
+
+def approximate_local_ned_to_geodetic(
+    point_ned_m: Any,
+    *,
+    home_origin: Any,
+    expected_vehicle_id: str,
+    coordinate_origin_id: str,
+    max_distance_m: float = 5000.0,
+) -> dict[str, Any]:
+    """Convert approximate local-NED coordinates to GPS using a static PX4 home.
+
+    This is display/observation metadata only. It deliberately does not
+    establish validated incident coordinates or dispatch eligibility.
+    """
+    if not isinstance(coordinate_origin_id, str) or not coordinate_origin_id.strip():
+        raise ValueError("coordinate_origin_id is required")
+    if not math.isfinite(max_distance_m) or max_distance_m <= 0:
+        raise ValueError("max_distance_m must be positive")
+
+    point = tuple(_finite_number(value, "point_ned_m") for value in point_ned_m)
+    if len(point) != 3:
+        raise ValueError("point_ned_m must have exactly three coordinates")
+    if math.sqrt(sum(value * value for value in point)) > max_distance_m:
+        raise ValueError("approximate point exceeds configured distance bound")
+
+    if not isinstance(home_origin, dict):
+        raise ValueError("home origin record is missing")
+    sampled_at = _utc(home_origin.get("sampled_at_utc"))
+    lat, lon, alt, home_id = _origin(
+        home_origin,
+        expected_vehicle_id,
+        sampled_at,
+        1.0,
+    )
+    if home_id != coordinate_origin_id:
+        raise ValueError("home origin does not match pose coordinate_origin_id")
+
+    home_ecef = _geodetic_to_ecef(lat, lon, alt)
+    delta_ecef = _ned_to_ecef_vector(point, lat, lon)
+    point_ecef = tuple(a + b for a, b in zip(home_ecef, delta_ecef))
+    latitude, longitude, absolute_altitude = _ecef_to_geodetic(*point_ecef)
+
+    return {
+        "coordinate_frame": "approximate_geodetic",
+        "latitude_deg": latitude,
+        "longitude_deg": longitude,
+        "absolute_altitude_m": absolute_altitude,
+        "source_local_ned_m": [float(value) for value in point],
+        "reference_vehicle_id": expected_vehicle_id,
+        "reference_home_id": home_id,
+        "conversion_method": "WGS84_ECEF_from_PX4_home_local_NED",
+        "location_status": "approximate",
+        "dispatchable": False,
+        "ground_truth": False,
+    }
+
+
 def transform_local_ned(
     point_ned_m: Any,
     *,

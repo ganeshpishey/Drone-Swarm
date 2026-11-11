@@ -185,7 +185,7 @@ def _atomic_json(path: Path, payload: Any) -> None:
     temporary = path.with_name(f".{path.name}.{uuid.uuid4().hex}.tmp")
     try:
         with temporary.open("x", encoding="utf-8") as stream:
-            json.dump(_json_safe(payload), stream, indent=2, sort_keys=True, allow_nan=False)
+            json.dump(_json_safe(payload), stream, separators=(",", ":"), allow_nan=False)
             stream.write("\n")
             stream.flush()
             os.fsync(stream.fileno())
@@ -458,10 +458,35 @@ class TerminalRunMonitor:
             self._last_status_key = key
 
     def sample(self, snapshot: dict[str, Any]) -> None:
+        # Routine samples need current perception status, not the full
+        # detection history. The complete history remains in the source
+        # perception JSONL and is included in finalization from end_state.
+        sample_keys = (
+            "generated_at_utc",
+            "vehicles",
+            "battery",
+            "incidents",
+            "missions",
+            "lidar",
+            "scout_lidar",
+            "scout_perception",
+        )
+        sample_snapshot = {
+            key: snapshot[key]
+            for key in sample_keys
+            if key in snapshot
+        }
+        perception = sample_snapshot.get("scout_perception")
+        if isinstance(perception, dict):
+            sample_snapshot["scout_perception"] = {
+                key: value for key, value in perception.items()
+                if key != "history"
+            }
+
         if self._persistence._started and not self._persistence._closed:
-            self._persistence.submit("call", (self._sample_sync, snapshot))
+            self._persistence.submit("call", (self._sample_sync, sample_snapshot))
             return
-        self._sample_sync(snapshot)
+        self._sample_sync(sample_snapshot)
 
     def _sample_sync(self, snapshot: dict[str, Any]) -> None:
         self._last_snapshot = _json_safe(snapshot)
@@ -530,7 +555,7 @@ class TerminalRunMonitor:
                 "sampled_at_monotonic_s": scout_lidar.get("received_at_monotonic_s")})
         now = time.monotonic()
         last = self._last_partial_snapshot_monotonic_s
-        if last is None or now - last >= 1.0:
+        if last is None or now - last >= 10.0:
             self._write_partial_snapshot()
             self._last_partial_snapshot_monotonic_s = now
 

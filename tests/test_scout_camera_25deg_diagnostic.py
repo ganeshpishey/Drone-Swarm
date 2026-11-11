@@ -34,8 +34,8 @@ class ScoutCamera25DegreeDiagnosticTests(unittest.TestCase):
         model = ET.parse(DIAGNOSTIC_25).getroot().find("model")
         include = next(x for x in model.findall("include") if x.findtext("name") == "mono_cam")
         joint = model.find("joint[@name='CameraJoint']")
-        expected_include = (0.10, 0.0, 0.40, 0.0, math.radians(25.0), 0.0)
-        expected_joint = (0.10, 0.0, 0.16, 0.0, math.radians(25.0), 0.0)
+        expected_include = (0.10, 0.0, 0.40, 0.0, 0.4363323129985824, 0.0)
+        expected_joint = (0.10, 0.0, 0.16, 0.0, 0.4363323129985824, 0.0)
         actual = tuple(float(x) for x in include.findtext("pose").split())
         joint_pose = tuple(float(x) for x in joint.findtext("pose").split())
         self.assertEqual(len(actual), 6)
@@ -71,11 +71,25 @@ class ScoutCamera25DegreeDiagnosticTests(unittest.TestCase):
             self.assertEqual(plugin.findtext(key), "true")
         self.assertGreater(float(plugin.findtext("update_frequency")), 0.0)
 
-    def test_production_camera_is_not_modified(self):
+    def test_production_camera_uses_lower_nadir_mount(self):
         production = ET.parse(PRODUCTION).getroot().find("model")
-        include = next(x for x in production.findall("include") if x.findtext("name") == "mono_cam")
-        pitch = float(include.findtext("pose").split()[4])
-        self.assertAlmostEqual(pitch, 1.5707, places=4)
+        include = next(
+            x for x in production.findall("include")
+            if x.findtext("name") == "mono_cam"
+        )
+        joint = production.find("joint[@name='CameraJoint']")
+
+        expected_include = (0.0, 0.0, 0.12, 0.0, 1.570796327, 0.0)
+        expected_joint = (0.0, 0.0, -0.12, 0.0, 1.570796327, 0.0)
+
+        for actual, expected in (
+            (include.findtext("pose"), expected_include),
+            (joint.findtext("pose"), expected_joint),
+        ):
+            values = tuple(float(x) for x in actual.split())
+            self.assertEqual(len(values), 6)
+            for got, want in zip(values, expected):
+                self.assertAlmostEqual(got, want, places=8)
 
 
 if __name__ == "__main__":

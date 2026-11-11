@@ -8,7 +8,7 @@ from pathlib import Path
 
 from integration.mavsdk_controller.medical_response import MedicalResponseMachine
 from integration.mavsdk_controller.day10_mission_coordinator import MISSION_STATES
-from integration.mavsdk_controller.day10_vehicle_agent import STATUS_TRANSITIONS
+from integration.mavsdk_controller.day10_vehicle_agent import STATUS_TRANSITIONS, mission_assignment_error
 from integration.mavsdk_controller.day10_coordinator_service import Day10CoordinatorService
 from integration.mavsdk_controller.day10_mission_coordinator import MissionRecord
 
@@ -146,3 +146,40 @@ class MedicalResponseStateTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AmbulanceMissionValidationTests(unittest.TestCase):
+    def setUp(self):
+        self.payload = {
+            "mission_id": "mission_test",
+            "incident_id": "incident_test",
+            "expires_at_utc": (datetime.now(timezone.utc) + timedelta(minutes=5)).isoformat(),
+            "target": {
+                "coordinate_frame": "local_ned_m",
+                "reference_vehicle_id": "ambulance_0",
+                "transform_id": "test_origin",
+                "coordinates": [10.0, 20.0, 3.0],
+            },
+        }
+
+    def test_valid_assignment_is_accepted_by_validator(self):
+        self.assertIsNone(mission_assignment_error(self.payload))
+
+    def test_non_finite_and_boolean_coordinates_are_rejected(self):
+        for value in (float("nan"), float("inf"), float("-inf"), True):
+            with self.subTest(value=value):
+                payload = {**self.payload, "target": {
+                    **self.payload["target"], "coordinates": [value, 20.0, 3.0]}}
+                self.assertEqual(mission_assignment_error(payload), "target_coordinates_invalid")
+
+    def test_expired_assignment_is_rejected(self):
+        payload = {**self.payload, "expires_at_utc": "2020-01-01T00:00:00Z"}
+        self.assertEqual(mission_assignment_error(payload), "mission_expired")
+
+    def test_timezone_naive_expiry_is_rejected(self):
+        payload = {**self.payload, "expires_at_utc": "2030-01-01T00:00:00"}
+        self.assertEqual(mission_assignment_error(payload), "mission_expiry_timezone_missing")
+
+    def test_missing_incident_id_is_rejected(self):
+        payload = {**self.payload, "incident_id": ""}
+        self.assertEqual(mission_assignment_error(payload), "incident_id_missing")

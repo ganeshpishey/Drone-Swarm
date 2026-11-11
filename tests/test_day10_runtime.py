@@ -15,9 +15,13 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from integration.mavsdk_controller.day10_coordinate_frames import transform_local_ned
+from integration.mavsdk_controller.day10_coordinate_frames import (
+    approximate_local_ned_to_geodetic,
+    transform_local_ned,
+)
 from integration.mavsdk_controller.day10_coordinator_service import Day10CoordinatorService
 from integration.mavsdk_controller.day10_coordinator_service import _finite_values
+from integration.mavsdk_controller.day10_mission_coordinator import MissionRecord
 from integration.mavsdk_controller.day10_scout_manet_bridge import ScoutReportBridge
 from integration.mavsdk_controller.day10_vehicle_agent import VehicleAgent
 from integration.mavsdk_controller.day10_ground_station import snapshot
@@ -112,6 +116,48 @@ def report(*, frame="local_ned_m", ref="scout_0", point=(20.0, 5.0, -1.0), obser
 
 
 class CoordinateTransformTests(unittest.TestCase):
+    def test_approximate_gps_conversion_preserves_home_at_zero_offset(self) -> None:
+        stamp = datetime.now(timezone.utc).isoformat()
+        home = origin("scout_0", 47.0, 8.0, at=stamp)
+        result = approximate_local_ned_to_geodetic(
+            [0, 0, 0], home_origin=home,
+            expected_vehicle_id="scout_0",
+            coordinate_origin_id=home["home_id"],
+        )
+        self.assertAlmostEqual(result["latitude_deg"], 47.0, places=7)
+        self.assertAlmostEqual(result["longitude_deg"], 8.0, places=7)
+        self.assertAlmostEqual(result["absolute_altitude_m"], home["absolute_altitude_m"], places=3)
+        self.assertEqual(result["location_status"], "approximate")
+        self.assertFalse(result["dispatchable"])
+
+    def test_approximate_gps_conversion_respects_ned_axis_signs(self) -> None:
+        stamp = datetime.now(timezone.utc).isoformat()
+        home = origin("scout_0", 47.0, 8.0, at=stamp)
+        north = approximate_local_ned_to_geodetic(
+            [10, 0, 0], home_origin=home, expected_vehicle_id="scout_0",
+            coordinate_origin_id=home["home_id"],
+        )
+        east = approximate_local_ned_to_geodetic(
+            [0, 10, 0], home_origin=home, expected_vehicle_id="scout_0",
+            coordinate_origin_id=home["home_id"],
+        )
+        down = approximate_local_ned_to_geodetic(
+            [0, 0, 10], home_origin=home, expected_vehicle_id="scout_0",
+            coordinate_origin_id=home["home_id"],
+        )
+        self.assertGreater(north["latitude_deg"], 47.0)
+        self.assertGreater(east["longitude_deg"], 8.0)
+        self.assertLess(down["absolute_altitude_m"], home["absolute_altitude_m"])
+
+    def test_approximate_gps_conversion_rejects_home_origin_mismatch(self) -> None:
+        stamp = datetime.now(timezone.utc).isoformat()
+        home = origin("scout_0", 47.0, 8.0, at=stamp)
+        with self.assertRaisesRegex(ValueError, "does not match"):
+            approximate_local_ned_to_geodetic(
+                [1, 2, 3], home_origin=home, expected_vehicle_id="scout_0",
+                coordinate_origin_id="different-home",
+            )
+
     def test_transform_same_origin_preserves_local_ned_axes(self) -> None:
         stamp = datetime.now(timezone.utc).isoformat()
         src, dst = origin("scout_0", 47.0, 8.0, at=stamp), origin("ambulance_0", 47.0, 8.0, at=stamp)
@@ -230,6 +276,24 @@ class RuntimeSafetyTests(unittest.TestCase):
         self.assertTrue(service._write_state_if_due(now_monotonic_s=10.42))
         self.assertEqual(len(writes), 2)
 
+    def test_coordinator_persists_ambulance_dispatch_queue(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            service = Day10CoordinatorService.__new__(Day10CoordinatorService)
+            service.dispatch_queue_path = Path(tmp) / "coordinator_ambulance_dispatch_queue.json"
+            service.pending_incident_ids = ["incident_victim_2", "incident_victim_3"]
+            service.active_ambulance_mission_id = "mission-victim-1"
+
+            service._persist_dispatch_queue()
+
+            saved = json.loads(service.dispatch_queue_path.read_text(encoding="utf-8"))
+            self.assertEqual(saved["schema_version"], 1)
+            self.assertEqual(
+                saved["pending_incident_ids"],
+                ["incident_victim_2", "incident_victim_3"],
+            )
+            self.assertEqual(saved["active_mission_id"], "mission-victim-1")
+            self.assertIn("updated_at_utc", saved)
+
     def test_live_telemetry_numeric_validator_rejects_invalid_samples_atomically(self) -> None:
         result = _finite_values({"north_m": 1.25, "east_m": -2.0}, label="position_velocity_ned")
         self.assertEqual(result, {"north_m": 1.25, "east_m": -2.0})
@@ -328,6 +392,125 @@ class RuntimeSafetyTests(unittest.TestCase):
             self.assertFalse(state["fresh"])
             self.assertFalse(state["available"])
             service.node.close()
+
+    def _make_ground_preview_service(self, root: Path, *, scan_age_s: float = 0.0,
+                                     expiry_delta_s: float = 60.0,
+                                     target: dict | None = None):
+        service = Day10CoordinatorService(
+            make_service_args(root, telemetry_max_age_s=5.0),
+            {"scout_0": {"role": "Scout"}, "ambulance_0": {"role": "Medical-Support"}},
+            {"scout_0": ("127.0.0.1", 21151), "ambulance_0": ("127.0.0.1", 21152)},
+        )
+        now = time.monotonic()
+        stamp = datetime.now(timezone.utc)
+        mission_target = target or {
+            "coordinate_frame": "local_ned_m",
+            "coordinates": [10.0, 0.0, 0.0],
+            "reference_vehicle_id": "ambulance_0",
+            "transform_id": "preview-test-transform",
+        }
+        mission = MissionRecord(
+            "preview-mission", "preview-incident", "ambulance_0", mission_target,
+            "suggestion_received", stamp.isoformat(),
+            (stamp + timedelta(seconds=expiry_delta_s)).isoformat(),
+        )
+        service.coordinator.missions[mission.mission_id] = mission
+
+        state = service.vehicle_state["ambulance_0"]
+        state.update({
+            "connected": True, "connection_error": None, "armed": False,
+            "in_air": False, "flight_mode": "HOLD",
+            "position_velocity_ned_fresh": True, "attitude_euler_fresh": True,
+        })
+        service.ambulance_nav.update({
+            "north_m": 0.0, "east_m": 0.0, "down_m": 0.0,
+            "north_velocity_m_s": 0.0, "east_velocity_m_s": 0.0,
+            "down_velocity_m_s": 0.0, "yaw_deg": 0.0,
+        })
+        service.nav_times["ambulance_0:position_velocity_ned"] = now
+        service.nav_times["ambulance_0:attitude_euler"] = now
+        for name in ("armed", "in_air", "flight_mode"):
+            service.telemetry_times["ambulance_0"][name] = now
+
+        horizontal, vertical = 180, 16
+        scan = {
+            "count": horizontal, "verticalCount": vertical,
+            "angleMin": -math.pi, "angleStep": 2 * math.pi / horizontal,
+            "verticalAngleMin": -math.radians(15),
+            "verticalAngleStep": math.radians(2),
+            "rangeMin": 0.2, "rangeMax": 25.0,
+            "ranges": [25.0] * (horizontal * vertical),
+        }
+        service.scan_feed = SimpleNamespace(
+            latest=scan, received_at=now - scan_age_s,
+        )
+        return service, now, mission
+
+    def test_ground_preview_only_suggests_path_for_unacknowledged_mission(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            service, now, mission = self._make_ground_preview_service(Path(directory))
+            try:
+                service._refresh_ambulance_ground_preview(now)
+                preview = service.ambulance_ground_preview
+                self.assertIn(preview["state"], {"GOAL", "DETOUR"})
+                self.assertEqual(preview["mission_id"], mission.mission_id)
+                self.assertEqual(mission.state, "suggestion_received")
+                self.assertFalse(preview["execution_enabled"])
+                self.assertFalse(preview["flight_commands_sent"])
+                self.assertFalse(service.mission_ack_times)
+            finally:
+                service.node.close()
+
+    def test_ground_preview_holds_for_stale_lidar(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            service, now, mission = self._make_ground_preview_service(
+                Path(directory), scan_age_s=2.0,
+            )
+            try:
+                service._refresh_ambulance_ground_preview(now)
+                preview = service.ambulance_ground_preview
+                self.assertEqual(preview["state"], "HOLD")
+                self.assertEqual(preview["reason"], "lidar_scan_stale_or_unavailable")
+                self.assertEqual(mission.state, "suggestion_received")
+                self.assertFalse(preview["execution_enabled"])
+                self.assertFalse(preview["flight_commands_sent"])
+            finally:
+                service.node.close()
+
+    def test_ground_preview_holds_for_expired_suggestion(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            service, now, mission = self._make_ground_preview_service(
+                Path(directory), expiry_delta_s=-1.0,
+            )
+            try:
+                service._refresh_ambulance_ground_preview(now)
+                preview = service.ambulance_ground_preview
+                self.assertEqual(preview["state"], "HOLD")
+                self.assertEqual(preview["reason"], "mission_expired")
+                self.assertEqual(mission.state, "suggestion_received")
+                self.assertFalse(preview["flight_commands_sent"])
+            finally:
+                service.node.close()
+
+    def test_ground_preview_holds_for_invalid_target_frame(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            service, now, mission = self._make_ground_preview_service(
+                Path(directory), target={
+                    "coordinate_frame": "approximate_geodetic",
+                    "coordinates": [12.9, 77.5, 900.0],
+                    "reference_vehicle_id": "ambulance_0",
+                    "transform_id": "unvalidated-preview-target",
+                },
+            )
+            try:
+                service._refresh_ambulance_ground_preview(now)
+                preview = service.ambulance_ground_preview
+                self.assertEqual(preview["state"], "HOLD")
+                self.assertEqual(mission.state, "suggestion_received")
+                self.assertFalse(preview["execution_enabled"])
+                self.assertFalse(preview["flight_commands_sent"])
+            finally:
+                service.node.close()
 
     def test_obstacle_guidance_uses_transition_connection_and_fresh_vehicle_streams(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -471,11 +654,45 @@ class RuntimeSafetyTests(unittest.TestCase):
                 "expires_at_utc": (datetime.now(timezone.utc).replace(year=datetime.now(timezone.utc).year + 1)).isoformat()}
             await agent.handle({"message_type": "mission_assignment", "payload": payload})
             saved = json.loads(args.mission_file.read_text())
-            self.assertTrue(saved["acknowledged"])
+            self.assertFalse(saved["acknowledged"])
+            self.assertEqual(saved["state"], "suggestion_received")
             self.assertFalse(saved["execution_enabled"])
             self.assertFalse(saved["flight_commands_sent"])
             self.assertEqual(agent.node.sent[0][1], "mission_ack")
             self.assertEqual(agent.node.sent[0][2]["status"], "accepted_suggestion_only")
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_vehicle_agent_accepts_standby_without_enabling_flight(self) -> None:
+        async def scenario(root: Path) -> None:
+            args = Namespace(vehicle="ambulance_0", key_file=None,
+                mission_file=root / "mission.json", state_file=root / "agent.json",
+                guidance_log=None, guidance_publish_s=1.0,
+                accept_ambulance_standby=True)
+            agent = VehicleAgent(args, ("127.0.0.1", 8765))
+            class FakeNode:
+                async def send_reliable(self, *call_args, **kwargs):
+                    self.sent = call_args
+                    return "accepted"
+            agent.node = FakeNode()
+            payload = {"mission_id": "standby-m1", "incident_id": "r1:0",
+                "target": {"coordinate_frame": "local_ned_m",
+                    "reference_vehicle_id": "ambulance_0",
+                    "transform_id": "wgs84-ecef:abc",
+                    "coordinates": [1.0, 2.0, -1.0]},
+                "expires_at_utc": (datetime.now(timezone.utc).replace(
+                    year=datetime.now(timezone.utc).year + 1)).isoformat()}
+            await agent.handle({"message_type": "mission_assignment", "payload": payload})
+            saved = json.loads(args.mission_file.read_text())
+            self.assertTrue(saved["acknowledged"])
+            self.assertEqual(saved["state"], "acknowledged")
+            self.assertFalse(saved["suggestion_received"])
+            self.assertFalse(saved["execution_enabled"])
+            self.assertFalse(saved["flight_commands_sent"])
+            self.assertEqual(agent.node.sent[1], "mission_ack")
+            self.assertEqual(agent.node.sent[2]["status"], "accepted_standby")
+            self.assertFalse(agent.node.sent[2]["execution_enabled"])
+            self.assertFalse(agent.node.sent[2]["flight_commands_sent"])
         with tempfile.TemporaryDirectory() as directory:
             asyncio.run(scenario(Path(directory)))
 
@@ -644,7 +861,7 @@ class RuntimeSafetyTests(unittest.TestCase):
             self.assertEqual(communication["phase"], "send_failed")
             self.assertEqual(len(errors), 1)
 
-    def test_terminal_monitor_rate_limits_partial_snapshots_to_one_second(self) -> None:
+    def test_terminal_monitor_rate_limits_partial_snapshots_to_ten_seconds(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             config = {"scout_0": {"role": "Scout", "instance": 0, "system_id": 1},
                       "ambulance_0": {"role": "Medical-Support", "instance": 1, "system_id": 2}}
@@ -654,7 +871,7 @@ class RuntimeSafetyTests(unittest.TestCase):
                 Path(directory) / "reports", config, peers, stream=io.StringIO())
 
             with patch.object(terminal_monitor_module.time, "monotonic",
-                              side_effect=[10.0, 10.4, 11.0]):
+                              side_effect=[10.0, 10.4, 20.0]):
                 with patch.object(monitor, "_write_partial_snapshot") as write_snapshot:
                     monitor.sample({})
                     self.assertEqual(write_snapshot.call_count, 1)
@@ -944,6 +1161,323 @@ class EndToEndLoopbackTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             asyncio.run(scenario(Path(directory)))
 
+    def test_three_victims_are_dispatched_sequentially_after_completion(self) -> None:
+        import copy
+
+        async def scenario(root: Path) -> None:
+            coord_port, ambulance_port = free_udp_port(), free_udp_port()
+            coordinator = Day10CoordinatorService(
+                make_service_args(root),
+                {"scout_0": {"role": "Scout"},
+                 "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", free_udp_port()),
+                 "ambulance_0": ("127.0.0.1", ambulance_port)},
+            )
+            agent_args = Namespace(
+                vehicle="ambulance_0", key_file=None,
+                mission_file=root / "ambulance_mission.json",
+                state_file=root / "ambulance_state.json",
+                guidance_log=None, progress_log=None, guidance_publish_s=1.0,
+            )
+            ambulance = VehicleAgent(agent_args, ("127.0.0.1", coord_port))
+            await coordinator.node.bind("127.0.0.1", coord_port)
+            await ambulance.node.bind("127.0.0.1", ambulance_port)
+
+            now = datetime.now(timezone.utc)
+            now_mono = time.monotonic()
+            coordinator.origins["scout_0"] = origin("scout_0", 47, 8, at=now.isoformat())
+            coordinator.origins["ambulance_0"] = origin("ambulance_0", 47, 8, at=now.isoformat())
+            coordinator.vehicle_state["ambulance_0"].update({
+                "role": "Medical-Support", "connected": True, "in_air": False,
+                "armed": False, "is_armable": True, "available": True,
+                "sampled_at_utc": now.isoformat(), "fresh": True,
+            })
+
+            class Battery:
+                remaining_percent = 90.0
+                voltage_v = 16.0
+                current_battery_a = 2.0
+                capacity_consumed_ah = 0.1
+
+            monitor = coordinator.batteries["ambulance_0"]
+            monitor.add_mavsdk_sample(
+                Battery(), monotonic_s=now_mono - 31,
+                sampled_at_utc=(now - timedelta(seconds=31)).isoformat(),
+            )
+            Battery.remaining_percent = 89.0
+            monitor.add_mavsdk_sample(
+                Battery(), monotonic_s=now_mono, sampled_at_utc=now.isoformat(),
+            )
+
+            async def wait_for(predicate, description: str) -> None:
+                deadline = time.monotonic() + 3.0
+                while time.monotonic() < deadline:
+                    if predicate():
+                        return
+                    await asyncio.sleep(0.01)
+                raise AssertionError(f"Timed out waiting for {description}")
+
+            def refresh_ambulance_telemetry() -> None:
+                sampled_at = datetime.now(timezone.utc).isoformat()
+                coordinator.vehicle_state["ambulance_0"].update({
+                    "role": "Medical-Support",
+                    "connected": True,
+                    "in_air": False,
+                    "armed": False,
+                    "is_armable": True,
+                    "available": True,
+                    "sampled_at_utc": sampled_at,
+                    "fresh": True,
+                })
+
+            async def complete_current_mission(mission) -> None:
+                for status in ("enroute", "arrived", "completed"):
+                    if status == "completed":
+                        refresh_ambulance_telemetry()
+                    progress = await ambulance.report_progress({
+                        "mission_id": mission.mission_id, "status": status,
+                    })
+                    self.assertTrue(progress["accepted"], progress)
+                    await wait_for(
+                        lambda: mission.state == status,
+                        f"mission {mission.mission_id} to reach {status}",
+                    )
+
+            try:
+                candidate = report(observed=now.isoformat())
+                candidate["report_id"] = "three-victim-report"
+                base_detection = candidate["detections"][0]
+                candidate["detections"] = []
+                for index in range(3):
+                    detection = copy.deepcopy(base_detection)
+                    detection["incident_world_location"]["position_m"] = [
+                        20.0 + index * 5.0, 5.0, -1.0,
+                    ]
+                    candidate["detections"].append(detection)
+
+                result = await coordinator.process_report(
+                    candidate, "three-victim-transport-message",
+                )
+                self.assertTrue(result["accepted"])
+                self.assertEqual(len(result["incident_ids"]), 3)
+                self.assertEqual(len(result["proposals"]), 1)
+                self.assertTrue(result["proposals"][0]["eligible"])
+
+                self.assertEqual(len(coordinator.coordinator.missions), 1)
+                first = next(iter(coordinator.coordinator.missions.values()))
+                self.assertEqual(
+                    list(coordinator.pending_incident_ids),
+                    result["incident_ids"][1:],
+                )
+                self.assertEqual(coordinator.active_ambulance_mission_id, first.mission_id)
+
+                await wait_for(
+                    lambda: first.state == "suggestion_received",
+                    "first mission acknowledgement",
+                )
+
+                await complete_current_mission(first)
+                refresh_ambulance_telemetry()
+
+                # Completion alone must not dispatch another sortie.
+                self.assertEqual(len(coordinator.coordinator.missions), 1)
+                self.assertEqual(coordinator.ambulance_sortie_state, "RETURN_REQUIRED")
+                self.assertEqual(coordinator.active_ambulance_mission_id, None)
+
+                # Simulate fresh landing confirmation from the return monitor.
+                lifecycle = coordinator.ambulance_return_lifecycle
+                lifecycle.state = "RETURNING"
+                lifecycle.rtl_requested_at = time.monotonic()
+                self.assertEqual(
+                    lifecycle.confirm_landed(in_air=False, telemetry_age_s=0.0),
+                    "LANDED",
+                )
+                coordinator.ambulance_sortie_state = "LANDED"
+                coordinator._persist_dispatch_queue()
+                await coordinator._dispatch_next_ambulance_incident()
+
+                print("\\n=== SEQUENTIAL DISPATCH DIAGNOSTIC ===", flush=True)
+                print("First mission:", first.mission_id, first.state, flush=True)
+                print("Active mission ID:", coordinator.active_ambulance_mission_id, flush=True)
+                print("Pending incident IDs:", list(coordinator.pending_incident_ids), flush=True)
+                print("Mission count:", len(coordinator.coordinator.missions), flush=True)
+                print("Recent dispatch events:", flush=True)
+                for event in coordinator.events[-30:]:
+                    if event.get("event") in {
+                        "mission_status_received",
+                        "mission_proposal_delivered",
+                        "mission_proposal_denied",
+                        "dispatch_queue_blocked",
+                        "mission_proposal_transport_failed",
+                    }:
+                        print(event, flush=True)
+                print("=== END DIAGNOSTIC ===\\n", flush=True)
+
+                await wait_for(
+                    lambda: len(coordinator.coordinator.missions) == 2,
+                    "second mission dispatch",
+                )
+                second = list(coordinator.coordinator.missions.values())[1]
+                await wait_for(
+                    lambda: second.state == "suggestion_received",
+                    "second mission acknowledgement",
+                )
+                self.assertEqual(
+                    coordinator.active_ambulance_mission_id, second.mission_id,
+                )
+                self.assertEqual(list(coordinator.pending_incident_ids), result["incident_ids"][2:])
+
+                await complete_current_mission(second)
+                refresh_ambulance_telemetry()
+
+                # The third incident also waits for the second sortie to land.
+                self.assertEqual(len(coordinator.coordinator.missions), 2)
+                self.assertEqual(coordinator.ambulance_sortie_state, "RETURN_REQUIRED")
+                lifecycle.state = "RETURNING"
+                lifecycle.rtl_requested_at = time.monotonic()
+                self.assertEqual(
+                    lifecycle.confirm_landed(in_air=False, telemetry_age_s=0.0),
+                    "LANDED",
+                )
+                coordinator.ambulance_sortie_state = "LANDED"
+                coordinator._persist_dispatch_queue()
+                await coordinator._dispatch_next_ambulance_incident()
+
+                await wait_for(
+                    lambda: len(coordinator.coordinator.missions) == 3,
+                    "third mission dispatch",
+                )
+                third = list(coordinator.coordinator.missions.values())[2]
+                await wait_for(
+                    lambda: third.state == "suggestion_received",
+                    "third mission acknowledgement",
+                )
+                self.assertEqual(coordinator.active_ambulance_mission_id, third.mission_id)
+                self.assertEqual(list(coordinator.pending_incident_ids), [])
+
+                await complete_current_mission(third)
+                self.assertIsNone(coordinator.active_ambulance_mission_id)
+                self.assertEqual(list(coordinator.pending_incident_ids), [])
+                self.assertEqual(coordinator.ambulance_sortie_state, "RETURN_REQUIRED")
+                self.assertTrue(any(
+                    event.get("event") == "ambulance_sortie_return_required"
+                    for event in coordinator.events
+                ))
+                self.assertEqual(
+                    [mission.state for mission in coordinator.coordinator.missions.values()],
+                    ["completed", "completed", "completed"],
+                )
+                self.assertFalse(json.loads(agent_args.mission_file.read_text())["flight_commands_sent"])
+            finally:
+                coordinator.node.close()
+                ambulance.node.close()
+
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_genuine_mission_ack_creates_authorization_timestamp(self) -> None:
+        async def scenario(root: Path) -> None:
+            args = make_service_args(root)
+            service = Day10CoordinatorService(
+                args,
+                {"scout_0": {"role": "Scout"},
+                 "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 11111),
+                 "ambulance_0": ("127.0.0.1", 11112)},
+            )
+            mission = SimpleNamespace(
+                mission_id="genuine-ack-test",
+                vehicle_id="ambulance_0",
+                state="proposed",
+                expires_at_utc=(datetime.now(timezone.utc) + timedelta(minutes=2)).isoformat(),
+                target={"coordinates": [1.0, 2.0, -1.0]},
+                history=[],
+            )
+            service.coordinator.missions[mission.mission_id] = mission
+
+            await service._handle_message({
+                "sender": "ambulance_0",
+                "message_type": "mission_ack",
+                "message_id": "genuine-ack-message-1",
+                "payload": {
+                    "mission_id": mission.mission_id,
+                    "status": "accepted",
+                    "execution_enabled": False,
+                    "flight_commands_sent": False,
+                },
+            })
+
+            self.assertEqual(mission.state, "acknowledged")
+            self.assertIn(mission.mission_id, service.mission_ack_times)
+            self.assertIsInstance(service.mission_ack_times[mission.mission_id], float)
+            self.assertFalse(any(
+                event.get("event") == "mission_application_ack"
+                and event.get("result", {}).get("accepted") is False
+                for event in service.events
+            ))
+            self.assertFalse(service.ambulance_guidance is not None
+                             and getattr(service.ambulance_guidance, "flight_commands_sent", False))
+
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_coordinator_accepts_standby_ack_only_when_enabled(self) -> None:
+        async def scenario(root: Path) -> None:
+            args = make_service_args(root)
+            args.allow_ambulance_standby_ack = True
+            service = Day10CoordinatorService(
+                args,
+                {"scout_0": {"role": "Scout"},
+                 "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 11111),
+                 "ambulance_0": ("127.0.0.1", 11112)})
+            mission = SimpleNamespace(
+                mission_id="standby-ack-test", vehicle_id="ambulance_0",
+                state="proposed",
+                expires_at_utc=(datetime.now(timezone.utc) + timedelta(minutes=2)).isoformat(),
+                target={"coordinates": [1.0, 2.0, -1.0]}, history=[])
+            service.coordinator.missions[mission.mission_id] = mission
+            await service._handle_message({
+                "sender": "ambulance_0", "message_type": "mission_ack",
+                "message_id": "standby-ack-message-1",
+                "payload": {"mission_id": mission.mission_id,
+                    "status": "accepted_standby",
+                    "execution_enabled": False, "flight_commands_sent": False}})
+            self.assertEqual(mission.state, "acknowledged")
+            self.assertIn(mission.mission_id, service.mission_ack_times)
+            service.node.close()
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
+    def test_coordinator_rejects_standby_ack_when_disabled(self) -> None:
+        async def scenario(root: Path) -> None:
+            args = make_service_args(root)
+            args.allow_ambulance_standby_ack = False
+            service = Day10CoordinatorService(
+                args,
+                {"scout_0": {"role": "Scout"},
+                 "ambulance_0": {"role": "Medical-Support"}},
+                {"scout_0": ("127.0.0.1", 11111),
+                 "ambulance_0": ("127.0.0.1", 11112)})
+            mission = SimpleNamespace(
+                mission_id="standby-disabled-test", vehicle_id="ambulance_0",
+                state="proposed",
+                expires_at_utc=(datetime.now(timezone.utc) + timedelta(minutes=2)).isoformat(),
+                target={"coordinates": [1.0, 2.0, -1.0]}, history=[])
+            service.coordinator.missions[mission.mission_id] = mission
+            await service._handle_message({
+                    "sender": "ambulance_0", "message_type": "mission_ack",
+                    "message_id": "standby-disabled-message-1",
+                    "payload": {"mission_id": mission.mission_id,
+                        "status": "accepted_standby",
+                        "execution_enabled": False, "flight_commands_sent": False}})
+            self.assertEqual(mission.state, "proposed")
+            self.assertIn("message_rejected:Ambulance standby acknowledgement is not enabled", service.communication["ambulance_0"]["error"])
+            self.assertNotIn(mission.mission_id, service.mission_ack_times)
+            service.node.close()
+        with tempfile.TemporaryDirectory() as directory:
+            asyncio.run(scenario(Path(directory)))
+
     def test_report_transform_policy_mission_delivery_and_application_ack(self) -> None:
         async def scenario(root: Path) -> None:
             coord_port, ambulance_port = free_udp_port(), free_udp_port()
@@ -983,12 +1517,12 @@ class EndToEndLoopbackTests(unittest.TestCase):
             self.assertTrue(result["proposals"][0]["eligible"])
             deadline = time.monotonic() + 2.0
             mission = next(iter(coordinator.coordinator.missions.values()))
-            while mission.state != "acknowledged" and time.monotonic() < deadline:
+            while mission.state != "suggestion_received" and time.monotonic() < deadline:
                 await asyncio.sleep(0.01)
-            self.assertEqual(mission.state, "acknowledged")
+            self.assertEqual(mission.state, "suggestion_received")
             self.assertFalse(coordinator.communication.get("ambulance_0", {}).get("error"))
-            self.assertEqual(coordinator.obstacle_guidance.get("state"), "HOLD")
-            self.assertEqual(coordinator.obstacle_guidance.get("reason"), "telemetry_unavailable")
+            self.assertEqual(coordinator.obstacle_guidance.get("state"), "UNKNOWN")
+            self.assertNotIn(mission.mission_id, coordinator.mission_ack_times)
             saved = json.loads(agent_args.mission_file.read_text())
             self.assertEqual(saved["mission_id"], mission.mission_id)
             self.assertFalse(saved["flight_commands_sent"])
@@ -998,7 +1532,7 @@ class EndToEndLoopbackTests(unittest.TestCase):
                 "message_id": "wrong-status-sender",
                 "payload": {"mission_id": mission.mission_id, "status": "enroute"},
             })
-            self.assertEqual(mission.state, "acknowledged")
+            self.assertEqual(mission.state, "suggestion_received")
             progress = await ambulance.report_progress({
                 "mission_id": mission.mission_id, "status": "enroute",
             })

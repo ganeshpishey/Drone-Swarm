@@ -43,6 +43,7 @@ async def run(args: argparse.Namespace, stop_requested: asyncio.Event) -> None:
     lidar_mapper: LidarPoseMapper | None = None
     lidar_started = False
     pose_tasks: list[asyncio.Task[None]] = []
+    altitude_guard_task: asyncio.Task[None] | None = None
     last_pose_sample: dict[str, float] = {}
 
     async def wait_or_operator_stop(awaitable: Any, operation: str) -> Any:
@@ -123,6 +124,8 @@ async def run(args: argparse.Namespace, stop_requested: asyncio.Event) -> None:
         async def monitor() -> None:
             nonlocal latest_altitude, next_report
             async for position in controller.drone.telemetry.position():
+                if stop_requested.is_set():
+                    raise SurveyInterrupted("Safety stop requested; returning to launch.")
                 latest_altitude = float(position.relative_altitude_m)
                 now = asyncio.get_running_loop().time()
                 if now >= next_report:
@@ -147,10 +150,32 @@ async def run(args: argparse.Namespace, stop_requested: asyncio.Event) -> None:
                 f"{observed}. Aborting survey and returning to launch."
             ) from error
 
+    async def enforce_altitude_limit() -> None:
+        try:
+            async for position in controller.drone.telemetry.position():
+                altitude = float(position.relative_altitude_m)
+                if altitude > args.max_altitude:
+                    print(
+                        f"ALTITUDE SAFETY LIMIT EXCEEDED: {altitude:.2f} m "
+                        f"> {args.max_altitude:.2f} m. Requesting RTL."
+                    )
+                    stop_requested.set()
+                    return
+            print("Altitude telemetry stream ended unexpectedly. Requesting RTL.")
+            stop_requested.set()
+        except asyncio.CancelledError:
+            raise
+        except Exception as error:
+            print(f"Altitude safety telemetry failed: {error}. Requesting RTL.")
+            stop_requested.set()
+
     try:
         print("Connecting to Scout at UDP 14540...")
         await controller.connect(timeout_s=45.0)
         connected = True
+        altitude_guard_task = asyncio.create_task(
+            enforce_altitude_limit(), name="scout-altitude-safety-guard"
+        )
         await log_pose_streams()
         if args.lidar_map:
             lidar_mapper = LidarPoseMapper(args.lidar_map)
@@ -162,8 +187,11 @@ async def run(args: argparse.Namespace, stop_requested: asyncio.Event) -> None:
                 print(f"Could not start LiDAR mapping capture: {error}")
         print(f"Arming and taking off vertically to {args.altitude:.1f} m...")
         await controller.arm()
-        await controller.takeoff(args.altitude)
+        # Ensure finally attempts RTL even if takeoff is interrupted or fails.
         airborne = True
+        await wait_or_operator_stop(
+            controller.takeoff(args.altitude), "takeoff"
+        )
         await wait_for_takeoff_altitude(
             args.minimum_altitude, timeout_s=args.takeoff_timeout
         )
@@ -221,6 +249,11 @@ async def run(args: argparse.Namespace, stop_requested: asyncio.Event) -> None:
     except Exception as error:
         print(f"Scout survey stopped: {error}")
     finally:
+        # Stop the altitude monitor before RTL so it cannot overwrite RTL
+        # with a delayed HOLD command.
+        if altitude_guard_task is not None:
+            altitude_guard_task.cancel()
+            await asyncio.gather(altitude_guard_task, return_exceptions=True)
         if connected and airborne:
             try:
                 print("Requesting PX4 return-to-launch and landing...")
@@ -229,6 +262,7 @@ async def run(args: argparse.Namespace, stop_requested: asyncio.Event) -> None:
                 )
                 await controller.wait_until_landed(timeout_s=args.landing_timeout)
                 print("PX4 telemetry confirms Scout landed.")
+                print("SCOUT_SURVEY_COMPLETED_AND_LANDED")
                 await log_snapshot("returned_and_landed")
             except Exception as error:
                 print(f"Could not confirm return and landing: {error}")
@@ -251,7 +285,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--north", type=float, default=5.0)
     parser.add_argument("--east", type=float, default=8.0)
-    parser.add_argument("--altitude", type=float, default=8.0)
+    parser.add_argument("--altitude", type=float, default=3.0)
     parser.add_argument(
         "--yaw-deg",
         type=float,
@@ -261,9 +295,11 @@ def main() -> None:
     parser.add_argument(
         "--minimum-altitude",
         type=float,
-        default=7.0,
+        default=2.5,
         help="Altitude gate before proceeding (lower than target to allow slow SITL climbs).",
     )
+    parser.add_argument("--max-altitude", type=float, default=4.0,
+                        help="Hard maximum Scout relative altitude in metres.")
     parser.add_argument("--takeoff-timeout", type=float, default=200.0)
     parser.add_argument("--waypoint-timeout", type=float, default=180.0)
     parser.add_argument(
@@ -298,8 +334,10 @@ def main() -> None:
         default=Path("/tmp/scout-day7-survey.jsonl"),
     )
     args = parser.parse_args()
-    if not 0.0 < args.minimum_altitude <= args.altitude:
-        parser.error("--minimum-altitude must be greater than 0 and no higher than --altitude")
+    if not 0.0 < args.minimum_altitude <= args.altitude <= args.max_altitude:
+        parser.error("Require 0 < minimum-altitude <= altitude <= max-altitude")
+    if args.max_altitude > 4.0:
+        parser.error("--max-altitude cannot exceed the project safety ceiling of 4.0 m")
     if args.hold_seconds < 0.0:
         parser.error("--hold-seconds cannot be negative")
     async def run_with_signal_handling() -> None:

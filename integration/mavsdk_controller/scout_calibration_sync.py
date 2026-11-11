@@ -10,6 +10,7 @@ import argparse
 import bisect
 import json
 import math
+import statistics
 import time
 import xml.etree.ElementTree as ET
 from collections import deque
@@ -27,42 +28,51 @@ def _finite(value: Any, name: str) -> float:
 
 
 def gazebo_header_time(message: Any) -> tuple[float, int | None]:
-    """Return Gazebo message-header simulation time and optional sequence.
+    """Read Gazebo simulation timestamp from JSON or protobuf messages.
 
-    Host receive time and GStreamer PTS are intentionally not accepted here.
+    Host receive time and GStreamer PTS are deliberately never substituted.
     """
-    if not isinstance(message, dict):
-        raise ValueError("Gazebo message must be a JSON object")
-    header = message.get("header")
-    stamp = header.get("stamp") if isinstance(header, dict) else None
-    if not isinstance(stamp, dict):
+    def field(obj: Any, name: str, default: Any = None) -> Any:
+        if isinstance(obj, dict):
+            return obj.get(name, default)
+        return getattr(obj, name, default)
+
+    header = field(message, "header")
+    stamp = field(header, "stamp")
+    if header is None or stamp is None:
         raise ValueError("gazebo_measurement_timestamp_missing")
-    sec = stamp.get("sec", stamp.get("seconds"))
-    nsec = stamp.get("nsec", stamp.get("nanoseconds"))
+
+    sec = field(stamp, "sec", field(stamp, "seconds"))
+    nsec = field(stamp, "nsec", field(stamp, "nanoseconds"))
+
     if isinstance(sec, str):
         try:
-            sec = int(sec, 10)  # Protobuf JSON encodes int64 seconds as a decimal string.
+            sec = int(sec, 10)
         except ValueError as error:
             raise ValueError("gazebo_timestamp_seconds_invalid") from error
+
     if isinstance(sec, bool) or not isinstance(sec, int):
         raise ValueError("gazebo_timestamp_seconds_invalid")
-    if isinstance(nsec, bool) or not isinstance(nsec, int) or not 0 <= nsec < 1_000_000_000:
+    if (isinstance(nsec, bool) or not isinstance(nsec, int)
+            or not 0 <= nsec < 1_000_000_000):
         raise ValueError("gazebo_timestamp_nanoseconds_invalid")
+
     sequence = None
-    entries = header.get("data", [])
-    if isinstance(entries, list):
-        for entry in entries:
-            if not isinstance(entry, dict) or entry.get("key", "").casefold() not in {"seq", "sequence"}:
-                continue
-            values = entry.get("value", [])
-            if isinstance(values, str):
-                values = [values]
-            if isinstance(values, list) and values:
-                try:
-                    sequence = int(values[0])
-                except (TypeError, ValueError):
-                    sequence = None
-            break
+    entries = field(header, "data", [])
+    for entry in entries or []:
+        key = field(entry, "key", "")
+        if not isinstance(key, str) or key.casefold() not in {"seq", "sequence"}:
+            continue
+        values = field(entry, "value", [])
+        if isinstance(values, str):
+            values = [values]
+        if values:
+            try:
+                sequence = int(values[0])
+            except (TypeError, ValueError):
+                sequence = None
+        break
+
     return sec + nsec * 1e-9, sequence
 
 
@@ -254,6 +264,14 @@ def inspect_sdf_calibration(vehicle_sdf: Path, camera_model_sdf: Path,
     frd_from_flu = [[1.0, 0.0, 0.0, 0.0], [0.0, -1.0, 0.0, 0.0],
                     [0.0, 0.0, -1.0, 0.0], [0.0, 0.0, 0.0, 1.0]]
     body_frd_from_lidar = _multiply(frd_from_flu, base_from_lidar)
+
+    # Direct camera optical -> vehicle body FRD transform.
+    # This path does not depend on the LiDAR mount or point cloud.
+    body_frd_from_camera_optical = _multiply(
+        _multiply(frd_from_flu, base_from_camera_link),
+        camera_link_from_optical,
+    )
+
     return {
         "schema_version": "scout-sdf-calibration-inspection-v1",
         "calibration_status": "nominal_sdf_derived_unverified",
@@ -272,8 +290,11 @@ def inspect_sdf_calibration(vehicle_sdf: Path, camera_model_sdf: Path,
                                           "lidar_link": base_from_lidar},
         "camera_joint_frame_pose_in_base_link_sdf": list(joint_pose_values),
         "camera_link_to_joint_origin_offset_m": [joint_from_camera_link[i][3] for i in range(3)],
-        "transforms_nominal": {"camera_optical_from_lidar_link": optical_from_lidar,
-                               "body_frd_from_lidar_link": body_frd_from_lidar},
+        "transforms_nominal": {
+            "camera_optical_from_lidar_link": optical_from_lidar,
+            "body_frd_from_lidar_link": body_frd_from_lidar,
+            "body_frd_from_camera_optical": body_frd_from_camera_optical,
+        },
         "extrinsics_validation": "derived_from_active_SDF_pose_graph_not_empirically_verified",
         "timestamp_policy": "use each Gazebo sensor message header.stamp; do not use host receive time or RTP PTS as acquisition time",
     }
@@ -456,66 +477,202 @@ class GazeboSensorSynchronizer:
 
 
 class SimulationClockMapper:
-    """Bounded least-squares mapping from Gazebo time to callback monotonic time.
+    """Robust local mapping from Gazebo time to host callback time.
 
-    A mapping is exposed only when it has enough samples and residual jitter is
-    within the configured limit. Caller must subscribe directly to Gazebo
-    clock messages and timestamp callback arrival with ``time.monotonic()``.
+    A bounded recent-sample window adapts to changing simulation speed.
+    Callback arrival is still only an estimate of clock-generation time;
+    the residual gate remains fail-closed.
     """
 
-    def __init__(self, *, sample_limit: int = 64, minimum_samples: int = 8,
-                 maximum_residual_s: float = 0.03, reset_backjump_s: float = 1.0):
+    def __init__(
+        self,
+        *,
+        sample_limit: int = 64,
+        minimum_samples: int = 8,
+        maximum_residual_s: float = 0.03,
+        reset_backjump_s: float = 1.0,
+        fit_window_samples: int = 12,
+    ):
         if sample_limit < 2 or minimum_samples < 2 or minimum_samples > sample_limit:
             raise ValueError("invalid clock mapper sample limits")
+        if fit_window_samples < minimum_samples or fit_window_samples > sample_limit:
+            raise ValueError("invalid clock mapper fit window")
         if maximum_residual_s <= 0 or reset_backjump_s <= 0:
             raise ValueError("invalid clock mapper time limits")
+
         self.samples: deque[tuple[float, float]] = deque(maxlen=sample_limit)
         self.minimum_samples = minimum_samples
         self.maximum_residual_s = maximum_residual_s
         self.reset_backjump_s = reset_backjump_s
+        self.fit_window_samples = fit_window_samples
         self.epoch = 0
 
     def add_clock(self, sim_time_s: float, receive_monotonic_s: float) -> dict[str, Any]:
         sim = _finite(sim_time_s, "sim_time_s")
         host = _finite(receive_monotonic_s, "receive_monotonic_s")
-        reset = bool(self.samples and sim < self.samples[-1][0] - self.reset_backjump_s)
+
+        reset = bool(
+            self.samples
+            and sim < self.samples[-1][0] - self.reset_backjump_s
+        )
         if reset:
             self.samples.clear()
             self.epoch += 1
-        if self.samples and (sim <= self.samples[-1][0] or host <= self.samples[-1][1]):
-            return {"accepted": False, "reason": "clock_sample_not_increasing", "epoch": self.epoch}
+
+        if self.samples and (
+            sim <= self.samples[-1][0]
+            or host <= self.samples[-1][1]
+        ):
+            return {
+                "accepted": False,
+                "reason": "clock_sample_not_increasing",
+                "epoch": self.epoch,
+            }
+
         self.samples.append((sim, host))
-        status = self.status()
-        return {"accepted": True, "simulation_reset": reset, **status}
+        return {
+            "accepted": True,
+            "simulation_reset": reset,
+            **self.status(),
+        }
+
+    def _fit(self, samples=None) -> tuple[float, float, float]:
+        samples = list(samples) if samples is not None else list(self.samples)[-self.fit_window_samples:]
+        slopes = []
+
+        for index, (x1, y1) in enumerate(samples):
+            for x2, y2 in samples[index + 1:]:
+                if x2 > x1:
+                    slope = (y2 - y1) / (x2 - x1)
+                    if math.isfinite(slope):
+                        slopes.append(slope)
+
+        if not slopes:
+            raise ValueError("clock_fit_insufficient_time_span")
+
+        slope = statistics.median(slopes)
+        intercept = statistics.median(y - slope * x for x, y in samples)
+        residual = max(
+            abs(y - (slope * x + intercept))
+            for x, y in samples
+        )
+        return slope, intercept, residual
 
     def status(self) -> dict[str, Any]:
-        if len(self.samples) < self.minimum_samples:
-            return {"ready": False, "sample_count": len(self.samples), "epoch": self.epoch}
-        xs = [sample[0] for sample in self.samples]
-        ys = [sample[1] for sample in self.samples]
-        xmean, ymean = sum(xs) / len(xs), sum(ys) / len(ys)
-        denom = sum((x - xmean) ** 2 for x in xs)
-        slope = sum((x - xmean) * (y - ymean) for x, y in zip(xs, ys)) / denom if denom else 0.0
-        intercept = ymean - slope * xmean
-        residual = max(abs(y - (slope * x + intercept)) for x, y in self.samples)
-        ready = 0.1 <= slope <= 10.0 and residual <= self.maximum_residual_s
-        return {"ready": ready, "sample_count": len(self.samples), "epoch": self.epoch,
-                "host_seconds_per_sim_second": slope, "max_fit_residual_s": residual}
+        count = len(self.samples)
+
+        if count < self.minimum_samples:
+            return {
+                "ready": False,
+                "sample_count": count,
+                "epoch": self.epoch,
+                "fit_window_samples": self.fit_window_samples,
+            }
+
+        try:
+            slope, intercept, residual = self._fit()
+        except ValueError:
+            return {
+                "ready": False,
+                "sample_count": count,
+                "epoch": self.epoch,
+                "fit_window_samples": self.fit_window_samples,
+                "reason": "clock_fit_insufficient_time_span",
+            }
+
+        window = list(self.samples)[-self.fit_window_samples:]
+        ready = (
+            0.1 <= slope <= 10.0
+            and residual <= self.maximum_residual_s
+        )
+
+        return {
+            "ready": ready,
+            "sample_count": count,
+            "epoch": self.epoch,
+            "host_seconds_per_sim_second": slope,
+            "clock_intercept_s": intercept,
+            "max_fit_residual_s": residual,
+            "mapping_method": "theil_sen_recent_window",
+            "fit_window_samples": len(window),
+            "fit_window_sim_start_s": window[0][0],
+            "fit_window_sim_end_s": window[-1][0],
+        }
 
     def to_monotonic(self, sim_time_s: float) -> dict[str, Any]:
-        status = self.status()
-        if not status["ready"]:
-            return {"valid": False, "reason": "simulation_clock_mapping_unstable", **status}
-        xs = [sample[0] for sample in self.samples]
-        ys = [sample[1] for sample in self.samples]
         sim = _finite(sim_time_s, "sim_time_s")
-        if sim < xs[0] or sim > xs[-1]:
-            return {"valid": False, "reason": "simulation_time_outside_clock_window", **status}
-        xmean, ymean = sum(xs) / len(xs), sum(ys) / len(ys)
-        slope = sum((x - xmean) * (y - ymean) for x, y in zip(xs, ys)) / sum((x - xmean) ** 2 for x in xs)
-        mapped = ymean + slope * (sim - xmean)
-        return {"valid": True, "host_monotonic_s": mapped,
-                "mapping_residual_bound_s": status["max_fit_residual_s"], "epoch": self.epoch}
+        samples = list(self.samples)
+        count = len(samples)
+
+        base = {
+            "sample_count": count,
+            "epoch": self.epoch,
+            "fit_window_samples": self.fit_window_samples,
+        }
+
+        if count < self.minimum_samples:
+            return {"valid": False,
+                    "reason": "simulation_clock_mapping_unstable",
+                    "ready": False, **base}
+
+        # Reject extrapolation outside all retained observations.
+        if sim < samples[0][0] or sim > samples[-1][0]:
+            return {"valid": False,
+                    "reason": "simulation_time_outside_clock_window",
+                    **base}
+
+        # Select a bounded historical window around the requested image time.
+        right = next(
+            (i for i, sample in enumerate(samples) if sample[0] >= sim),
+            count - 1,
+        )
+        size = min(self.fit_window_samples, count)
+        first = max(0, min(right - size // 2, count - size))
+        window = samples[first:first + size]
+
+        if sim < window[0][0] or sim > window[-1][0]:
+            return {"valid": False,
+                    "reason": "simulation_time_outside_clock_window",
+                    **base}
+
+        try:
+            slope, intercept, residual = self._fit(window)
+        except ValueError:
+            return {"valid": False,
+                    "reason": "simulation_clock_mapping_unstable",
+                    **base}
+
+        ready = (
+            0.1 <= slope <= 10.0
+            and residual <= self.maximum_residual_s
+        )
+
+        info = {
+            **base,
+            "ready": ready,
+            "host_seconds_per_sim_second": slope,
+            "clock_intercept_s": intercept,
+            "max_fit_residual_s": residual,
+            "mapping_method": "theil_sen_timestamp_bracketed_window",
+            "fit_window_samples": len(window),
+            "fit_window_sim_start_s": window[0][0],
+            "fit_window_sim_end_s": window[-1][0],
+        }
+
+        if not ready:
+            return {"valid": False,
+                    "reason": "simulation_clock_mapping_unstable",
+                    **info}
+
+        return {
+            "valid": True,
+            "host_monotonic_s": slope * sim + intercept,
+            "mapping_residual_bound_s": residual,
+            "epoch": self.epoch,
+            "mapping_method": "theil_sen_timestamp_bracketed_window",
+            **info,
+        }
+
 
 
 def _euler_to_quaternion_xyzw(roll: float, pitch: float, yaw: float) -> tuple[float, float, float, float]:
@@ -632,6 +789,131 @@ def _interpolate_pose(history: list[dict[str, Any]], target_host_s: float,
             "timestamp_domain": "host_monotonic_capture", "coordinate_origin_id": left[3],
             "pose_interpolation": {"method": "linear_position_quaternion_slerp_rotation",
                                    "source_times_s": [left[0], right[0]], "bracket_s": gap}}
+
+
+
+
+def interpolate_pose_at_monotonic(
+    history: list[dict[str, Any]],
+    target_host_s: float,
+    maximum_bracket_s: float = 0.2,
+) -> dict[str, Any] | None:
+    """Public, fail-closed interpolation of paired PX4 local-NED pose samples."""
+    return _interpolate_pose(
+        history,
+        target_host_s,
+        maximum_bracket_s,
+    )
+
+
+def interpolate_separate_navigation_streams(
+    position_history: list[dict[str, Any]],
+    attitude_history: list[dict[str, Any]],
+    target_host_s: float,
+    maximum_bracket_s: float = 0.2,
+) -> dict[str, Any] | None:
+    """Interpolate independent PX4 position and attitude streams at one time.
+
+    Both streams must independently bracket the requested host-monotonic
+    timestamp. Samples must share one coordinate origin. Position is
+    interpolated linearly and attitude with quaternion SLERP.
+    """
+    try:
+        target = _finite(target_host_s, "target_host_s")
+        maximum_gap = _finite(maximum_bracket_s, "maximum_bracket_s")
+        if maximum_gap <= 0:
+            return None
+
+        def bracket(history: list[dict[str, Any]], fields: tuple[str, ...]):
+            usable = []
+            for sample in history:
+                try:
+                    stamp = _finite(sample.get("host_monotonic_s"), "sample.host_monotonic_s")
+                    origin = sample.get("coordinate_origin_id")
+                    if not isinstance(origin, str) or not origin.strip():
+                        continue
+                    values = {
+                        name: _finite(sample.get(name), name)
+                        for name in fields
+                    }
+                    usable.append((stamp, values, origin))
+                except (ValueError, TypeError, AttributeError):
+                    continue
+
+            usable.sort(key=lambda item: item[0])
+            exact = [item for item in usable if abs(item[0] - target) <= 1e-9]
+            if exact:
+                return exact[-1], exact[-1], 0.0
+
+            before = [item for item in usable if item[0] < target]
+            after = [item for item in usable if item[0] > target]
+            if not before or not after:
+                return None
+
+            left, right = before[-1], after[0]
+            gap = right[0] - left[0]
+            if (gap <= 0 or gap > maximum_gap + 1e-9
+                    or left[2] != right[2]):
+                return None
+
+            return left, right, (target - left[0]) / gap
+
+        position = bracket(
+            position_history, ("north_m", "east_m", "down_m")
+        )
+        attitude = bracket(
+            attitude_history, ("roll_rad", "pitch_rad", "yaw_rad")
+        )
+
+        if position is None or attitude is None:
+            return None
+
+        p_left, p_right, p_fraction = position
+        a_left, a_right, a_fraction = attitude
+
+        origins = {
+            p_left[2], p_right[2], a_left[2], a_right[2]
+        }
+        if len(origins) != 1:
+            return None
+
+        position_values = {
+            name: p_left[1][name] + p_fraction * (
+                p_right[1][name] - p_left[1][name]
+            )
+            for name in ("north_m", "east_m", "down_m")
+        }
+
+        q_left = _pose_quaternion_xyzw(a_left[1])
+        q_right = _pose_quaternion_xyzw(a_right[1])
+        orientation = _quaternion_slerp_xyzw(
+            q_left, q_right, a_fraction
+        )
+        roll, pitch, yaw = _quaternion_xyzw_to_euler(orientation)
+
+        return {
+            **position_values,
+            "roll_rad": roll,
+            "pitch_rad": pitch,
+            "yaw_rad": yaw,
+            "orientation_quaternion_xyzw": list(orientation),
+            "coordinate_frame": "local_ned_m",
+            "host_monotonic_s": target,
+            "timestamp_domain": "host_monotonic_capture",
+            "coordinate_origin_id": p_left[2],
+            "pose_interpolation": {
+                "method": "independent_position_and_attitude_interpolation",
+                "position_source_times_s": [p_left[0], p_right[0]],
+                "attitude_source_times_s": [a_left[0], a_right[0]],
+                "position_bracket_s": p_right[0] - p_left[0],
+                "attitude_bracket_s": a_right[0] - a_left[0],
+                "position_fraction": p_fraction,
+                "attitude_fraction": a_fraction,
+            },
+        }
+
+    except (ValueError, TypeError, KeyError, AttributeError):
+        return None
 
 
 def localize_gazebo_measurements(

@@ -7,7 +7,7 @@
     "mavsdk_port": 14540,
     "mavsdk_server_port": 50051,
     "model_name": "x500_mono_cam_down_lidar",
-    "spawn_pose": "-75,-60,1.70,0,0,0",
+    "spawn_pose": "-74.5,-55,1.7,0,0,0.35",
     "lidar_topic": "/scout/lidar/points",
     "waypoint_ned_m": [
       3.0,

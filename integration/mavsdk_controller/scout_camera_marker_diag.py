@@ -153,7 +153,7 @@ def project_center_into_camera(camera: dict[str, Any], target: dict[str, Any],
     tan_v = tan_h * height / width
     inside_fov = (abs(horizontal) <= forward * tan_h
                   and abs(vertical) <= forward * tan_v)
-    pixel_x = None if forward <= 0 else (0.5 + horizontal / (2 * forward * tan_h)) * width
+    pixel_x = None if forward <= 0 else (0.5 - horizontal / (2 * forward * tan_h)) * width
     pixel_y = None if forward <= 0 else (0.5 - vertical / (2 * forward * tan_v)) * height
     within_image = (pixel_x is not None and pixel_y is not None
                     and 0 <= pixel_x < width and 0 <= pixel_y < height)
@@ -164,7 +164,7 @@ def project_center_into_camera(camera: dict[str, Any], target: dict[str, Any],
             "within_image_bounds": within_image,
             "within_clipping_planes": within_clips,
             "visible_by_geometry": bool(inside_fov and within_image and within_clips),
-            "horizontal_normalized": None if forward <= 0 else horizontal / (forward * tan_h),
+            "horizontal_normalized": None if forward <= 0 else -horizontal / (forward * tan_h),
             "vertical_normalized": None if forward <= 0 else vertical / (forward * tan_v),
             "near_clip_m": near_clip_m, "far_clip_m": far_clip_m}
 
@@ -364,12 +364,35 @@ def enrich_with_pose(frame: dict[str, Any], sample: dict[str, Any] | None,
                                                float(frame.get("near_clip_m", 0.1)), far_clip_m)
     fresh = delta <= max_pose_delta_s
     chain_complete = world_to_model is not None and model_to_base is not None
+    # Check the red fiducial around its projected pixel, not the
+    # unrelated centre of the full camera image.
+    projected_red_fraction = 0.0
+    if projection and projection.get("predicted_pixel_xy") and frame.get("png_path"):
+        marker_image = cv2.imread(frame["png_path"], cv2.IMREAD_COLOR)
+        if marker_image is not None:
+            marker_rgb = cv2.cvtColor(marker_image, cv2.COLOR_BGR2RGB)
+            marker_x, marker_y = (
+                int(round(value)) for value in projection["predicted_pixel_xy"]
+            )
+            half = 12
+            roi = marker_rgb[
+                max(0, marker_y - half):min(marker_rgb.shape[0], marker_y + half),
+                max(0, marker_x - half):min(marker_rgb.shape[1], marker_x + half),
+            ]
+            if roi.size:
+                projected_red_fraction = float(np.mean(
+                    (roi[:, :, 0] > 80)
+                    & (roi[:, :, 0] > 1.4 * roi[:, :, 1])
+                    & (roi[:, :, 0] > 1.4 * roi[:, :, 2])
+                ))
+
+    frame["projected_marker_roi_red_dominant_fraction"] = projected_red_fraction
+
     visible = bool(fresh and chain_complete and camera is not None and base is not None and base_to_camera is not None
-                   and camera_sensor is not None
                    and target is not None and signature is not None
                    and projection and projection["visible_by_geometry"]
                    and frame["distinct_rgb_values"] > 1
-                   and frame["center_roi_red_dominant_fraction"] >= 0.25)
+                   and projected_red_fraction >= 0.15)
     return {**frame, "pose_status": "matched" if fresh else "pose_stale",
             "pose_sim_time_s": sample["sim_time_s"], "pose_receive_monotonic_s": sample["receive_monotonic_s"],
             "image_timestamp_source": "Gazebo Image.header.stamp",

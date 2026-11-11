@@ -222,8 +222,6 @@ def test_pose_publisher_preparation_changes_only_disposable_copies(tmp_path):
     source_model = tmp_path / "model"
     source_model.mkdir()
     source_world.write_text("""<sdf version='1.9'><world name='earthquake_landslide_world'>
-      <model name='camera_diagnostic_target'><static>true</static><link name='checkerboard'/></model>
-      <model name='camera_diagnostic_world_signature'><static>true</static><link name='signature'/></model>
     </world></sdf>""")
     source_model.joinpath("model.sdf").write_text("""<sdf version='1.9'>
       <model name='x500_mono_cam_down_lidar'><link name='base_link'/><link name='camera_link'/></model>

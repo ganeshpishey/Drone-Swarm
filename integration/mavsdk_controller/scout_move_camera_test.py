@@ -49,19 +49,19 @@ async def run(config_path: Path, telemetry_path: Path) -> None:
         print("Arming Scout...")
         await controller.arm()
 
-        print("Taking off to 6 metres...")
-        await controller.takeoff(altitude_m=6.0)
+        print("Taking off to 4 metres...")
+        await controller.takeoff(altitude_m=4.0)
         await controller.wait_for_relative_altitude(
-            minimum_altitude_m=5.0,
+            minimum_altitude_m=3.5,
             timeout_s=60,
         )
         await record("altitude_reached")
 
-        print("Moving 3 metres north, maintaining 6 metres altitude...")
+        print("Moving 3 metres north, maintaining 4 metres altitude...")
         await controller.goto_position_ned(
             north_m=3.0,
             east_m=0.0,
-            altitude_m=6.0,
+            altitude_m=4.0,
             timeout_s=60,
         )
         await record("north_waypoint_reached")

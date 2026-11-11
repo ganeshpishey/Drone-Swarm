@@ -216,6 +216,7 @@ def localize_detections(
     maximum_range_m: float = 25.0,
     maximum_pose_age_s: float = 0.25,
     maximum_sensor_age_s: float = 0.5,
+    maximum_pose_image_delta_s: float = 0.10,
 ) -> list[dict[str, Any]]:
     """Associate projected LiDAR returns with boxes and produce Scout-local NED.
 
@@ -226,7 +227,7 @@ def localize_detections(
     """
     if (isinstance(minimum_returns, bool) or minimum_returns < 1
             or maximum_range_m <= minimum_range_m or maximum_pose_age_s <= 0
-            or maximum_sensor_age_s <= 0):
+            or maximum_sensor_age_s <= 0 or maximum_pose_image_delta_s <= 0):
         raise ValueError("invalid localization quality limits")
     try:
         cfg = validate_calibration(calibration)
@@ -281,13 +282,26 @@ def localize_detections(
 
     pose_data: dict[str, float] | None = None
     pose_age = math.inf
+    pose_image_delta = math.inf
+    pose_rejection_reason = "scout_pose_missing_stale_or_wrong_frame"
     if isinstance(pose, dict):
         try:
             pose_time = _finite(pose.get("host_monotonic_s"), "pose.host_monotonic_s")
             pose_age = now - pose_time
-            if (0 <= pose_age <= maximum_pose_age_s
-                    and pose.get("coordinate_frame") == "local_ned_m"
-                    and pose.get("timestamp_domain") == expected_clock):
+            pose_image_delta = abs(pose_time - frame_time)
+            if not isinstance(coordinate_origin_id, str) or not coordinate_origin_id.strip():
+                pose_rejection_reason = "px4_local_ned_origin_id_missing"
+            elif pose.get("coordinate_origin_id") != coordinate_origin_id:
+                pose_rejection_reason = "scout_pose_coordinate_origin_mismatch"
+            elif pose.get("coordinate_frame") != "local_ned_m":
+                pose_rejection_reason = "scout_pose_wrong_coordinate_frame"
+            elif pose.get("timestamp_domain") != expected_clock:
+                pose_rejection_reason = "scout_pose_timestamp_domain_mismatch"
+            elif not 0 <= pose_age <= maximum_pose_age_s:
+                pose_rejection_reason = "scout_pose_missing_stale_or_wrong_frame"
+            elif pose_image_delta > maximum_pose_image_delta_s:
+                pose_rejection_reason = "scout_pose_camera_capture_timestamp_mismatch"
+            else:
                 pose_data = {name: _finite(pose.get(name), f"pose.{name}") for name in (
                     "north_m", "east_m", "down_m", "roll_rad", "pitch_rad", "yaw_rad")}
         except (ValueError, TypeError):
@@ -345,7 +359,7 @@ def localize_detections(
         reason = None
         target_ned = None
         if pose_data is None:
-            reason = "scout_pose_missing_stale_or_wrong_frame"
+            reason = pose_rejection_reason
         elif not isinstance(coordinate_origin_id, str) or not coordinate_origin_id.strip():
             reason = "px4_local_ned_origin_id_missing"
         else:
@@ -379,6 +393,7 @@ def localize_detections(
                 "scout_pose": pose.get("host_monotonic_s") if pose_data else None,
             },
             "timestamp_delta_s": sync_delta, "pose_age_s": pose_age,
+            "pose_image_delta_s": pose_image_delta,
             "transformation_provenance": {
                 "calibration_id": calibration["calibration_id"],
                 "camera_from_lidar": "empirically_verified_4x4",

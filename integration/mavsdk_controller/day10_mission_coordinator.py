@@ -22,7 +22,8 @@ except ImportError:  # Direct execution from this directory.
 
 
 MISSION_STATES = {
-    "proposed": {"acknowledged", "rejected", "cancelled"},
+    "proposed": {"acknowledged", "suggestion_received", "rejected", "cancelled"},
+    "suggestion_received": {"enroute", "avoiding_obstacle", "victim_approach", "arrived", "returning", "cancelled", "failed"},
     "acknowledged": {"enroute", "cancelled", "failed"},
     "enroute": {"avoiding_obstacle", "victim_approach", "arrived", "returning", "cancelled", "failed"},
     "avoiding_obstacle": {"enroute", "victim_approach", "returning", "cancelled", "failed"},
@@ -306,6 +307,7 @@ class Day10Coordinator:
                         existing["status"] = "provisional"
                         existing["location_status"] = "unlocalized"
                         existing["localization_status"] = "unlocalized"
+                        existing["approximate_location"] = detection.get("approximate_location")
                         existing["target"] = None
                         existing["dispatchable"] = False
                         accepted.append(incident_id)
@@ -334,6 +336,7 @@ class Day10Coordinator:
                 "localization_confidence": detection.get("localization_confidence"),
                 "localization_rejection_reason": detection.get("rejection_reason"),
                 "localization_provenance": detection.get("transformation_provenance"),
+                "approximate_location": detection.get("approximate_location"),
                 "sensor_timestamps": detection.get("sensor_timestamps_monotonic_s"),
                 "supporting_sensor_information": {
                     "depth_status": detection.get("depth_status", "unavailable"),

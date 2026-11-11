@@ -71,7 +71,8 @@ class ScoutCamera45DegreeDiagnosticTests(unittest.TestCase):
         production = ET.parse(PRODUCTION).getroot().find("model")
         include = next(x for x in production.findall("include") if x.findtext("name") == "mono_cam")
         pitch = float(include.findtext("pose").split()[4])
-        self.assertAlmostEqual(pitch, 1.5707, places=4)
+        self.assertAlmostEqual(pitch, math.pi / 2.0, places=4)
+        self.assertNotAlmostEqual(pitch, math.pi / 4.0, places=4)
 
 
 if __name__ == "__main__":

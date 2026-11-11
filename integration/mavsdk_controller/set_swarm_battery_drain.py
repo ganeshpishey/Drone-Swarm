@@ -21,8 +21,11 @@ async def first_value(stream, timeout_s: float = 10.0):
 
 
 async def connect_vehicle(name: str, config: dict) -> tuple[System, float, float]:
-    drone = System(port=config["mavsdk_server_port"])
-    await drone.connect(system_address=f"udpin://0.0.0.0:{config['mavsdk_port']}")
+    drone = System(
+        mavsdk_server_address="127.0.0.1",
+        port=int(config["mavsdk_server_port"]),
+    )
+    await drone.connect()
 
     async def wait_connected() -> None:
         async for state in drone.core.connection_state():

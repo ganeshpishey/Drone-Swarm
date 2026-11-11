@@ -16,6 +16,7 @@ PX4_WORLDS="$PX4_ROOT/Tools/simulation/gz/worlds"
 PX4_PLUGINS="$PX4_BUILD/src/modules/simulation/gz_plugins"
 PX4_SERVER_CONFIG="$PX4_ROOT/src/modules/simulation/gz_bridge/server.config"
 MVSDK_PYTHON="$PROJECT_ROOT/.venv-mavsdk/bin/python"
+MVSDK_SERVER="$PROJECT_ROOT/.venv-mavsdk/lib/python3.10/site-packages/mavsdk_grpc/bin/mavsdk_server"
 PERCEPTION_PYTHON="$PROJECT_ROOT/.venv-perception/bin/python"
 PERCEPTION_MODEL="$PROJECT_ROOT/yolo26n.pt"
 WORLD_SOURCE="$(/usr/bin/python3 "$SCRIPT_DIR/gazebo_world_identity.py" select \
@@ -30,19 +31,20 @@ MODE="${1:-scout-ambulance}"
 
 usage() {
   cat <<'USAGE'
-Usage: launch_active_uavs.sh [scout-only|ambulance-only|scout-ambulance|preflight-only|stop]
+Usage: launch_active_uavs.sh [telemetry-only|scout-only|ambulance-only|scout-ambulance|integrated-safe|preflight-only|stop]
 
 Starts only Scout, only Ambulance, or both. A Scout-plus-Ambulance run also
 starts the Day 10 coordinator, direct localhost UDP agents, Scout camera/YOLO,
 and read-only sensor monitors. Ctrl+C or stop sends SIGTERM only to owned
 process groups. Per-run logs and staged files are retained under /tmp. The
 preflight-only mode performs the same checks for the pair and exits without
-starting PX4 or Gazebo.
+starting PX4 or Gazebo. telemetry-only starts Scout PX4 and MAVSDK only;
+it does not start perception, survey, coordinator, or Ambulance.
 USAGE
 }
 
 case "$MODE" in
-  scout-only|ambulance-only|scout-ambulance|preflight-only|stop) ;;
+  telemetry-only|scout-only|ambulance-only|scout-ambulance|integrated-safe|preflight-only|stop) ;;
   -h|--help) usage; exit 0 ;;
   *) usage >&2; exit 2 ;;
 esac
@@ -63,9 +65,11 @@ expected = {"scout_0", "ambulance_0"}
 if set(config) != expected:
     raise SystemExit(f"active_uavs.json must contain exactly {sorted(expected)}")
 selected = {
+    "telemetry-only": ["scout_0"],
     "scout-only": ["scout_0"],
     "ambulance-only": ["ambulance_0"],
     "scout-ambulance": ["scout_0", "ambulance_0"],
+    "integrated-safe": ["scout_0", "ambulance_0"],
     "preflight-only": ["scout_0", "ambulance_0"],
     "stop": [],
 }[mode]
@@ -332,7 +336,12 @@ if ! command -v gz >/dev/null 2>&1 || ! command -v setsid >/dev/null 2>&1; then
   exit 1
 fi
 
-if [[ "$MODE" == "scout-ambulance" || "$MODE" == "preflight-only" ]]; then
+if [[ "$MODE" == "telemetry-only" ]]; then
+  if [[ ! -x "$MVSDK_PYTHON" ]] || ! "$MVSDK_PYTHON" -c 'import mavsdk_grpc' >/dev/null 2>&1; then
+    echo "Telemetry-only mode requires a working .venv-mavsdk; nothing launched." >&2
+    exit 1
+  fi
+elif [[ "$MODE" == "scout-ambulance" || "$MODE" == "integrated-safe" || "$MODE" == "preflight-only" ]]; then
   if [[ ! -x "$MVSDK_PYTHON" || ! -x "$PERCEPTION_PYTHON" || ! -r "$PERCEPTION_MODEL" ]]; then
     echo "Two-UAV runtime requires .venv-mavsdk, .venv-perception and $PERCEPTION_MODEL; nothing launched." >&2
     exit 1
@@ -372,7 +381,7 @@ for row in "${VEHICLES[@]}"; do
 done
 PORT_TYPES["udp:14550"]=UDP
 PORT_TYPES["udp:5600"]=UDP
-if [[ "$MODE" == "scout-ambulance" || "$MODE" == "preflight-only" ]]; then
+if [[ "$MODE" == "scout-ambulance" || "$MODE" == "integrated-safe" || "$MODE" == "preflight-only" ]]; then
   PORT_TYPES["udp:8765"]=UDP
   PORT_TYPES["udp:8766"]=UDP
   PORT_TYPES["udp:8767"]=UDP
@@ -483,7 +492,23 @@ fi
 RUN_DIR="$(mktemp -d "$BASE_DIR/run-$(date -u +%Y%m%dT%H%M%SZ)-XXXXXX")"
 STAGE_MODELS="$RUN_DIR/gz/models"
 STAGE_WORLDS="$RUN_DIR/gz/worlds"
-mkdir -p "$STAGE_MODELS" "$STAGE_WORLDS" "$RUN_DIR/instances" "$RUN_DIR/logs"
+mkdir -p "$STAGE_MODELS" "$STAGE_WORLDS" "$RUN_DIR/instances" "$RUN_DIR/logs" "$RUN_DIR/runtime"
+
+SCOUT_SDF_CALIBRATION_REPORT="$RUN_DIR/runtime/scout_sdf_calibration_report.json"
+if [[ "$MODE" == "scout-only" || "$MODE" == "scout-ambulance" || "$MODE" == "integrated-safe" ]]; then
+  echo "Generating run-specific Scout SDF calibration report."
+  "$PERCEPTION_PYTHON" "$SCRIPT_DIR/scout_calibration_sync.py" \
+    --vehicle-sdf "$PROJECT_ROOT/worlds/disaster_assets/models/x500_mono_cam_down_lidar/model.sdf" \
+    --camera-model-sdf "$PX4_MODELS/mono_cam/model.sdf" \
+    --base-model-sdf "$PX4_MODELS/x500_base/model.sdf" \
+    --calibration-json "$SCRIPT_DIR/scout_camera_calibration.json" \
+    --output "$SCOUT_SDF_CALIBRATION_REPORT"
+  [[ -s "$SCOUT_SDF_CALIBRATION_REPORT" ]] || {
+    echo "Scout SDF calibration report was not generated." >&2
+    exit 1
+  }
+fi
+
 install -m 644 "$WORLD_SOURCE" "$STAGE_WORLDS/$WORLD_NAME.sdf"
 /usr/bin/python3 "$SCRIPT_DIR/gazebo_world_identity.py" verify-staged \
   --source "$WORLD_SOURCE" \
@@ -771,6 +796,8 @@ start_instance() {
   local -a env_args=(
     "PX4_GZ_WORLD=$WORLD_NAME"
     "PX4_SYS_AUTOSTART=4001"
+    "PX4_PARAM_SDLOG_PROFILE=129"
+    "PX4_PARAM_SDLOG_MODE=0"
     "PX4_GZ_MODEL_POSE=$pose"
     "PX4_SIM_MODEL=gz_$model"
     "PX4_GZ_MODELS=$STAGE_MODELS"
@@ -794,7 +821,42 @@ start_instance() {
   PIDS+=("$pid")
   printf '%s\t%s\t%s\t%s\n' "$role" "$instance" "$pid" "$workdir" >>"$RUN_DIR/processes.tsv"
   echo "Started $role: PX4 instance=$instance system_id=$sid PID=$pid; MAVSDK UDP=$mavsdk_port gRPC=$grpc_port."
+
   wait_for_instance "$role" "$pid" "$instance" "$model"
+
+  # Start an owned MAVSDK server for this PX4 vehicle.
+  local mavsdk_log="$RUN_DIR/logs/$role.mavsdk.log"
+  if [[ ! -x "$MVSDK_SERVER" ]]; then
+    echo "MAVSDK server executable missing: $MVSDK_SERVER" >&2
+    return 1
+  fi
+  setsid env "DRONE_SWARM_ACTIVE_RUN_DIR=$RUN_DIR" \
+    "$MVSDK_SERVER" -p "$grpc_port" --sysid 245 --compid 190 \
+    "udpin://0.0.0.0:$mavsdk_port" >"$mavsdk_log" 2>&1 9>&- &
+  local mavsdk_pid=$!
+  AUX_PIDS+=("$mavsdk_pid")
+  printf '%s\t%s\t%s\t%s\t%s\n' \
+    "$role-mavsdk" "$mavsdk_pid" "$MVSDK_SERVER" "$MVSDK_SERVER" "$PROJECT_ROOT" \
+    >>"$RUN_DIR/auxiliary_processes.tsv"
+  echo "Started $role MAVSDK server PID=$mavsdk_pid UDP=$mavsdk_port gRPC=$grpc_port."
+
+  local attempt
+  for ((attempt=1; attempt<=15; attempt++)); do
+    if grep -q 'Server set to listen on' "$mavsdk_log"; then
+      echo "$role MAVSDK gRPC server ready on port $grpc_port."
+      break
+    fi
+    if ! kill -0 "$mavsdk_pid" 2>/dev/null; then
+      echo "$role MAVSDK server exited; inspect $mavsdk_log" >&2
+      return 1
+    fi
+    sleep 1
+  done
+  if ! grep -q 'Server set to listen on' "$mavsdk_log"; then
+    echo "Timed out waiting for $role MAVSDK server; inspect $mavsdk_log" >&2
+    return 1
+  fi
+
 }
 
 start_auxiliary() {
@@ -828,8 +890,73 @@ wait_auxiliary_ready() {
   return 1
 }
 
+start_scout_only_survey() {
+  [[ "$MODE" == "scout-only" ]] || return 0
+  local runtime="$RUN_DIR/runtime"
+  local survey_script="$SCRIPT_DIR/scout_victim_survey.py"
+  local detector_script="$SCRIPT_DIR/scout_live_person_detection.py"
+  local survey_supervisor="$runtime/scout_survey_supervisor.sh"
+  local perception_output="$RUN_DIR/perception-waypoint"
+  mkdir -p "$runtime" "$perception_output"
+  # Use this run's staged Gazebo resources.
+  source "$RUN_DIR/gz_env.sh"
+
+  # Start the camera/LiDAR detector before the Scout begins moving.
+  start_auxiliary scout-waypoint-detector "$PERCEPTION_PYTHON" "$detector_script" \
+    "$RUN_DIR/logs/scout-waypoint-detector.log" \
+    --input-source gazebo-image \
+    --gazebo-world "$WORLD_NAME" \
+    --gazebo-image-topic "/world/$WORLD_NAME/model/x500_mono_cam_down_lidar_0/link/camera_link/sensor/imager/image" \
+    --lidar-topic /scout/lidar/points \
+    --sdf-calibration-report "$SCOUT_SDF_CALIBRATION_REPORT" \
+    --model "$PERCEPTION_MODEL" \
+    --output-dir "$perception_output" \
+    --interval 1 --max-inferences 0 --imgsz 960 --conf 0.25
+
+  local detector_pid="${AUX_PIDS[-1]}"
+  wait_auxiliary_ready scout-waypoint-detector "$detector_pid" \
+    "$RUN_DIR/logs/scout-waypoint-detector.log" \
+    'Listening for Scout Gazebo Image messages'
+
+  cat >"$survey_supervisor" <<'SURVEY'
+#!/usr/bin/env bash
+set -Eeuo pipefail
+python="$1"
+survey="$2"
+runtime="$3"
+detector_pid="$4"
+echo "Starting bounded Scout-only waypoint survey with live camera recording."
+if "$python" "$survey" \
+  --north 0.7 --east 1.9 --altitude 2.96 --yaw-deg 20 \
+  --minimum-altitude 2.5 --max-altitude 4.0 \
+  --hold-seconds 35 \
+  --skip-frame-capture \
+  --pose-log "$runtime/scout_survey_pose.jsonl" \
+  --telemetry-log "$runtime/scout_survey_telemetry.jsonl"; then
+  survey_status=0
+else
+  survey_status=$?
+fi
+echo "Scout survey exited with status $survey_status."
+echo "Live detector remains active until the simulation is stopped."
+echo "SCOUT_SURVEY_PROCESS_EXITED; inspect survey log and perception output."
+while :; do sleep 3600; done
+SURVEY
+  chmod 700 "$survey_supervisor"
+  start_auxiliary scout-survey /bin/bash "$survey_supervisor" \
+    "$RUN_DIR/logs/scout-survey.log" \
+    "$MVSDK_PYTHON" "$survey_script" "$runtime" "$detector_pid"
+  local survey_pid="${AUX_PIDS[-1]}"
+  sleep 2
+  if ! kill -0 "$survey_pid" 2>/dev/null; then
+    echo "Scout-only survey failed during startup; inspect $RUN_DIR/logs/scout-survey.log" >&2
+    return 1
+  fi
+  echo "Scout-only survey supervisor started; bounded flight and RTL are enabled."
+}
+
 start_day10_runtime() {
-  [[ "$MODE" == "scout-ambulance" ]] || return 0
+  [[ "$MODE" == "scout-ambulance" || "$MODE" == "integrated-safe" ]] || return 0
   local runtime="$RUN_DIR/runtime"
   local coordinator_script="$SCRIPT_DIR/day10_coordinator_service.py"
   local scout_bridge_script="$SCRIPT_DIR/day10_scout_manet_bridge.py"
@@ -837,6 +964,13 @@ start_day10_runtime() {
   local perception_script="$SCRIPT_DIR/scout_live_person_detection.py"
   local coordinator_log="$RUN_DIR/logs/coordinator.log"
   local perception_output="$RUN_DIR/perception"
+  local standby_coordinator_args=()
+  local standby_agent_args=()
+  if [[ "${ENABLE_AMBULANCE_STANDBY_ACCEPTANCE:-0}" == "1" ]]; then
+    standby_coordinator_args+=(--allow-ambulance-standby-ack)
+    standby_agent_args+=(--accept-ambulance-standby)
+    echo "Ambulance standby ACK enabled; flight execution remains disabled."
+  fi
   mkdir -p "$runtime" "$perception_output"
   cat >"$runtime/coordinator_peers.json" <<'JSON'
 {
@@ -856,6 +990,7 @@ JSON
     --bind 127.0.0.1 --port 8765 --state "$runtime/coordinator_state.json" \
     --reports-dir "$PROJECT_ROOT/reports" --control-file "$runtime/control.jsonl" \
     --outbound-minutes 1 --task-minutes 1 --return-minutes 1 \
+    --telemetry-stream-timeout-s 15 \
     --scout-lidar-topic /scout/lidar/points --scout-lidar-frame lidar_link \
     --scout-lidar-horizontal-samples 180 --scout-lidar-vertical-samples 16 \
     --camera-topic "/world/$WORLD_NAME/model/x500_mono_cam_down_lidar_0/link/camera_link/sensor/imager/image" \
@@ -865,7 +1000,8 @@ JSON
     --manet-event-log "$runtime/ambulance_manet.jsonl" \
     --component-log "$RUN_DIR/logs/scout_camera_yolo.log" \
     --component-log "$RUN_DIR/logs/scout_manet_bridge.log" \
-    --component-log "$RUN_DIR/logs/ambulance_manet_agent.log"
+    --component-log "$RUN_DIR/logs/ambulance_manet_agent.log" \
+    "${standby_coordinator_args[@]}"
   local coordinator_pid="${AUX_PIDS[-1]}"
   wait_auxiliary_ready coordinator "$coordinator_pid" "$coordinator_log" '\[COORDINATOR ONLINE\]' 
 
@@ -885,7 +1021,8 @@ JSON
     --mission-file "$runtime/ambulance_proposal.json" \
     --state-file "$runtime/ambulance_agent_state.json" \
     --heartbeat-file "$runtime/ambulance_heartbeat.json" \
-    --event-log "$runtime/ambulance_manet.jsonl"
+    --event-log "$runtime/ambulance_manet.jsonl" \
+    "${standby_agent_args[@]}"
   local ambulance_agent_pid="${AUX_PIDS[-1]}"
   wait_auxiliary_ready ambulance-manet-agent "$ambulance_agent_pid" \
     "$RUN_DIR/logs/ambulance_manet_agent.log" 'MANET agent listening'
@@ -895,10 +1032,52 @@ JSON
     --input-source gazebo-image --gazebo-world "$WORLD_NAME" \
     --gazebo-image-topic "/world/$WORLD_NAME/model/x500_mono_cam_down_lidar_0/link/camera_link/sensor/imager/image" \
     --lidar-topic /scout/lidar/points --model "$PERCEPTION_MODEL" \
-    --output-dir "$perception_output" --interval 5 --conf 0.10
+    --output-dir "$perception_output" --interval 5 --imgsz 960 --conf 0.25 \
+    --pose-log "$runtime/coordinator_navigation_history.json" \
+    --sdf-calibration-report "$SCOUT_SDF_CALIBRATION_REPORT" \
+    ${SCOUT_VERIFIED_CALIBRATION:+--calibration "$SCOUT_VERIFIED_CALIBRATION"}
   local perception_pid="${AUX_PIDS[-1]}"
   wait_auxiliary_ready scout-camera-yolo "$perception_pid" \
     "$RUN_DIR/logs/scout_camera_yolo.log" 'Listening for Scout Gazebo Image messages'
+
+  if [[ "$MODE" == "integrated-safe" ]]; then
+    echo "Integrated-safe mode: Scout survey skipped; no flight commands will be issued."
+    return 0
+  fi
+
+  # Run the bounded Scout survey alongside live camera/YOLO.
+  # The supervisor remains alive after a successful survey so the launcher's
+  # auxiliary-process monitor does not mistake normal completion for a crash.
+  local survey_script="$SCRIPT_DIR/scout_victim_survey.py"
+  local survey_supervisor="$runtime/scout_survey_supervisor.sh"
+  cat >"$survey_supervisor" <<'SURVEY'
+#!/usr/bin/env bash
+set -Eeuo pipefail
+python="$1"
+survey="$2"
+runtime="$3"
+echo "Starting bounded Scout survey; live camera receiver remains with YOLO."
+"$python" "$survey" \
+  --north 0.7 --east 1.9 --altitude 2.96 --yaw-deg 20 \
+  --minimum-altitude 2.5 --max-altitude 4.0 \
+  --hold-seconds 35 \
+  --skip-frame-capture \
+  --pose-log "$runtime/scout_survey_pose.jsonl" \
+  --telemetry-log "$runtime/scout_survey_telemetry.jsonl"
+echo "SCOUT_SURVEY_PROCESS_EXITED; check survey log for landing confirmation."
+while :; do sleep 3600; done
+SURVEY
+  chmod 700 "$survey_supervisor"
+  start_auxiliary scout-survey /bin/bash "$survey_supervisor" \
+    "$RUN_DIR/logs/scout-survey.log" \
+    "$MVSDK_PYTHON" "$survey_script" "$runtime"
+  local survey_pid="${AUX_PIDS[-1]}"
+  sleep 2
+  if ! kill -0 "$survey_pid" 2>/dev/null; then
+    echo "Scout survey supervisor failed during startup; inspect $RUN_DIR/logs/scout-survey.log" >&2
+    return 1
+  fi
+  echo "Scout survey supervisor started; bounded flight and RTL are enabled."
 }
 
 wait_for_instance() {
@@ -921,7 +1100,7 @@ wait_for_instance() {
 echo "Active UAV launch mode: $MODE"
 echo "World: $WORLD_SOURCE (staged privately as $WORLD_NAME)"
 echo "Temporary parameter copies and per-vehicle logs: $RUN_DIR"
-if [[ "$MODE" == "scout-only" ]]; then
+if [[ "$MODE" == "telemetry-only" || "$MODE" == "scout-only" ]]; then
   start_instance "${VEHICLES[0]}" 1
 elif [[ "$MODE" == "ambulance-only" ]]; then
   start_instance "${VEHICLES[0]}" 1
@@ -929,7 +1108,27 @@ else
   start_instance "${VEHICLES[0]}" 1
   start_instance "${VEHICLES[1]}" 0
 fi
+
+# Apply and verify the battery model on every Scout + Ambulance launch.
+# The launcher uses isolated PX4 parameter copies, so reapply settings here.
+if [[ "$MODE" == "scout-ambulance" ]]; then
+  BATTERY_PYTHON="$PROJECT_ROOT/.venv-px4/bin/python"
+  if [[ ! -x "$BATTERY_PYTHON" ]]; then
+    echo "Battery configuration requires .venv-px4/bin/python." >&2
+    exit 1
+  fi
+
+  echo "Applying battery model: 2400-second drain interval, 50% reserve."
+  env -u PYTHONPATH -u PYTHONHOME \
+    "$BATTERY_PYTHON" "$SCRIPT_DIR/set_swarm_battery_drain.py" \
+    --config "$CONFIG" --drain-seconds 2400 --reserve-percent 50 \
+    2>&1 | tee "$RUN_DIR/logs/battery_config.log"
+fi
+
 start_day10_runtime
+if [[ "$MODE" == "scout-only" ]]; then
+  start_scout_only_survey
+fi
 
 for row in "${VEHICLES[@]}"; do
   IFS=$'\t' read -r role instance sid gcs_port mavsdk_port grpc_port model pose topic <<<"$row"

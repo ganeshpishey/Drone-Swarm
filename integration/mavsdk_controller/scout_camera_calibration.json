@@ -13,7 +13,7 @@
     "cy": 480.0
   },
   "vertical_fov_rad_derived": 1.453401713389793,
-  "distortion_model": "PLUMB_BOB; runtime CameraInfo coefficients all zero",
+  "distortion_model": "none",
   "camera_pose_in_scout_base_sdf": {
     "translation_m": [
       0.0,
@@ -60,5 +60,13 @@
     ],
     "capture_file": "/tmp/scout_camera_info_live_20261101.json",
     "meaning": "one live simulated CameraInfo message; nominal simulator calibration evidence only, not empirical target calibration"
-  }
+  },
+  "runtime_camera_info_distortion_model": "PLUMB_BOB",
+  "runtime_camera_info_distortion_coefficients": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ]
 }

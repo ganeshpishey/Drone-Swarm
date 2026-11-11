@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import math
 import os
 import tempfile
 import time
@@ -21,6 +22,7 @@ except ImportError:  # Direct execution from this directory.
 
 TERMINAL = {"completed", "mission_completed", "cancelled", "failed", "rejected", "landed"}
 STATUS_TRANSITIONS = {
+    "suggestion_received": {"enroute", "avoiding_obstacle", "victim_approach", "arrived", "returning", "cancelled", "failed"},
     "acknowledged": {"enroute", "cancelled", "failed"},
     "enroute": {"avoiding_obstacle", "victim_approach", "arrived", "returning", "cancelled", "failed"},
     "avoiding_obstacle": {"enroute", "victim_approach", "returning", "cancelled", "failed"},
@@ -49,6 +51,59 @@ def atomic_json(path: Path, value: Any) -> None:
         except FileNotFoundError:
             pass
         raise
+
+
+def mission_assignment_error(
+    payload: dict[str, Any], *, now: datetime | None = None
+) -> str | None:
+    """Validate an Ambulance mission before persisting or acknowledging it."""
+    mission_id = payload.get("mission_id")
+    incident_id = payload.get("incident_id")
+    target = payload.get("target")
+    expires = payload.get("expires_at_utc")
+
+    if not isinstance(mission_id, str) or not mission_id.strip():
+        return "mission_id_missing"
+    if not isinstance(incident_id, str) or not incident_id.strip():
+        return "incident_id_missing"
+    if not isinstance(target, dict):
+        return "target_missing"
+    if target.get("coordinate_frame") != "local_ned_m":
+        return "target_coordinate_frame_invalid"
+    if target.get("reference_vehicle_id") != "ambulance_0":
+        return "target_reference_vehicle_invalid"
+
+    transform_id = target.get("transform_id")
+    if not isinstance(transform_id, str) or not transform_id.strip():
+        return "target_transform_id_missing"
+
+    coordinates = target.get("coordinates")
+    if not isinstance(coordinates, list) or len(coordinates) != 3:
+        return "target_coordinates_invalid"
+    if any(
+        isinstance(value, bool)
+        or not isinstance(value, (int, float))
+        or not math.isfinite(value)
+        for value in coordinates
+    ):
+        return "target_coordinates_invalid"
+
+    if not isinstance(expires, str) or not expires.strip():
+        return "mission_expiry_missing"
+    try:
+        expiry = datetime.fromisoformat(expires.replace("Z", "+00:00"))
+    except ValueError:
+        return "mission_expiry_invalid"
+    if expiry.tzinfo is None or expiry.utcoffset() is None:
+        return "mission_expiry_timezone_missing"
+
+    current_time = now or datetime.now(timezone.utc)
+    if current_time.tzinfo is None or current_time.utcoffset() is None:
+        return "validation_clock_timezone_missing"
+    if expiry <= current_time:
+        return "mission_expired"
+
+    return None
 
 
 class VehicleAgent:
@@ -87,19 +142,27 @@ class VehicleAgent:
             status, reason = "rejected", "invalid_mission_assignment"
             accepted = False
             if isinstance(mission_id, str) and mission_id.strip():
-                if self.mission_id and self.mission_id != mission_id:
+                if (self.mission_id and self.mission_id != mission_id
+                        and self.mission_state not in TERMINAL):
                     status, reason = "rejected", "another_nonterminal_mission_is_recorded"
                 else:
-                    target = payload.get("target", {})
-                    expires = payload.get("expires_at_utc")
-                    if (target.get("coordinate_frame") == "local_ned_m"
-                            and target.get("reference_vehicle_id") == "ambulance_0"
-                            and isinstance(target.get("transform_id"), str)
-                            and target["transform_id"].strip()
-                            and isinstance(target.get("coordinates"), list)
-                            and len(target["coordinates"]) == 3
-                            and isinstance(expires, str)):
-                        status, reason = "accepted_suggestion_only", "persisted_without_flight_execution"
+                    target = payload.get("target")
+                    validation_error = mission_assignment_error(payload)
+                    if validation_error is None:
+                        expires = payload["expires_at_utc"]
+                        standby_acceptance = bool(
+                            getattr(self.args, "accept_ambulance_standby", False)
+                        )
+                        status = (
+                            "accepted_standby" if standby_acceptance
+                            else "accepted_suggestion_only"
+                        )
+                        reason = (
+                            "mission_persisted_acknowledged_standby_no_flight"
+                            if standby_acceptance
+                            else "persisted_without_flight_execution"
+                        )
+                        mission_state = "acknowledged" if standby_acceptance else "suggestion_received"
                         record = {
                             "schema_version": "uav-mission-v1", "message_type": "mission_assignment",
                             "mission_id": mission_id, "incident_id": payload["incident_id"],
@@ -107,21 +170,23 @@ class VehicleAgent:
                             "target_ned_m": target["coordinates"], "coordinate_frame": "local_ned_m",
                             "target_reference_vehicle_id": "ambulance_0", "transform_id": target["transform_id"],
                             "received_at_utc": datetime.now(timezone.utc).isoformat(),
-                            "expires_at_utc": expires, "acknowledged": True, "cancelled": False,
-                            "state": "acknowledged", "execution_enabled": False,
+                            "expires_at_utc": expires,
+                            "acknowledged": standby_acceptance, "cancelled": False,
+                            "suggestion_received": not standby_acceptance,
+                            "state": mission_state, "execution_enabled": False,
                             "flight_commands_sent": False,
                         }
                         try:
                             atomic_json(self.args.mission_file, record)
                             atomic_json(self.args.state_file, {"vehicle_id": self.args.vehicle,
-                                "mission_id": mission_id, "state": "acknowledged",
+                                "mission_id": mission_id, "state": mission_state,
                                 "updated_at_utc": record["received_at_utc"],
                                 "execution_enabled": False, "flight_commands_sent": False})
-                            self.mission_id, self.mission_state, accepted = mission_id, "acknowledged", True
+                            self.mission_id, self.mission_state, accepted = mission_id, mission_state, True
                         except OSError as error:
                             status, reason = "rejected", f"mission_persistence_failed:{error}"
                     else:
-                        reason = "target_frame_reference_transform_or_expiry_invalid"
+                        reason = validation_error
                 try:
                     await self.node.send_reliable(
                         "coordinator", "mission_ack",
@@ -159,7 +224,6 @@ class VehicleAgent:
                 "flight_commands_sent": False,
             }
             atomic_json(self.args.heartbeat_file, heartbeat)
-            atomic_json(self.args.state_file, heartbeat)
 
     async def run(self) -> None:
         await self.node.bind(self.args.bind, self.args.port)
@@ -237,63 +301,105 @@ class VehicleAgent:
             except OSError as error:
                 print(f"guidance log unavailable: {error}", flush=True)
             try:
-                await asyncio.wait_for(self.stop_event.wait(), timeout=min(0.1, self.args.guidance_publish_s))
+                await asyncio.wait_for(
+                    self.stop_event.wait(),
+                    timeout=min(0.1, self.args.guidance_publish_s),
+                )
             except asyncio.TimeoutError:
                 pass
 
     async def report_progress(self, record: dict[str, Any]) -> dict[str, Any]:
-        """Send a validated monitored status; it never controls flight."""
+        """Persist and publish monitored progress without controlling flight."""
         mission_id, status = record.get("mission_id"), record.get("status")
         if (self.args.vehicle != "ambulance_0" or mission_id != self.mission_id
                 or not isinstance(status, str)
                 or status not in STATUS_TRANSITIONS.get(self.mission_state or "", set())):
             return {"accepted": False, "reason": "mission_status_identity_or_transition_invalid"}
+
         if status == "first_aid_delivered" and not (
             record.get("delivery_kind") == "virtual_simulation_event"
             and record.get("ground_truth_test") is True
             and record.get("physical_release") is False
         ):
             return {"accepted": False, "reason": "virtual_delivery_requires_ground_truth_test_and_no_physical_release"}
-        if status == "first_aid_delivered":
-            try:
-                current = json.loads(self.args.mission_file.read_text(encoding="utf-8"))
-            except (OSError, json.JSONDecodeError) as error:
-                return {"accepted": False, "reason": f"ground_truth_test_mission_unavailable:{error}"}
-            target = current.get("target") if isinstance(current, dict) else None
-            if not isinstance(target, dict) or target.get("coordinate_provenance") != "GROUND_TRUTH_TEST":
-                return {"accepted": False, "reason": "virtual_delivery_requires_ground_truth_test_target"}
-        payload: dict[str, Any] = {"mission_id": mission_id, "status": status,
-                                   "flight_commands_sent": False}
-        if status == "first_aid_delivered":
-            payload.update({"delivery_kind": "virtual_simulation_event", "ground_truth_test": True,
-                            "physical_release": False, "treatment_claimed": False})
-        try:
-            await self.node.send_reliable("coordinator", "mission_status", payload,
-                                          retries=2, ack_timeout_s=0.5)
-        except (OSError, TimeoutError, RuntimeError, ValueError) as error:
-            return {"accepted": False, "reason": f"mission_status_delivery_failed:{error}"}
+
         try:
             mission = json.loads(self.args.mission_file.read_text(encoding="utf-8"))
-            updated_at = datetime.now(timezone.utc).isoformat()
-            mission.update({"state": status, "progress_updated_at_utc": updated_at,
-                            "flight_commands_sent": False})
-            if status == "first_aid_delivered":
-                mission["delivery"] = {"kind": "virtual_simulation_event",
-                    "kit_status": "VIRTUAL_KIT_DELIVERED", "ground_truth_test": True,
-                    "physical_release": False, "treatment_claimed": False,
-                    "at_utc": updated_at}
-            atomic_json(self.args.mission_file, mission)
-            atomic_json(self.args.state_file, {"vehicle_id": self.args.vehicle,
-                         "mission_id": mission_id, "state": status,
-                         "updated_at_utc": updated_at, "execution_enabled": False,
-                         "flight_commands_sent": False})
         except (OSError, json.JSONDecodeError) as error:
             return {"accepted": False, "reason": f"mission_progress_persistence_failed:{error}"}
+
+        if status == "first_aid_delivered":
+            target = mission.get("target") if isinstance(mission, dict) else None
+            if not isinstance(target, dict) or target.get("coordinate_provenance") != "GROUND_TRUTH_TEST":
+                return {"accepted": False, "reason": "virtual_delivery_requires_ground_truth_test_target"}
+
+        previous_state = self.mission_state
+        updated_at = datetime.now(timezone.utc).isoformat()
+        mission.update({
+            "state": status,
+            "progress_updated_at_utc": updated_at,
+            "flight_commands_sent": False,
+        })
+        if status == "first_aid_delivered":
+            mission["delivery"] = {
+                "kind": "virtual_simulation_event",
+                "kit_status": "VIRTUAL_KIT_DELIVERED",
+                "ground_truth_test": True,
+                "physical_release": False,
+                "treatment_claimed": False,
+                "at_utc": updated_at,
+            }
+
+        try:
+            atomic_json(self.args.mission_file, mission)
+            atomic_json(self.args.state_file, {
+                "vehicle_id": self.args.vehicle,
+                "mission_id": mission_id,
+                "state": status,
+                "updated_at_utc": updated_at,
+                "execution_enabled": False,
+                "flight_commands_sent": False,
+            })
+        except (OSError, json.JSONDecodeError) as error:
+            return {"accepted": False, "reason": f"mission_progress_persistence_failed:{error}"}
+
+        # Release the terminal mission before publishing completion. The
+        # coordinator may assign the next incident as soon as it receives it.
         self.mission_state = status
         if status in TERMINAL:
             self.mission_id = None
-        return {"accepted": True, "mission_id": mission_id, "state": status,
-                "flight_commands_sent": False}
+
+        payload: dict[str, Any] = {
+            "mission_id": mission_id,
+            "status": status,
+            "flight_commands_sent": False,
+        }
+        if status == "first_aid_delivered":
+            payload.update({
+                "delivery_kind": "virtual_simulation_event",
+                "ground_truth_test": True,
+                "physical_release": False,
+                "treatment_claimed": False,
+            })
+
+        try:
+            await self.node.send_reliable(
+                "coordinator", "mission_status", payload,
+                retries=2, ack_timeout_s=0.5,
+            )
+        except (OSError, TimeoutError, RuntimeError, ValueError) as error:
+            # Restore only if a newer assignment has not already arrived.
+            if self.mission_id is None:
+                self.mission_id = mission_id
+                self.mission_state = previous_state
+            return {"accepted": False, "reason": f"mission_status_delivery_failed:{error}"}
+
+        return {
+            "accepted": True,
+            "mission_id": mission_id,
+            "state": status,
+            "flight_commands_sent": False,
+        }
 
     async def _relay_progress_log(self) -> None:
         """Relay explicitly appended monitor/operator mission status records."""
@@ -345,6 +451,10 @@ def main() -> None:
     parser.add_argument("--progress-log", type=Path,
                         help="optional JSONL mission-status records from a validated monitor; suggestion-only")
     parser.add_argument("--guidance-publish-s", type=float, default=1.0)
+    parser.add_argument(
+        "--accept-ambulance-standby", action="store_true", default=False,
+        help="Acknowledge validated Ambulance missions without authorizing flight",
+    )
     parser.add_argument("--key-file", type=Path)
     parser.add_argument("--event-log", type=Path,
                         help="append per-endpoint MANET send/receive/ACK/retry diagnostics as JSONL")

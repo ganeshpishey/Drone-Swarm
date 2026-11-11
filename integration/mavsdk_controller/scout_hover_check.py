@@ -87,6 +87,10 @@ def main() -> None:
     parser.add_argument("--hover-seconds", type=float, default=10.0)
     parser.add_argument("--altitude", type=float, default=3.0)
     args = parser.parse_args()
+    if not 0.0 < args.altitude <= 4.0:
+        parser.error("--altitude must be greater than 0 and at most 4 metres")
+    if args.hover_seconds <= 0:
+        parser.error("--hover-seconds must be positive")
     asyncio.run(run(args.config, args.telemetry_log, args.hover_seconds, args.altitude))
 
 

@@ -205,7 +205,7 @@ class GazeboScoutImageSource:
         self._lidar_reordered = 0
         self._sim_time_s: float | None = None
         self._clock_mapper = SimulationClockMapper(
-            sample_limit=64, minimum_samples=8, maximum_residual_s=0.03
+            sample_limit=8192, minimum_samples=8, maximum_residual_s=0.03
         )
         self._clock_fit: dict[str, Any] = {"ready": False, "sample_count": 0}
         self._subscriptions = (
@@ -317,6 +317,7 @@ class GazeboScoutImageSource:
             **metadata,
             "points_xyz_sensor_m": points,
             "receive_monotonic_s": received,
+            "original_message": message,
         }
         with self._condition:
             self._pointcloud_messages_received += 1
@@ -324,10 +325,45 @@ class GazeboScoutImageSource:
             self._condition.notify_all()
 
     def pointcloud_snapshot(self, image: ImageFrame) -> dict[str, Any]:
-        """Return nearest cloud; temporal association never authorizes dispatch."""
+        """Return nearest cloud, briefly waiting for a closer future cloud.
+
+        Temporal association never authorizes dispatch.
+        """
+        wait_started = time.monotonic()
+        deadline = wait_started + 0.25
+
         with self._condition:
+            while True:
+                clouds = list(self._pointcloud)
+                current = self._sim_time_s
+
+                if clouds:
+                    nearest = min(
+                        clouds,
+                        key=lambda item: abs(
+                            item["pointcloud_acquisition_sim_s"] - image.sim_time_s
+                        ),
+                    )
+                    delta = abs(
+                        nearest["pointcloud_acquisition_sim_s"] - image.sim_time_s
+                    )
+                    has_future_cloud = any(
+                        item["pointcloud_acquisition_sim_s"] >= image.sim_time_s
+                        for item in clouds
+                    )
+
+                    if delta <= self.max_timestamp_delta_s or has_future_cloud:
+                        break
+
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    break
+                self._condition.wait(remaining)
+
             clouds = list(self._pointcloud)
             current = self._sim_time_s
+
+        wait_wall_s = time.monotonic() - wait_started
 
         base = {
             "image_acquisition_sim_s": image.sim_time_s,
@@ -336,7 +372,9 @@ class GazeboScoutImageSource:
             "temporal_pair_is_dispatchable": False,
             "dispatchable": False,
             "localization_status": "not_performed",
+            "pointcloud_wait_wall_s": wait_wall_s,
         }
+
         if not clouds:
             return {
                 **base,
@@ -356,6 +394,7 @@ class GazeboScoutImageSource:
             None if current is None
             else current - cloud["pointcloud_acquisition_sim_s"]
         )
+
         reason = None
         if current is None:
             reason = "gazebo_world_clock_unavailable"
@@ -367,8 +406,9 @@ class GazeboScoutImageSource:
         return {
             **base,
             **{key: value for key, value in cloud.items()
-               if key != "points_xyz_sensor_m"},
+               if key not in {"points_xyz_sensor_m", "original_message"}},
             "points_xyz_sensor_m": cloud["points_xyz_sensor_m"],
+            "original_message": cloud["original_message"],
             "image_pointcloud_abs_delta_s": delta,
             "pointcloud_age_sim_s": age,
             "synchronization_status": (
@@ -378,10 +418,24 @@ class GazeboScoutImageSource:
         }
 
     def _on_clock(self, message: Any) -> None:
-        stamp = message.sim
-        current = int(stamp.sec) + int(stamp.nsec) * 1e-9
+        # Gazebo's system timestamp records clock publication time.
+        # Convert it to this process's monotonic domain, avoiding
+        # variable transport/callback scheduling delay.
+        mono_before = time.monotonic()
+        wall_now = time.time()
+        mono_after = time.monotonic()
+        monotonic_offset = ((mono_before + mono_after) * 0.5) - wall_now
+
+        sim_stamp = message.sim
+        system_stamp = message.system
+        current = int(sim_stamp.sec) + int(sim_stamp.nsec) * 1e-9
+        system_s = int(system_stamp.sec) + int(system_stamp.nsec) * 1e-9
+        system_monotonic_s = system_s + monotonic_offset
+
         with self._condition:
-            fit = self._clock_mapper.add_clock(current, time.monotonic())
+            fit = self._clock_mapper.add_clock(
+                current, system_monotonic_s
+            )
             if fit.get("simulation_reset"):
                 self._last_sequence = None
                 self._last_image_stamp = None
@@ -395,6 +449,17 @@ class GazeboScoutImageSource:
                 self._latest = None
             self._sim_time_s = current
             self._clock_fit = fit
+
+    def localization_clock_snapshot(self) -> dict[str, Any]:
+        """Expose the existing Gazebo clock mapper for validated localization."""
+        with self._condition:
+            return {
+                "clock_mapper": self._clock_mapper,
+                "current_sim_time_s": self._sim_time_s,
+                "sensor_epoch": self._clock_mapper.epoch,
+                "clock_fit": dict(self._clock_fit),
+                "host_monotonic_now_s": time.monotonic(),
+            }
 
     def get_latest(self, timeout_s: float = 0.25, *, wait_until_timeout: bool = False) -> ImageFrame | None:
         """Get a frame, optionally waiting out a sampling interval while callbacks coalesce."""

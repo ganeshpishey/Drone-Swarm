@@ -42,6 +42,7 @@ def detection() -> dict:
 def pose(at: float = 10.0) -> dict:
     return {"coordinate_frame": "local_ned_m", "host_monotonic_s": at,
             "timestamp_domain": "host_monotonic_capture",
+            "coordinate_origin_id": "scout-home-1",
             "north_m": 1.0, "east_m": 2.0, "down_m": 3.0,
             "roll_rad": 0.0, "pitch_rad": 0.0, "yaw_rad": 0.0}
 
@@ -123,6 +124,23 @@ class ScoutLocalizationTests(unittest.TestCase):
         self.assertFalse(missing_origin["dispatchable"])
         self.assertEqual(missing_origin["rejection_reason"], "px4_local_ned_origin_id_missing")
 
+    def test_pose_from_different_px4_origin_is_rejected(self) -> None:
+        wrong_origin_pose = {**pose(), "coordinate_origin_id": "different-home"}
+        result = run(pose=wrong_origin_pose)
+        self.assertEqual(result["depth_status"], "associated")
+        self.assertFalse(result["dispatchable"])
+        self.assertIsNone(result["incident_world_location"])
+        self.assertEqual(result["rejection_reason"],
+                         "scout_pose_coordinate_origin_mismatch")
+
+    def test_pose_not_synchronized_to_image_capture_is_rejected(self) -> None:
+        result = run(pose=pose(9.85))
+        self.assertEqual(result["depth_status"], "associated")
+        self.assertFalse(result["dispatchable"])
+        self.assertIsNone(result["incident_world_location"])
+        self.assertEqual(result["rejection_reason"],
+                         "scout_pose_camera_capture_timestamp_mismatch")
+
     def test_no_box_returns_invalid_values_and_out_of_view_returns_rejected(self) -> None:
         no_match = run(points=[(4, 0, 5)] * 6)
         self.assertEqual(no_match["rejection_reason"], "insufficient_lidar_returns_in_bbox")
@@ -167,12 +185,32 @@ class ScoutLocalizationTests(unittest.TestCase):
                 "location_status": "unlocalized", "localization_status": "unlocalized",
                 "depth_status": "unavailable", "dispatchable": False,
                 "localization_uncertainty_m": None,
+                "approximate_location": {
+                    "coordinate_frame": "approximate_geodetic",
+                    "latitude_deg": 12.9716,
+                    "longitude_deg": 77.5946,
+                    "absolute_altitude_m": 900.0,
+                    "location_status": "approximate",
+                    "dispatchable": False,
+                    "ground_truth": False,
+                },
                 "rejection_reason": "camera_lidar_capture_clock_and_verified_calibration_required"}]}
         ingested = coordinator.ingest_incident(report, message_id="test-image-only")
         self.assertTrue(ingested["accepted"])
         incident = coordinator.incidents[ingested["incident_ids"][0]]
         self.assertEqual(incident["status"], "provisional")
         self.assertFalse(incident["dispatchable"])
+        self.assertIsNone(incident["target"])
+        self.assertNotIn("coordinates", incident)
+        self.assertEqual(
+            incident["approximate_location"]["coordinate_frame"],
+            "approximate_geodetic",
+        )
+        self.assertEqual(
+            incident["approximate_location"]["latitude_deg"],
+            12.9716,
+        )
+        self.assertFalse(incident["approximate_location"]["dispatchable"])
         self.assertEqual(incident["localization_rejection_reason"],
                          "camera_lidar_capture_clock_and_verified_calibration_required")
         denied = coordinator.propose_mission(incident["incident_id"], vehicle_id="ambulance_0",

@@ -22,6 +22,7 @@ except ImportError as exc:  # pragma: no cover - depends on optional extra
 
 
 EARTH_RADIUS_M = 6_378_137.0
+BATTERY_SNAPSHOT_TIMEOUT_S = 3.0
 
 
 @dataclass(frozen=True)
@@ -37,6 +38,9 @@ class Velocity:
     north_m_s: float
     east_m_s: float
     down_m_s: float
+
+
+MAX_RELATIVE_ALTITUDE_M = 4.0
 
 
 class PX4Controller:
@@ -95,8 +99,11 @@ class PX4Controller:
         await self.drone.action.arm()
 
     async def takeoff(self, altitude_m: float = 3.0) -> None:
-        if altitude_m <= 0:
-            raise ValueError("Takeoff altitude must be greater than zero")
+        if not math.isfinite(altitude_m) or not 0.0 < altitude_m <= MAX_RELATIVE_ALTITUDE_M:
+            raise ValueError(
+                f"Takeoff altitude must be greater than 0 and at most "
+                f"{MAX_RELATIVE_ALTITUDE_M:.1f} m"
+            )
         await self.drone.action.set_takeoff_altitude(altitude_m)
         await self.drone.action.takeoff()
 
@@ -126,6 +133,11 @@ class PX4Controller:
         yaw_deg: float = 0.0,
     ) -> None:
         """Fly to a local north/east/altitude waypoint and heading from home."""
+        if not math.isfinite(z) or not 0.0 < z <= MAX_RELATIVE_ALTITUDE_M:
+            raise ValueError(
+                f"Waypoint altitude must be greater than 0 and at most "
+                f"{MAX_RELATIVE_ALTITUDE_M:.1f} m"
+            )
         if self._home is None:
             raise RuntimeError("Call connect() before requesting a waypoint")
         latitude = self._home.latitude_deg + math.degrees(x / EARTH_RADIUS_M)
@@ -158,8 +170,11 @@ class PX4Controller:
         timeout_s: float = 60.0,
     ) -> None:
         """Move by a local north/east offset using PX4 offboard position control."""
-        if altitude_m <= 0:
-            raise ValueError("Waypoint altitude must be greater than zero")
+        if not math.isfinite(altitude_m) or not 0.0 < altitude_m <= MAX_RELATIVE_ALTITUDE_M:
+            raise ValueError(
+                f"Waypoint altitude must be greater than 0 and at most "
+                f"{MAX_RELATIVE_ALTITUDE_M:.1f} m"
+            )
 
         async def first_local_position() -> tuple[float, float, float]:
             async for state in self.drone.telemetry.position_velocity_ned():
@@ -290,6 +305,10 @@ class PX4Controller:
     async def hold(self) -> None:
         await self.drone.action.hold()
 
+    async def return_to_launch(self) -> None:
+        """Request PX4's native return-to-launch behaviour."""
+        await self.drone.action.return_to_launch()
+
     async def land(self) -> None:
         await self.drone.action.land()
 
@@ -329,8 +348,16 @@ class PX4Controller:
     async def telemetry_snapshot(self) -> dict[str, Any]:
         position = await self.get_position()
         velocity = await self.get_velocity()
+        try:
+            battery_remaining_percent = await asyncio.wait_for(
+                self.get_battery(),
+                timeout=BATTERY_SNAPSHOT_TIMEOUT_S,
+            )
+        except asyncio.TimeoutError:
+            battery_remaining_percent = None
+
         return {
             "position": asdict(position),
             "velocity": asdict(velocity),
-            "battery_remaining_percent": await self.get_battery(),
+            "battery_remaining_percent": battery_remaining_percent,
         }

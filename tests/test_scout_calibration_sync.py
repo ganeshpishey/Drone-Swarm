@@ -4,6 +4,7 @@ import math
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 
 from integration.mavsdk_controller.scout_calibration_sync import (
     GazeboSensorSynchronizer,
@@ -14,6 +15,8 @@ from integration.mavsdk_controller.scout_calibration_sync import (
     compare_ground_truth_position,
     summarize_ground_truth_trials,
     _interpolate_pose,
+    interpolate_pose_at_monotonic,
+    interpolate_separate_navigation_streams,
 )
 
 
@@ -65,13 +68,38 @@ class ScoutCalibrationSyncTests(unittest.TestCase):
         report = inspect_sdf_calibration(VEHICLE, CAMERA)
         cam = report["transforms_nominal"]["camera_optical_from_lidar_link"]
         body = report["transforms_nominal"]["body_frd_from_lidar_link"]
-        # x500_base places base_link 0.24 m above the merged model origin;
-        # camera_link is at model z=0.10 and lidar_link at base z=0.06.
+        camera_body = report["transforms_nominal"]["body_frd_from_camera_optical"]
+
+        # The camera optical +Z axis must point downward in body FRD.
+        self.assertAlmostEqual(camera_body[0][2], 0.0, places=7)
+        self.assertAlmostEqual(camera_body[1][2], 0.0, places=7)
+        self.assertAlmostEqual(camera_body[2][2], 1.0, places=7)
+
+        # Preserve the camera mount translation in the direct transform.
+        self.assertAlmostEqual(camera_body[0][3], 0.0, places=7)
+        self.assertAlmostEqual(camera_body[1][3], 0.0, places=7)
+        self.assertAlmostEqual(camera_body[2][3], 0.12, places=7)
+
+        self.assertEqual(camera_body[3], [0.0, 0.0, 0.0, 1.0])
+        self.assertFalse(report["dispatchable_calibration"])
+        self.assertEqual(
+            report["extrinsics_validation"],
+            "derived_from_active_SDF_pose_graph_not_empirically_verified",
+        )
+        # x500_base places base_link 0.24 m above the merged model origin.
+        # The production camera is mounted 25 degrees forward-down.
         self.assertAlmostEqual(report["model_frame_poses_sdf"]["base_link"][2][3], 0.24, places=8)
-        self.assertAlmostEqual(report["model_frame_poses_sdf"]["camera_link"][2][3], 0.10, places=8)
-        self.assertAlmostEqual(report["mount_poses_in_base_link_sdf"]["camera_link"][2][3], -0.14, places=8)
-        # The camera optical +Z axis points down; the lidar is 0.20 m above it.
-        self.assertAlmostEqual(cam[2][3], -0.20, places=5)
+        self.assertAlmostEqual(report["model_frame_poses_sdf"]["camera_link"][2][3], 0.12, places=8)
+        self.assertAlmostEqual(report["mount_poses_in_base_link_sdf"]["camera_link"][0][3], 0.00, places=8)
+        self.assertAlmostEqual(report["mount_poses_in_base_link_sdf"]["camera_link"][2][3], -0.12, places=8)
+
+        # Verify the optical transform is a valid rigid transform.
+        self.assertEqual(len(cam), 4)
+        self.assertEqual(len(cam[0]), 4)
+        self.assertAlmostEqual(cam[3][0], 0.0, places=8)
+        self.assertAlmostEqual(cam[3][1], 0.0, places=8)
+        self.assertAlmostEqual(cam[3][2], 0.0, places=8)
+        self.assertAlmostEqual(cam[3][3], 1.0, places=8)
         self.assertAlmostEqual(body[2][3], -0.06, places=8)
         self.assertEqual(report["camera_frame"]["frame_id_sdf"], "camera_link")
         self.assertEqual(report["extrinsics_validation"],
@@ -122,6 +150,12 @@ class ScoutCalibrationSyncTests(unittest.TestCase):
                          (42.25, None))
         with self.assertRaisesRegex(ValueError, "timestamp_missing"):
             gazebo_header_time({"received_monotonic_s": 5.0})
+
+    def test_gazebo_header_time_accepts_protobuf_attribute_shape(self) -> None:
+        proto = SimpleNamespace(header=SimpleNamespace(
+            stamp=SimpleNamespace(sec=42, nsec=250000000),
+            data=[SimpleNamespace(key="seq", value=["77"])]))
+        self.assertEqual(gazebo_header_time(proto), (42.25, 77))
 
     def test_scan_buffer_matches_closest_by_sim_time_not_arrival_time(self) -> None:
         sync = GazeboSensorSynchronizer(max_delta_s=0.06, max_age_s=0.5)
@@ -182,6 +216,110 @@ class ScoutCalibrationSyncTests(unittest.TestCase):
         self.assertFalse(mapper.status()["ready"])
         self.assertFalse(mapper.to_monotonic(0.2)["valid"])
 
+    def test_clock_mapper_maps_historical_timestamp_inside_retained_samples(self) -> None:
+        mapper = SimulationClockMapper(
+            minimum_samples=8,
+            maximum_residual_s=0.001,
+            fit_window_samples=12,
+        )
+        for index in range(40):
+            sim = index * 0.1
+            mapper.add_clock(sim, 200.0 + 2.0 * sim)
+
+        mapped = mapper.to_monotonic(1.5)
+        self.assertTrue(mapped["valid"], mapped)
+        self.assertAlmostEqual(mapped["host_monotonic_s"], 203.0, places=6)
+        self.assertEqual(
+            mapped["mapping_method"],
+            "theil_sen_timestamp_bracketed_window",
+        )
+
+        outside = mapper.to_monotonic(10.0)
+        self.assertFalse(outside["valid"])
+        self.assertEqual(
+            outside["reason"],
+            "simulation_time_outside_clock_window",
+        )
+
+    def test_clock_mapper_adapts_to_a_changed_simulation_rate(self) -> None:
+        mapper = SimulationClockMapper(
+            minimum_samples=8,
+            maximum_residual_s=0.03,
+            fit_window_samples=12,
+        )
+        host = 500.0
+        for index in range(40):
+            if index:
+                # Simulated real-time factor changes after the first 20 samples.
+                rate = 3.5 if index <= 20 else 3.9
+                host += 0.1 * rate
+            mapper.add_clock(index * 0.1, host)
+
+        status = mapper.status()
+        self.assertTrue(status["ready"], status)
+        self.assertEqual(status["mapping_method"], "theil_sen_recent_window")
+        self.assertEqual(status["fit_window_samples"], 12)
+
+        mapped = mapper.to_monotonic(3.9)
+        self.assertTrue(mapped["valid"], mapped)
+        self.assertAlmostEqual(mapped["host_monotonic_s"], host, places=6)
+
+
+    def test_separate_navigation_streams_interpolate_at_camera_time(self) -> None:
+        positions = [
+            {"host_monotonic_s": 10.4, "coordinate_origin_id": "home-1",
+             "north_m": 4.0, "east_m": 8.0, "down_m": 2.0},
+            {"host_monotonic_s": 10.6, "coordinate_origin_id": "home-1",
+             "north_m": 6.0, "east_m": 10.0, "down_m": 4.0},
+        ]
+        attitudes = [
+            {"host_monotonic_s": 10.3, "coordinate_origin_id": "home-1",
+             "roll_rad": 0.0, "pitch_rad": 0.0, "yaw_rad": 0.2},
+            {"host_monotonic_s": 10.7, "coordinate_origin_id": "home-1",
+             "roll_rad": 0.0, "pitch_rad": 0.0, "yaw_rad": 0.4},
+        ]
+        pose = interpolate_separate_navigation_streams(
+            positions, attitudes, 10.5, maximum_bracket_s=0.5
+        )
+        self.assertIsNotNone(pose)
+        self.assertAlmostEqual(pose["north_m"], 5.0)
+        self.assertAlmostEqual(pose["east_m"], 9.0)
+        self.assertAlmostEqual(pose["down_m"], 3.0)
+        self.assertAlmostEqual(pose["yaw_rad"], 0.3)
+        self.assertEqual(pose["coordinate_origin_id"], "home-1")
+
+    def test_separate_navigation_streams_reject_missing_bracket(self) -> None:
+        positions = [
+            {"host_monotonic_s": 10.4, "coordinate_origin_id": "home-1",
+             "north_m": 1.0, "east_m": 2.0, "down_m": 3.0},
+        ]
+        attitudes = [
+            {"host_monotonic_s": 10.3, "coordinate_origin_id": "home-1",
+             "roll_rad": 0.0, "pitch_rad": 0.0, "yaw_rad": 0.0},
+            {"host_monotonic_s": 10.7, "coordinate_origin_id": "home-1",
+             "roll_rad": 0.0, "pitch_rad": 0.0, "yaw_rad": 0.1},
+        ]
+        self.assertIsNone(interpolate_separate_navigation_streams(
+            positions, attitudes, 10.5
+        ))
+
+    def test_separate_navigation_streams_reject_origin_mismatch(self) -> None:
+        positions = [
+            {"host_monotonic_s": 10.4, "coordinate_origin_id": "home-1",
+             "north_m": 1.0, "east_m": 2.0, "down_m": 3.0},
+            {"host_monotonic_s": 10.6, "coordinate_origin_id": "home-1",
+             "north_m": 2.0, "east_m": 3.0, "down_m": 4.0},
+        ]
+        attitudes = [
+            {"host_monotonic_s": 10.3, "coordinate_origin_id": "home-1",
+             "roll_rad": 0.0, "pitch_rad": 0.0, "yaw_rad": 0.0},
+            {"host_monotonic_s": 10.7, "coordinate_origin_id": "home-2",
+             "roll_rad": 0.0, "pitch_rad": 0.0, "yaw_rad": 0.1},
+        ]
+        self.assertIsNone(interpolate_separate_navigation_streams(
+            positions, attitudes, 10.5
+        ))
+
     def test_pose_interpolation_and_localization_wrapper_use_gazebo_measurement_times(self) -> None:
         calibration = synthetic_runtime_calibration()
         mapper = SimulationClockMapper(minimum_samples=4, maximum_residual_s=0.001)
@@ -213,6 +351,35 @@ class ScoutCalibrationSyncTests(unittest.TestCase):
                          "linear_position_quaternion_slerp_rotation")
         self.assertAlmostEqual(result["incident_world_location"]["position_m"][0], 1.1, places=6)
 
+    def test_localization_wrapper_accepts_protobuf_like_sensor_messages(self) -> None:
+        mapper = SimulationClockMapper(minimum_samples=4, maximum_residual_s=0.001)
+        for index in range(8):
+            mapper.add_clock(2.0 + index * 0.1, 200.0 + index * 0.1)
+        history = [
+            {"host_monotonic_s": 200.3, "timestamp_domain": "host_monotonic_callback",
+             "coordinate_frame": "local_ned_m", "coordinate_origin_id": "home-1",
+             "north_m": 0., "east_m": 0., "down_m": 0., "roll_rad": 0.,
+             "pitch_rad": 0., "yaw_rad": 0.},
+            {"host_monotonic_s": 200.5, "timestamp_domain": "host_monotonic_callback",
+             "coordinate_frame": "local_ned_m", "coordinate_origin_id": "home-1",
+             "north_m": 0., "east_m": 0., "down_m": 0., "roll_rad": 0.,
+             "pitch_rad": 0., "yaw_rad": 0.},
+        ]
+        def proto_message(t, seq):
+            sec = int(t)
+            return SimpleNamespace(header=SimpleNamespace(
+                stamp=SimpleNamespace(sec=sec, nsec=round((t-sec)*1e9)),
+                data=[SimpleNamespace(key="seq", value=[str(seq)])]))
+        result = localize_gazebo_measurements(
+            [{"type": "person", "confidence": .95, "xyxy_pixels": [40, 40, 60, 60]}],
+            [(0, 0, 5)] * 6, image_message=proto_message(2.4, 8),
+            lidar_message=proto_message(2.42, 9), now_sim_time_s=2.5,
+            now_monotonic_s=200.5, pose_history=history, clock_mapper=mapper,
+            calibration=synthetic_runtime_calibration(), coordinate_origin_id="home-1",
+            sensor_epoch=0)[0]
+        self.assertTrue(result["dispatchable"])
+        self.assertAlmostEqual(result["timestamp_delta_s"], 0.02, places=6)
+
     def test_pose_interpolation_uses_shortest_arc_quaternion_slerp(self) -> None:
         history = [
             {"host_monotonic_s": 10.0, "timestamp_domain": "host_monotonic_callback",
@@ -237,6 +404,61 @@ class ScoutCalibrationSyncTests(unittest.TestCase):
         self.assertAlmostEqual(q[3], math.sqrt(3.0) / 2.0, places=7)
         self.assertAlmostEqual(pose["north_m"], 1.0, places=7)
         self.assertAlmostEqual(pose["east_m"], 2.0, places=7)
+
+    def test_public_pose_interpolation_wrapper(self) -> None:
+        history = [
+            {"host_monotonic_s": 10.0, "timestamp_domain": "host_monotonic_callback",
+             "coordinate_frame": "local_ned_m", "coordinate_origin_id": "home-1",
+             "north_m": 0.0, "east_m": 1.0, "down_m": 2.0,
+             "orientation_xyzw": [0.0, 0.0, 0.0, 1.0]},
+            {"host_monotonic_s": 12.0, "timestamp_domain": "host_monotonic_callback",
+             "coordinate_frame": "local_ned_m", "coordinate_origin_id": "home-1",
+             "north_m": 2.0, "east_m": 3.0, "down_m": 4.0,
+             "orientation_xyzw": [0.0, 0.0, 0.0, 1.0]},
+        ]
+
+        pose = interpolate_pose_at_monotonic(history, 11.0, maximum_bracket_s=2.0)
+
+        self.assertIsNotNone(pose)
+        self.assertAlmostEqual(pose["north_m"], 1.0)
+        self.assertAlmostEqual(pose["east_m"], 2.0)
+        self.assertAlmostEqual(pose["down_m"], 3.0)
+        self.assertEqual(pose["coordinate_origin_id"], "home-1")
+        self.assertEqual(
+            pose["pose_interpolation"]["method"],
+            "linear_position_quaternion_slerp_rotation",
+        )
+
+    def test_public_pose_interpolation_wrapper_accepts_exact_sample(self) -> None:
+        history = [
+            {"host_monotonic_s": 10.0, "timestamp_domain": "host_monotonic_callback",
+             "coordinate_frame": "local_ned_m", "coordinate_origin_id": "home-1",
+             "north_m": 1.0, "east_m": 2.0, "down_m": 3.0,
+             "orientation_xyzw": [0.0, 0.0, 0.0, 1.0]},
+        ]
+
+        pose = interpolate_pose_at_monotonic(history, 10.0)
+
+        self.assertIsNotNone(pose)
+        self.assertEqual(
+            pose["pose_interpolation"]["method"],
+            "exact_callback_sample",
+        )
+        self.assertEqual(pose["coordinate_origin_id"], "home-1")
+
+    def test_public_pose_interpolation_wrapper_rejects_origin_mismatch(self) -> None:
+        history = [
+            {"host_monotonic_s": 10.0, "timestamp_domain": "host_monotonic_callback",
+             "coordinate_frame": "local_ned_m", "coordinate_origin_id": "home-1",
+             "north_m": 0.0, "east_m": 0.0, "down_m": 0.0,
+             "orientation_xyzw": [0.0, 0.0, 0.0, 1.0]},
+            {"host_monotonic_s": 10.1, "timestamp_domain": "host_monotonic_callback",
+             "coordinate_frame": "local_ned_m", "coordinate_origin_id": "home-2",
+             "north_m": 1.0, "east_m": 1.0, "down_m": 1.0,
+             "orientation_xyzw": [0.0, 0.0, 0.0, 1.0]},
+        ]
+
+        self.assertIsNone(interpolate_pose_at_monotonic(history, 10.05))
 
     def test_pose_interpolation_handles_quaternion_sign_equivalence(self) -> None:
         history = [

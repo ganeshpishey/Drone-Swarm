@@ -372,22 +372,21 @@ async def run_demo(output: Path, terminal_hold_s: float) -> dict[str, Any]:
                          and bool(service.coordinator.missions), description="incident validation and mission proposal")
         mission = next(iter(service.coordinator.missions.values()))
         mission_id = mission.mission_id
-        await wait_until(lambda: service.coordinator.missions[mission_id].state == "acknowledged",
+        await wait_until(lambda: service.coordinator.missions[mission_id].state == "suggestion_received",
                          description="Ambulance application acknowledgement")
-        await wait_until(lambda: service.obstacle_guidance.get("state") == "HOLD"
-                         and service.obstacle_guidance.get("reason") == "telemetry_unavailable",
-                         description="ACK-triggered guidance refresh fails closed without telemetry")
+        if service.obstacle_guidance.get("state") != "UNKNOWN":
+            raise AssertionError("Suggestion-only ACK must not authorize mission-linked guidance")
         evidence["assertions"].update({
             "synthetic_scout_report_manet_ack": ack,
             "coordinator_validated_incident": True,
             "battery_gate_allowed_from_synthetic_observed_history": True,
             "ambulance_transport_and_application_ack": True,
-            "ack_guidance_refresh_fails_closed_without_real_telemetry": True,
+            "suggestion_only_ack_does_not_authorize_guidance": True,
             "mission_id": mission_id,
             "mission_execution_enabled": False,
             "flight_commands_sent": False,
         })
-        await save_stage("01_incident_assigned_and_acknowledged")
+        await save_stage("01_incident_assigned_suggestion_only")
 
         # Replay the exact same UDP message identity twice: callback must not reapply it.
         original_envelope = report_envelopes[0]
@@ -427,9 +426,16 @@ async def run_demo(output: Path, terminal_hold_s: float) -> dict[str, Any]:
             "reason": stale_reason if stale_rejected else None,
         })
 
+        # Synthetic-only fixture: release the first acknowledged mission slot
+        # so the independent unavailability policy scenario reaches eligibility.
+        service.active_ambulance_mission_id = None
+        service._persist_dispatch_queue()
+
         # Separate incidents prove the coordinator refuses allocation for unavailability and battery policy.
         base_connected = service.vehicle_state["ambulance_0"]["connected"]
         service.vehicle_state["ambulance_0"]["connected"] = False
+        service._refresh_available("ambulance_0")
+        assert service.vehicle_state["ambulance_0"]["available"] is False
         unavailable = synthetic_report("SYNTHETIC-DEMO-AMBULANCE-UNAVAILABLE", [31.0, 2.0, -1.0])
         await scout.send_reliable("coordinator", "incident_observation", {
             "report_id": unavailable["report_id"], "detections": unavailable["detections"], "report": unavailable,
@@ -441,8 +447,19 @@ async def run_demo(output: Path, terminal_hold_s: float) -> dict[str, Any]:
             m.incident_id.startswith(unavailable["report_id"])
             for m in service.coordinator.missions.values())
         unavailable_reason = unavailable_incident.get("dispatch_block_reason")
+        print("\\n========== UNAVAILABLE AMBULANCE DIAGNOSTICS ==========", flush=True)
+        print("connected:", service.vehicle_state["ambulance_0"].get("connected"), flush=True)
+        print("available:", service.vehicle_state["ambulance_0"].get("available"), flush=True)
+        print("incident:", unavailable_incident, flush=True)
+        print("mission_created:", unavailable_mission_created, flush=True)
+        print("dispatch_block_reason:", unavailable_reason, flush=True)
+        print("=======================================================\\n", flush=True)
         if unavailable_mission_created or unavailable_reason != "vehicle_unavailable_or_status_stale":
             raise AssertionError("unavailable Ambulance fixture did not fail closed")
+        if unavailable_incident["incident_id"] in service.pending_incident_ids:
+            service.pending_incident_ids.remove(unavailable_incident["incident_id"])
+        service._persist_dispatch_queue()
+
         evidence["failure_scenarios"].append({
             "case": "ambulance_unavailable", "mission_created_for_report": unavailable_mission_created,
             "reason": unavailable_reason, "rejected": True,
@@ -471,6 +488,9 @@ async def run_demo(output: Path, terminal_hold_s: float) -> dict[str, Any]:
                                   for m in service.coordinator.missions.values())
             if mission_created or incident.get("dispatch_block_reason") != expected_reason:
                 raise AssertionError(f"{name} was not denied by battery policy")
+            if incident["incident_id"] in service.pending_incident_ids:
+                service.pending_incident_ids.remove(incident["incident_id"])
+            service._persist_dispatch_queue()
             evidence["failure_scenarios"].append({
                 "case": "low_battery" if percent > args.critical_battery_percent else "critical_battery",
                 "fixture_percent": percent, "mission_created_for_report": mission_created,

@@ -144,6 +144,99 @@ class GazeboImageSourceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "truncated"):
             pointcloud_packed_to_xyz(make_message(data=b"short"))
 
+    def test_pointcloud_snapshot_preserves_original_message_without_authorizing_dispatch(self) -> None:
+        import struct
+        from collections import deque
+
+        source = GazeboScoutImageSource.__new__(GazeboScoutImageSource)
+        source._condition = threading.Condition()
+        source._pointcloud_messages_received = 0
+        source._pointcloud = deque(maxlen=16)
+        source._sim_time_s = 12.345
+        source.pointcloud_topic = "/scout/lidar/points/points"
+        source.max_lidar_age_s = 0.5
+        source.max_timestamp_delta_s = 0.1
+
+        message = SimpleNamespace(
+            width=1, height=1, point_step=12, row_step=12,
+            is_bigendian=False,
+            data=struct.pack("<fff", 1.0, 2.0, 3.0),
+            field=[
+                SimpleNamespace(name="x", offset=0, datatype=6, count=1),
+                SimpleNamespace(name="y", offset=4, datatype=6, count=1),
+                SimpleNamespace(name="z", offset=8, datatype=6, count=1),
+            ],
+            header=SimpleNamespace(
+                stamp=SimpleNamespace(sec=12, nsec=345_000_000),
+                data=[
+                    SimpleNamespace(key="frame_id", value=["lidar_link"]),
+                ],
+            ),
+        )
+
+        source._on_pointcloud(message)
+        image = SimpleNamespace(sim_time_s=12.345)
+        snapshot = source.pointcloud_snapshot(image)
+
+        self.assertIs(snapshot["original_message"], message)
+        self.assertEqual(snapshot["points_xyz_sensor_m"], [(1.0, 2.0, 3.0)])
+        self.assertEqual(snapshot["synchronization_status"], "temporally_paired_unverified")
+        self.assertFalse(snapshot["dispatchable"])
+        self.assertFalse(snapshot["temporal_pair_is_dispatchable"])
+
+    def test_pointcloud_snapshot_waits_for_closer_future_cloud(self) -> None:
+        from collections import deque
+
+        source = GazeboScoutImageSource.__new__(GazeboScoutImageSource)
+        source._condition = threading.Condition()
+        source._pointcloud = deque([{
+            "pointcloud_acquisition_sim_s": 12.0,
+            "pointcloud_sequence": 1,
+            "pointcloud_frame_id": "lidar_link",
+            "pointcloud_points_finite": 1,
+            "points_xyz_sensor_m": [(1.0, 2.0, 3.0)],
+            "receive_monotonic_s": time.monotonic(),
+            "original_message": object(),
+        }], maxlen=16)
+        source._sim_time_s = 12.0
+        source.pointcloud_topic = "/scout/lidar/points/points"
+        source.max_lidar_age_s = 0.5
+        source.max_timestamp_delta_s = 0.1
+
+        future_message = object()
+
+        def publish_future_cloud():
+            with source._condition:
+                source._sim_time_s = 12.2
+                source._pointcloud.append({
+                    "pointcloud_acquisition_sim_s": 12.2,
+                    "pointcloud_sequence": 2,
+                    "pointcloud_frame_id": "lidar_link",
+                    "pointcloud_points_finite": 1,
+                    "points_xyz_sensor_m": [(4.0, 5.0, 6.0)],
+                    "receive_monotonic_s": time.monotonic(),
+                    "original_message": future_message,
+                })
+                source._condition.notify_all()
+
+        timer = threading.Timer(0.03, publish_future_cloud)
+        timer.start()
+        try:
+            snapshot = source.pointcloud_snapshot(
+                SimpleNamespace(sim_time_s=12.15)
+            )
+        finally:
+            timer.join()
+
+        self.assertIs(snapshot["original_message"], future_message)
+        self.assertAlmostEqual(snapshot["image_pointcloud_abs_delta_s"], 0.05)
+        self.assertGreaterEqual(snapshot["pointcloud_wait_wall_s"], 0.02)
+        self.assertEqual(
+            snapshot["synchronization_status"],
+            "temporally_paired_unverified",
+        )
+        self.assertFalse(snapshot["dispatchable"])
+
     def test_temporal_pair_bound_handles_float_rounding_without_widening_meaningfully(self) -> None:
         self.assertTrue(temporal_pair_within_bound(0.1, 0.1))
         self.assertTrue(temporal_pair_within_bound(0.1000005, 0.1))

@@ -476,6 +476,20 @@ def prepare_experiment(output: Path, *, project_root: Path, px4_models: Path,
     source_model = source_root.find("model")
     if source_model is None:
         raise ValueError("production_scout_model_missing")
+    camera_include_source = next(
+        (node for node in source_model.findall("include")
+         if (node.findtext("name") or "").strip() == "mono_cam"),
+        None,
+    )
+    camera_joint_source = source_model.find("joint[@name='CameraJoint']")
+    if camera_include_source is None or camera_joint_source is None:
+        raise ValueError("production_camera_include_or_joint_missing")
+
+    original_camera_include_pose = camera_include_source.find("pose")
+    original_camera_joint_pose = camera_joint_source.find("pose")
+    if original_camera_include_pose is None or original_camera_joint_pose is None:
+        raise ValueError("production_camera_pose_missing")
+
     lidar_link = source_model.find("link[@name='lidar_link']")
     if lidar_link is None:
         raise ValueError("production_lidar_link_missing")
@@ -483,6 +497,12 @@ def prepare_experiment(output: Path, *, project_root: Path, px4_models: Path,
     original_sensor = lidar_link.find("sensor[@name='lidar']")
     if original_link_pose is None or original_sensor is None:
         raise ValueError("production_lidar_mount_or_sensor_missing")
+
+    original_lidar_pose_values = [
+        float(value) for value in original_link_pose.text.split()
+    ]
+    if len(original_lidar_pose_values) != 6:
+        raise ValueError("production_lidar_pose_must_have_six_values")
 
     variants = [
         {"id": "baseline_h1_947", "tilt_deg": 0.0, "base_height_m": 1.947,
@@ -492,7 +512,7 @@ def prepare_experiment(output: Path, *, project_root: Path, px4_models: Path,
         {"id": "baseline_shifted_h1_947", "tilt_deg": 0.0, "base_height_m": 1.947,
          "viewpoint_xy": [-0.3, 0.2]},
         {"id": "tilt35_h1_947", "tilt_deg": 35.0, "base_height_m": 1.947,
-         "viewpoint_xy": [0.0, 0.0]},
+         "viewpoint_xy": [-1.5, 0.0]},
         {"id": "tilt40_h1_947", "tilt_deg": 40.0, "base_height_m": 1.947,
          "viewpoint_xy": [0.0, 0.0]},
         {"id": "tilt45_h1_947", "tilt_deg": 45.0, "base_height_m": 1.947,
@@ -506,23 +526,30 @@ def prepare_experiment(output: Path, *, project_root: Path, px4_models: Path,
         root = ET.Element("sdf", {"version": "1.9"})
         model = ET.SubElement(root, "model", {"name": model_name})
         ET.SubElement(model, "static").text = "true"
-        # Base_link is the origin, matching the production sensor extrinsics:
-        # camera_link is z=-0.14 m and lidar_link z=+0.06 m.
+        # Reuse the actual production camera include and joint extrinsics.
+        # This keeps the diagnostic camera identical to the Scout camera.
         base_link = ET.SubElement(model, "link", {"name": "base_link"})
         _plugin(model, f"/day10_22/pose/{variant['id']}")
         camera_include = ET.SubElement(model, "include", {"merge": "true"})
         ET.SubElement(camera_include, "uri").text = "model://mono_cam"
-        ET.SubElement(camera_include, "pose").text = "0 0 -0.14 0 1.5707 0"
+        ET.SubElement(camera_include, "pose").text = original_camera_include_pose.text
         ET.SubElement(camera_include, "name").text = "mono_cam"
         camera_joint = ET.SubElement(model, "joint", {"name": "CameraJoint", "type": "fixed"})
         ET.SubElement(camera_joint, "parent").text = "base_link"
         ET.SubElement(camera_joint, "child").text = "camera_link"
-        ET.SubElement(camera_joint, "pose", {"relative_to": "base_link"}).text = "0 0 -0.14 0 1.5707 0"
+        ET.SubElement(
+            camera_joint, "pose",
+            dict(original_camera_joint_pose.attrib)
+        ).text = original_camera_joint_pose.text
         lidar = ET.fromstring(ET.tostring(lidar_link))
         lidar_pose = lidar.find("pose")
         assert lidar_pose is not None
-        lidar_pose.text = f"0 0 0.06 0 {math.radians(variant['tilt_deg']):.12g} 0"
-        lidar_pose.set("relative_to", "base_link")
+        # Preserve production XYZ, roll and yaw. Only diagnostic variants
+        # deliberately change the LiDAR pitch.
+        lidar_pose_values = list(original_lidar_pose_values)
+        lidar_pose_values[4] = math.radians(variant["tilt_deg"])
+        lidar_pose.text = " ".join(f"{value:.12g}" for value in lidar_pose_values)
+        lidar_pose.set("relative_to", original_link_pose.get("relative_to", "base_link"))
         sensor = lidar.find("sensor[@name='lidar']")
         assert sensor is not None
         sensor.find("topic").text = f"/day10_22/{variant['id']}/lidar"
@@ -860,19 +887,56 @@ def capture_world(world_path: Path, variant: dict[str, Any], output_dir: Path,
                                 "width_px": int(image.message.width),
                                 "height_px": int(image.message.height)})
                         target_point_pixels = []
+                        inside_aabb_count = 0
+                        in_front_count = 0
+                        behind_camera_count = 0
+                        outside_image_count = 0
+                        camera_x_values = []
+
+                        projection_intrinsics = {
+                            "fx_px": capture.camera_infos[-1]["intrinsics_k"][0],
+                            "fy_px": capture.camera_infos[-1]["intrinsics_k"][4],
+                            "cx_px": capture.camera_infos[-1]["intrinsics_k"][2],
+                            "cy_px": capture.camera_infos[-1]["intrinsics_k"][5],
+                            "width_px": int(image.message.width),
+                            "height_px": int(image.message.height),
+                        }
+
+                        camera_q = cam_pose["orientation_xyzw"]
+                        inverse_camera_q = (
+                            -camera_q[0], -camera_q[1],
+                            -camera_q[2], camera_q[3],
+                        )
+
                         for world_point in world_points:
-                            if all(low[i] <= world_point[i] <= high[i] for i in range(3)):
-                                pixel = project_world_point(
-                                    world_point, cam_pose, {
-                                        "fx_px": capture.camera_infos[-1]["intrinsics_k"][0],
-                                        "fy_px": capture.camera_infos[-1]["intrinsics_k"][4],
-                                        "cx_px": capture.camera_infos[-1]["intrinsics_k"][2],
-                                        "cy_px": capture.camera_infos[-1]["intrinsics_k"][5],
-                                        "width_px": int(image.message.width),
-                                        "height_px": int(image.message.height)})
-                                if pixel is not None and 0 <= pixel[0] < image.message.width \
-                                        and 0 <= pixel[1] < image.message.height:
-                                    target_point_pixels.append(pixel)
+                            if not all(low[i] <= world_point[i] <= high[i]
+                                       for i in range(3)):
+                                continue
+
+                            inside_aabb_count += 1
+                            camera_local = _rotate(
+                                inverse_camera_q,
+                                [world_point[i] - cam_pose["position_m"][i]
+                                 for i in range(3)],
+                            )
+                            camera_x_values.append(camera_local[0])
+
+                            if camera_local[0] <= 1e-6:
+                                behind_camera_count += 1
+                                continue
+
+                            in_front_count += 1
+                            pixel = project_world_point(
+                                world_point, cam_pose, projection_intrinsics
+                            )
+
+                            if pixel is None:
+                                behind_camera_count += 1
+                            elif (0 <= pixel[0] < image.message.width
+                                  and 0 <= pixel[1] < image.message.height):
+                                target_point_pixels.append(pixel)
+                            else:
+                                outside_image_count += 1
                         target_returns[target["name"]] = {
                             "ground_truth_aabb_world_m": [low, high],
                             "surveyed_ground_contact_world_m": target["ground_contact_world_m"],
@@ -880,6 +944,14 @@ def capture_world(world_path: Path, variant: dict[str, Any], output_dir: Path,
                                 world_points, bounds_min=low, bounds_max=high),
                             "camera_predicted_bbox": camera_bbox,
                             "lidar_returns_inside_camera_fov_count": len(target_point_pixels),
+                            "diagnostic_inside_aabb_count": inside_aabb_count,
+                            "diagnostic_in_front_of_camera_count": in_front_count,
+                            "diagnostic_behind_camera_count": behind_camera_count,
+                            "diagnostic_outside_image_count": outside_image_count,
+                            "diagnostic_camera_local_x_min_max_m": (
+                                [min(camera_x_values), max(camera_x_values)]
+                                if camera_x_values else None
+                            ),
                             "projected_lidar_return_pixels_px": target_point_pixels,
                             "pose_at_scan": target_poses[target["name"]],
                         }
